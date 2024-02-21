@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="tel"],
+        .form-group input[type="email"],
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group select {
+            height: 40px;
+        }
+
+        .form-group .textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .form-group .verify-otp-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .linkedIn-style-section {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consultancy Registration</h1>
+        <form id="registrationForm">
+            <!-- PROFILE PHOTO UPLOAD (Optional) -->
+            
+
+            <!-- NAME (Name of NGO/Firm) -->
+            <div class="form-group">
+                <label for="ngo-name">Name of NGO/Firm</label>
+                <input type="text" id="ngo-name" required>
+            </div> 
+
+            <!-- DATE OF SETUP (Dropdown Calendar) -->
+            <div class="form-group" >
+                <label for="date-of-setup">Date of Setup</label>
+                <input type="date" id="date-of-setup" required>
+            </div>
+
+            <!-- LOCATION (State, City, Pincode) -->
+            <div class="form-row">
+                <div class="form-group" style="margin: 0.5rem;"> 
+                    <label for="state">State</label>
+                    <select id="state">
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                        <option value="Assam">Assam</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Chhattisgarh">Chhattisgarh</option>
+                        <option value="Goa">Goa</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                        <option value="Jharkhand">Jharkhand</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Manipur">Manipur</option>
+                        <option value="Meghalaya">Meghalaya</option>
+                        <option value="Mizoram">Mizoram</option>
+                        <option value="Nagaland">Nagaland</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Sikkim">Sikkim</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Tripura">Tripura</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Uttarakhand">Uttarakhand</option>
+                        <option value="West Bengal">West Bengal</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin: 0.5rem;">
+                    <label for="city">City</label>
+                    <select id="city">
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Visakhapatnam">Visakhapatnam</option>
+                        <option value="Vijayawada">Vijayawada</option>
+                        <option value="Guntur">Guntur</option>
+                        <option value="Nellore">Nellore</option>
+                        <option value="Guwahati">Guwahati</option>
+                        <option value="Silchar">Silchar</option>
+                        <option value="Dibrugarh">Dibrugarh</option>
+                        <option value="Patna">Patna</option>
+                        <option value="Gaya">Gaya</option>
+                        <option value="Bhagalpur">Bhagalpur</option>
+                        <option value="Muzaffarpur">Muzaffarpur</option>
+                        <option value="Chandigarh">Chandigarh</option>
+                        <option value="Raipur">Raipur</option>
+                        <option value="Bhilai">Bhilai</option>
+                        <option value="Bilaspur">Bilaspur</option>
+                        <option value="Panaji">Panaji</option>
+                        <option value="Vasco da Gama">Vasco da Gama</option>
+                        <option value="Ahmedabad">Ahmedabad</option>
+                        <option value="Surat">Surat</option>
+                        <option value="Vadodara">Vadodara</option>
+                        <option value="Rajkot">Rajkot</option>
+                        <option value="Faridabad">Faridabad</option>
+                        <option value="Gurgaon">Gurgaon</option>
+                        <option value="Panipat">Panipat</option>
+                        <option value="Shimla">Shimla</option>
+                        <option value="Dharamshala">Dharamshala</option>
+                        <option value="Hamirpur">Hamirpur</option>
+                        <option value="Ranchi">Ranchi</option>
+                        <option value="Jamshedpur">Jamshedpur</option>
+                        <option value="Bokaro Steel City">Bokaro Steel City</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Mysore">Mysore</option>
+                        <option value="Hubli-Dharwad">Hubli-Dharwad</option>
+                        <option value="Belgaum">Belgaum</option>
+                        <option value="Kochi">Kochi</option>
+                        <option value="Kozhikode">Kozhikode</option>
+                        <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                        <option value="Thrissur">Thrissur</option>
+                        <option value="Bhopal">Bhopal</option>
+                        <option value="Indore">Indore</option>
+                        <option value="Jabalpur">Jabalpur</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Pune">Pune</option>
+                        <option value="Nagpur">Nagpur</option>
+                        <option value="Nashik">Nashik</option>
+                        <option value="Aurangabad">Aurangabad</option>
+                        <option value="Thane">Thane</option>
+                        <option value="Imphal">Imphal</option>
+                        <option value="Shillong">Shillong</option>
+                        <option value="Aizawl">Aizawl</option>
+                        <option value="Kohima">Kohima</option>
+                        <option value="Bhubaneswar">Bhubaneswar</option>
+                        <option value="Cuttack">Cuttack</option>
+                        <option value="Rourkela">Rourkela</option>
+                        <option value="Amritsar">Amritsar</option>
+                        <option value="Ludhiana">Ludhiana</option>
+                        <option value="Jalandhar">Jalandhar</option>
+                        <option value="Jaipur">Jaipur</option>
+                        <option value="Jodhpur">Jodhpur</option>
+                        <option value="Kota">Kota</option>
+                        <option value="Ajmer">Ajmer</option>
+                        <option value="Gangtok">Gangtok</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Coimbatore">Coimbatore</option>
+                        <option value="Madurai">Madurai</option>
+                        <option value="Tiruchirappalli">Tiruchirappalli</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Warangal">Warangal</option>
+                        <option value="Agartala">Agartala</option>
+                        <option value="Lucknow">Lucknow</option>
+                        <option value="Kanpur">Kanpur</option>
+                        <option value="Varanasi">Varanasi</option>
+                        <option value="Allahabad">Allahabad</option>
+                        <option value="Dehradun">Dehradun</option>
+                        <option value="Haridwar">Haridwar</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Asansol">Asansol</option>
+                        <option value="Durgapur">Durgapur</option>
+                       
+                    </select>
+                </div>
+                <div class="form-group" style="margin: 0.5rem;">
+                    <label for="pincode">Pincode</label>
+                    <input type="text" id="pincode">
+                </div>
+            </div>
+            
+
+            <!-- OFFICIAL MOBILE NUMBER (Verify with OTP) -->
+            <div class="form-group">
+                <label for="official-mobile">Official Mobile Number</label>
+                <input type="tel" id="official-mobile" required>
+                <button class="verify-otp-button" style="margin-top: 0.5rem";>Verify with OTP</button>
+            </div>
+
+            <!-- OFFICIAL EMAIL ID (Verify with OTP) -->
+            <div class="form-group">
+                <label for="official-email">Official Email ID</label>
+                <input type="email" id="official-email" required>
+                <button class="verify-otp-button" style="margin-top: 0.5rem;">Verify with OTP</button>
+            </div>
+
+            <!-- OFFICIAL ADDRESS (Four to Five Lines) -->
+            <div class="form-group">
+                <label for="official-address">Official Address</label>
+                <textarea class="textarea" id="official-address" rows="5" required></textarea>
+            </div>
+
+            
+
+            
+         
+
+            
+
+            <!-- NUMBER OF MEMBERS / EMPLOYEES (Compulsory) -->
+            <div class="form-group">
+                <label for="members-count">Number of Members / Employees</label>
+                <input type="number" id="members-count" min="0" required>
+                <label for="members-uid"style="margin-top:1rem">List of UIDs (If Registered on Our Portal)</label>
+                <input type="text" id="members-uid">
+            </div>
+
+            <!-- DOCUMENTS PROOF (Compulsory) -->
+            <div class="form-group">
+                <label for="documents-proof">Upload Documents (e.g., PAN, Govt Authority Certificate)</label>
+                <input type="file" id="documents-proof" accept=".pdf, .doc, .docx" required>
+            </div>
+
+            <!-- Unique ID Based on Basic Details (Name, Date of Setup, Document, etc.) -->
+           
+            <!-- Submit Button -->
+            <div class="form-group">
+                <a href="company-login.html"><button type="submit" id="submitButton">Submit</button></a> 
+            </div>
+        </form>
+    </div>
+    <script>
+        // JavaScript code to handle form submission
+        document.getElementById('submitButton').addEventListener('click', function () {
+            // Check if all required fields are filled
+            var ngoName = document.getElementById('ngo-name').value;
+            var dateOfSetup = document.getElementById('date-of-setup').value;
+            var state = document.getElementById('state').value;
+            var city = document.getElementById('city').value;
+            var pincode = document.getElementById('pincode').value;
+            var officialMobile = document.getElementById('official-mobile').value;
+            var officialEmail = document.getElementById('official-email').value;
+            var officialAddress = document.getElementById('official-address').value;
+            var membersCount = document.getElementById('members-count').value;
+            var documentsProof = document.getElementById('documents-proof').value;
+
+            if (ngoName && dateOfSetup && state && city && pincode && officialMobile && officialEmail && officialAddress && membersCount && documentsProof) {
+                // If all required fields are filled, redirect to company-login.html
+                window.location.href = 'company-login.html';
+            } else {
+                alert('Please fill in all required fields.');
+            }
+        });
+    </script>
+</body>
+</html>

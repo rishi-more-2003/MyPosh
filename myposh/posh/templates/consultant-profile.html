@@ -1,0 +1,127 @@
+<!-- FILEPATH: /c:/Users/allan/Downloads/freelance/preview.colorlib.com/theme/negotiate/consultant-profile.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Consultant Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        form {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border-radius: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #3e8e41;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <label for="profile-photo">Profile Photo:</label>
+        <input type="file" id="profile-photo" name="profile-photo"><br><br>
+        
+        <label for="marital-status">Marital Status:</label>
+        <select id="marital-status" name="marital-status">
+            <option value="married">Married</option>
+            <option value="unmarried">Unmarried</option>
+            <option value="others">Others</option>
+        </select><br><br>
+        
+        <label for="aadhaar-card">Aadhaar Card:</label>
+        <input type="file" id="aadhaar-card" name="aadhaar-card"><br><br>
+        
+        <label for="educational-background">Educational Background:</label>
+        <textarea id="educational-background" name="educational-background"></textarea><br><br>
+        
+        <label for="skills" style="font-weight: bold; font-size: 18px;">Skills:</label>
+        <textarea id="skills" name="skills" style="width: 100%; height: 100px;"></textarea><br><br>
+        
+        <label for="certifications">Certifications:</label>
+        <textarea id="certifications" name="certifications"></textarea><br><br>
+        
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea><br><br>
+        
+        <label for="short-description">Short Description:</label>
+        <textarea id="short-description" name="short-description"></textarea><br><br>
+        
+        <label for="career-experience">Career/Experience:</label>
+        <textarea id="career-experience" name="career-experience"></textarea><br><br>
+        
+        <label for="committees">Currently Member in How Many Committees:</label>
+        <input type="number" id="committees" name="committees"><br><br>
+        
+        <label for="services">Services & Charges:</label>
+        <textarea id="services" name="services"></textarea><br><br>
+        
+        <label for="clients">Current Top Five Clients:</label>
+        <textarea id="clients" name="clients"></textarea><br><br>
+        
+        <label for="ngo">Associated with some NGO/Consultancy Firm:</label>
+        <select id="ngo" name="ngo">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select><br><br>
+        
+        <label for="ngo-name">NGO/Consultancy Firm Name:</label>
+        <input type="text" id="ngo-name" name="ngo-name"><br><br>
+        
+        <label for="ngo-uid">NGO/Consultancy Firm UID:</label>
+        <input type="text" id="ngo-uid" name="ngo-uid"><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

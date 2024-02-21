@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- Mirrored from preview.colorlib.com/theme/negotiate/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 05 Sep 2023 17:00:59 GMT -->
+  <head>
+    <title>Negotiate - Free Bootstrap 4 Template by Colorlib</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="static/css/open-iconic-bootstrap.min.css" />
+    <link rel="stylesheet" href="static/css/animate.css" />
+    <link rel="stylesheet" href="static/css/owl.carousel.min.css" />
+    <link rel="stylesheet" href="static/css/owl.theme.default.min.css" />
+    <link rel="stylesheet" href="static/css/magnific-popup.css" />
+    <link rel="stylesheet" href="static/css/aos.css" />
+    <link rel="stylesheet" href="static/css/ionicons.min.css" />
+    <link rel="stylesheet" href="static/css/flaticon.css" />
+    <link rel="stylesheet" href="static/css/icomoon.css" />
+    <link rel="stylesheet" href="static/css/style.css" />
+    <script nonce="451486d8-8ad1-4889-9db3-54cf83c6ab9e">
+      (function (w, d) {
+        !(function (bg, bh, bi, bj) {
+          bg[bi] = bg[bi] || {};
+          bg[bi].executed = [];
+          bg.zaraz = { deferred: [], listeners: [] };
+          bg.zaraz.q = [];
+          bg.zaraz._f = function (bk) {
+            return async function () {
+              var bl = Array.prototype.slice.call(arguments);
+              bg.zaraz.q.push({ m: bk, a: bl });
+            };
+          };
+          for (const bm of ["track", "set", "debug"])
+            bg.zaraz[bm] = bg.zaraz._f(bm);
+          bg.zaraz.init = () => {
+            var bn = bh.getElementsByTagName(bj)[0],
+              bo = bh.createElement(bj),
+              bp = bh.getElementsByTagName("title")[0];
+            bp && (bg[bi].t = bh.getElementsByTagName("title")[0].text);
+            bg[bi].x = Math.random();
+            bg[bi].w = bg.screen.width;
+            bg[bi].h = bg.screen.height;
+            bg[bi].j = bg.innerHeight;
+            bg[bi].e = bg.innerWidth;
+            bg[bi].l = bg.location.href;
+            bg[bi].r = bh.referrer;
+            bg[bi].k = bg.screen.colorDepth;
+            bg[bi].n = bh.characterSet;
+            bg[bi].o = new Date().getTimezoneOffset();
+            if (bg.dataLayer)
+              for (const bt of Object.entries(
+                Object.entries(dataLayer).reduce(
+                  (bu, bv) => ({ ...bu[1], ...bv[1] }),
+                  {}
+                )
+              ))
+                zaraz.set(bt[0], bt[1], { scope: "page" });
+            bg[bi].q = [];
+            for (; bg.zaraz.q.length; ) {
+              const bw = bg.zaraz.q.shift();
+              bg[bi].q.push(bw);
+            }
+            bo.defer = !0;
+            for (const bx of [localStorage, sessionStorage])
+              Object.keys(bx || {})
+                .filter((bz) => bz.startsWith("_zaraz_"))
+                .forEach((by) => {
+                  try {
+                    bg[bi]["z_" + by.slice(7)] = JSON.parse(bx.getItem(by));
+                  } catch {
+                    bg[bi]["z_" + by.slice(7)] = bx.getItem(by);
+                  }
+                });
+            bo.referrerPolicy = "origin";
+            bo.src =
+              "../../cdn-cgi/zaraz/sd0d9.js?z=" +
+              btoa(encodeURIComponent(JSON.stringify(bg[bi])));
+            bn.parentNode.insertBefore(bo, bn);
+          };
+          ["complete", "interactive"].includes(bh.readyState)
+            ? zaraz.init()
+            : bg.addEventListener("DOMContentLoaded", zaraz.init);
+        })(w, d, "zarazData", "script");
+      })(window, document);
+    </script>
+    <style>
+      .dropdown-menu2 li {
+        position: relative;
+      }
+      .dropdown-menu2 .dropdown-submenu {
+        display: none;
+        position: absolute;
+        left: 100%;
+        top: -7px;
+      }
+      .dropdown-menu2 .dropdown-submenu-left {
+        right: 100%;
+        left: auto;
+      }
+      .dropdown-menu2 > li:hover > .dropdown-submenu {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-top navbar-light d-flex flex-column-reverse">
+      <div class="container py-3">
+        <div
+          class="row no-gutters d-flex align-items-center align-items-stretch"
+        >
+          <div class="col-md-4 d-flex align-items-center py-4">
+            <a class="navbar-brand" href="index-2.html">MyPosH<span></span></a>
+          </div>
+          <div class="col-lg-8 d-block">
+            <div class="row d-flex">
+              <div
+                class="col-md d-flex topper align-items-center align-items-stretch py-md-4"
+              >
+                <div class="text"></div>
+              </div>
+              <div
+                class="col-md d-flex topper align-items-center align-items-stretch py-md-4"
+              >
+                <div class="text"></div>
+              </div>
+              <div
+                class="col-md d-flex topper align-items-center align-items-stretch py-md-4"
+              >
+                <div class="text"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav
+      class="navbar navbar-expand-lg navbar-dark bg-dark ftco-navbar-light"
+      id="ftco-navbar"
+    >
+      <div class="container d-flex align-items-center">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#ftco-nav"
+          aria-controls="ftco-nav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="oi oi-menu"></span> Menu
+        </button>
+        <form action="#" class="searchform order-lg-last">
+          <div class="form-group d-flex">
+            <button type="submit" placeholder class="form-control search">
+              <span class="ion-ios-search"></span>
+            </button>
+          </div>
+        </form>
+        <div class="collapse navbar-collapse" id="ftco-nav">
+          <ul
+            class="navbar-nav mr-auto"
+            style="display: flex; justify-content: center; align-items: center"
+          >
+            <li class="nav-item active">
+              <a href="index-2.html" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item">
+              <a href="services.html" class="nav-link">Services</a>
+            </li>
+            <div class="dropdown">
+                <button
+                  class="btn dropdown-toggle"
+                  type="button"
+                  id="dropdownMenuButton"
+                  data-mdb-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                <a href="button.html" style="color: black;">Registration</a>
+                </button>
+                <ul
+                  class="dropdown-menu dropdown-menu2"
+                  aria-labelledby="dropdownMenuButton"
+                >
+                  <li>
+                    <a class="dropdown-item" href="establishment-button.html">Establishment Registration</a>
+                  </li>
+                  
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      Posh Associate Registration &raquo;
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu2 dropdown-submenu">
+                      <li>
+                        <a class="dropdown-item" href="individual-button.html">Individual</a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="ngo-button.html">NGO</a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="posh-button.html">POSH Consultancy</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            <!-- <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="loginDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                POSH Associate
+              </a>
+              <div
+                class="dropdown-menu"
+                aria-labelledby="loginDropdown"
+                style="background-color: yellow; color: white"
+              >
+                <a class="dropdown-item" href="consultant-display.html"
+                  >Consultant profile</a
+                >
+              </div>
+            </li> -->
+
+            <div class="dropdown">
+              <button
+                class="btn dropdown-toggle"
+                type="button"
+                id="dropdownMenuButton"
+                data-mdb-toggle="dropdown"
+                aria-expanded="false"
+              >
+                POSH Associate
+              </button>
+              <ul
+                class="dropdown-menu dropdown-menu1"
+                aria-labelledby="dropdownMenuButton"
+              >
+                <li>
+                  <a class="dropdown-item" href="consultant-display.html"
+                    >Consultant profile</a
+                  >
+                </li>
+              </ul>
+            </div>
+
+            <li class="nav-item">
+              <a href="blog.html" class="nav-link">Blog</a>
+            </li>
+            <li class="nav-item">
+              <a href="about.html" class="nav-link"  style="white-space: nowrap;">About us</a>
+            </li>
+
+            <li class="nav-item">
+              <a href="contact.html" class="nav-link">Contact</a>
+            </li>
+            <div class="dropdown">
+              <button
+                class="btn dropdown-toggle"
+                type="button"
+                id="dropdownMenuButton"
+                data-mdb-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Login
+              </button>
+              <ul
+                class="dropdown-menu dropdown-menu2"
+                aria-labelledby="dropdownMenuButton"
+              >
+                <li>
+                  <a class="dropdown-item" href="establishment-login.html">Establishment Login</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="employee-login.html">Employee Login</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">
+                    Posh Associate Login &raquo;
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu2 dropdown-submenu">
+                    <li>
+                      <a class="dropdown-item" href="individual-login.html">Individual</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="ngo-login.html">NGO</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="consultant-login.html">POSH Consultancy</a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="overlay"></div>
+    <div class="container">
+      <div
+        class="row no-gutters slider-text align-items-center justify-content-end"
+        data-scrollax-parent="true"
+      >
+        <div class="col-md-7 ftco-animate mb-md-5"></div>
+      </div>
+    </div>
+
+    <div class="overlay"></div>
+    <div class="container">
+      <div
+        class="row no-gutters slider-text align-items-center justify-content-end"
+        data-scrollax-parent="true"
+      >
+        <p>
+          <a href="#" class="btn btn-primary px-4 py-3 mt-3">Our Services</a>
+        </p>
+      </div>
+    </div>
+    <section class="ftco-section ftco-no-pt ftco-no-pb ftco-consult">
+      <div class="container">
+        <div class="row d-flex no-gutters align-items-stretch consult-wrap">
+          <div class="col-md-5 wrap-about align-items-stretch d-flex">
+            <div
+              class="ftco-animate bg-primary align-self-stretch px-4 py-5 w-100"
+            >
+              <h2 class="heading-white mb-4">Free Consulting</h2>
+              <form action="#" class="appointment-form ftco-animate">
+                <div class="form-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="First Name"
+                  />
+                </div>
+                <div class="form-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Last Name"
+                  />
+                </div>
+                <div class="form-group">
+                  <div class="form-field">
+                    <div class="select-wrap">
+                      <div class="icon">
+                        <span class="ion-ios-arrow-down"></span>
+                      </div>
+                      <select name id class="form-control">
+                        <option value>Select Guidance</option>
+                        <option value>Finance</option>
+                        <option value>Business</option>
+                        <option value>Auto Loan</option>
+                        <option value>Real Estate</option>
+                        <option value>Other Services</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" placeholder="Phone" />
+                </div>
+                <div class="form-group">
+                  <textarea
+                    name
+                    id
+                    cols="30"
+                    rows="2"
+                    class="form-control"
+                    placeholder="Message"
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <input
+                    type="submit"
+                    value="Request A Quote"
+                    class="btn btn-secondary py-3 px-4"
+                  />
+                </div>
+              </form>
+            </div>
+          </div>
+          <div
+            class="col-md-7 wrap-about ftco-animate align-items-stretch d-flex"
+          >
+            <div class="bg-white p-5">
+              <h2 class="mb-4">PosH <br />Legal Agency</h2>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="services">
+                    <div class="icon mt-2 d-flex align-items-center">
+                      <span class="flaticon-collaboration"></span>
+                    </div>
+                    <div class="text media-body">
+                      <h3>Business Solution</h3>
+                      <p>
+                        Far far away, behind the word mountains, far from the
+                        countries Vokalia.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="services">
+                    <div class="icon mt-2">
+                      <span class="flaticon-analysis"></span>
+                    </div>
+                    <div class="text media-body">
+                      <h3>Financial Analysis</h3>
+                      <p>
+                        Far far away, behind the word mountains, far from the
+                        countries Vokalia.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="services">
+                    <div class="icon mt-2">
+                      <span class="flaticon-search-engine"></span>
+                    </div>
+                    <div class="text media-body">
+                      <h3>Marketing Strategy</h3>
+                      <p>
+                        Far far away, behind the word mountains, far from the
+                        countries Vokalia.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="services">
+                    <div class="icon mt-2">
+                      <span class="flaticon-handshake"></span>
+                    </div>
+                    <div class="text media-body">
+                      <h3>Investment Planning</h3>
+                      <p>
+                        Far far away, behind the word mountains, far from the
+                        countries Vokalia.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container consult-wrap">
+      <div class="row d-flex align-items-stretch">
+        <div class="col-md-6 wrap-about align-items-stretch d-flex">
+          <div
+            class="img"
+            style="background-image: url(images/about.jpg)"
+          ></div>
+        </div>
+        <div class="col-md-6 wrap-about ftco-animate py-md-5 pl-md-5">
+          <div class="heading-section mb-4">
+            <span class="subheading">Welcome to Negotiate</span>
+            <h2>The Smartest Thing To Do With Your Consulting Business</h2>
+          </div>
+          <p>
+            Far far away, behind the word mountains, far from the countries
+            Vokalia and Consonantia, there live the blind texts.
+          </p>
+          <div class="tabulation-2 mt-4">
+            <ul class="nav nav-pills nav-fill d-md-flex d-block">
+              <li class="nav-item">
+                <a class="nav-link active py-2" data-toggle="tab" href="#home1"
+                  ><span class="ion-ios-home mr-2"></span> Our Mission</a
+                >
+              </li>
+              <li class="nav-item px-lg-2">
+                <a class="nav-link py-2" data-toggle="tab" href="#home2"
+                  ><span class="ion-ios-person mr-2"></span> Our Vision</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link py-2" data-toggle="tab" href="#home3"
+                  ><span class="ion-ios-mail mr-2"></span> Our Value</a
+                >
+              </li>
+            </ul>
+            <div class="tab-content bg-light rounded mt-2">
+              <div class="tab-pane container p-0 active" id="home1">
+                <p>
+                  Far far away, behind the word mountains, far from the
+                  countries Vokalia and Consonantia, there live the blind texts.
+                  Separated they live in Bookmarksgrove right at the coast of
+                  the Semantics, a large language ocean.
+                </p>
+              </div>
+              <div class="tab-pane container p-0 fade" id="home2">
+                <p>
+                  Far far away, behind the word mountains, far from the
+                  countries Vokalia and Consonantia, there live the blind texts.
+                  Separated they live in Bookmarksgrove right at the coast of
+                  the Semantics, a large language ocean.
+                </p>
+              </div>
+              <div class="tab-pane container p-0 fade" id="home3">
+                <p>
+                  Far far away, behind the word mountains, far from the
+                  countries Vokalia and Consonantia, there live the blind texts.
+                  Separated they live in Bookmarksgrove right at the coast of
+                  the Semantics, a large language ocean.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-5">
+            <div
+              class="col-md d-flex justify-content-center counter-wrap ftco-animate"
+            >
+              <div class="block-18">
+                <div class="icon"><span class="flaticon-doctor"></span></div>
+                <div class="text">
+                  <strong class="number" data-number="1387">0</strong>
+                  <span>Happy Clients</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="col-md d-flex justify-content-center counter-wrap ftco-animate"
+            >
+              <div class="block-18">
+                <div class="icon"><span class="flaticon-doctor"></span></div>
+                <div class="text">
+                  <strong class="number" data-number="310">0</strong>
+                  <span>Success Reports</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="col-md d-flex justify-content-center counter-wrap ftco-animate"
+            >
+              <div class="block-18">
+                <div class="icon"><span class="flaticon-doctor"></span></div>
+                <div class="text">
+                  <strong class="number" data-number="35">0</strong>
+                  <span>Experienced</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section
+      class="ftco-intro ftco-no-pb img"
+      style="background-image: url(images/bg_1.jpg)"
+    >
+      <div class="container">
+        <div class="row justify-content-center">
+          <div
+            class="col-lg-9 col-md-8 d-flex align-items-center heading-section heading-section-white ftco-animate"
+          >
+            <h2 class="mb-3 mb-md-0">You Always Get the Best Guidance</h2>
+          </div>
+          <div class="col-lg-3 col-md-4 ftco-animate">
+            <p class="mb-0">
+              <a href="#" class="btn btn-secondary py-3 px-4">Request Quote</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="ftco-section testimony-section">
+      <div class="container-fluid px-md-5">
+        <div class="row justify-content-center mb-5">
+          <div class="col-md-8 text-center heading-section ftco-animate">
+            <span class="subheading">Testimonies</span>
+            <h2 class="mb-4">Our Clients Says</h2>
+            <p>
+              Separated they live in. A small river named Duden flows by their
+              place and supplies it with the necessary regelialia. It is a
+              paradisematic country
+            </p>
+          </div>
+        </div>
+        <div class="row ftco-animate justify-content-center">
+          <div class="col-md-12">
+            <div class="carousel-testimony owl-carousel">
+              <div class="item">
+                <div class="testimony-wrap d-flex">
+                  <div
+                    class="user-img"
+                    style="background-image: url(images/person_1.jpg)"
+                  ></div>
+                  <div class="text pl-4">
+                    <span
+                      class="quote d-flex align-items-center justify-content-center"
+                    >
+                      <i class="icon-quote-left"></i>
+                    </span>
+                    <p>
+                      Far far away, behind the word mountains, far from the
+                      countries Vokalia and Consonantia, there live the blind
+                      texts.
+                    </p>
+                    <p class="name">Racky Henderson</p>
+                    <span class="position">Father</span>
+                  </div>
+                </div>
+              </div>
+              <div class="item">
+                <div class="testimony-wrap d-flex">
+                  <div
+                    class="user-img"
+                    style="background-image: url(images/person_2.jpg)"
+                  ></div>
+                  <div class="text pl-4">
+                    <span
+                      class="quote d-flex align-items-center justify-content-center"
+                    >
+                      <i class="icon-quote-left"></i>
+                    </span>
+                    <p>
+                      Far far away, behind the word mountains, far from the
+                      countries Vokalia and Consonantia, there live the blind
+                      texts.
+                    </p>
+                    <p class="name">Henry Dee</p>
+                    <span class="position">Businesswoman</span>
+                  </div>
+                </div>
+              </div>
+              <div class="item">
+                <div class="testimony-wrap d-flex">
+                  <div
+                    class="user-img"
+                    style="background-image: url(images/person_3.jpg)"
+                  ></div>
+                  <div class="text pl-4">
+                    <span
+                      class="quote d-flex align-items-center justify-content-center"
+                    >
+                      <i class="icon-quote-left"></i>
+                    </span>
+                    <p>
+                      Far far away, behind the word mountains, far from the
+                      countries Vokalia and Consonantia, there live the blind
+                      texts.
+                    </p>
+                    <p class="name">Mark Huff</p>
+                    <span class="position">Businesswoman</span>
+                  </div>
+                </div>
+              </div>
+              <div class="item">
+                <div class="testimony-wrap d-flex">
+                  <div
+                    class="user-img"
+                    style="background-image: url(images/person_4.jpg)"
+                  ></div>
+                  <div class="text pl-4">
+                    <span
+                      class="quote d-flex align-items-center justify-content-center"
+                    >
+                      <i class="icon-quote-left"></i>
+                    </span>
+                    <p>
+                      Far far away, behind the word mountains, far from the
+                      countries Vokalia and Consonantia, there live the blind
+                      texts.
+                    </p>
+                    <p class="name">Rodel Golez</p>
+                    <span class="position">Businesswoman</span>
+                  </div>
+                </div>
+              </div>
+              <div class="item">
+                <div class="testimony-wrap d-flex">
+                  <div
+                    class="user-img"
+                    style="background-image: url(images/person_1.jpg)"
+                  ></div>
+                  <div class="text pl-4">
+                    <span
+                      class="quote d-flex align-items-center justify-content-center"
+                    >
+                      <i class="icon-quote-left"></i>
+                    </span>
+                    <p>
+                      Far far away, behind the word mountains, far from the
+                      countries Vokalia and Consonantia, there live the blind
+                      texts.
+                    </p>
+                    <p class="name">Ken Bosh</p>
+                    <span class="position">Businesswoman</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <hr />
+    <section class="ftco-section">
+      <div class="container">
+        <div class="row justify-content-center mb-5 pb-2">
+          <div class="col-md-8 text-center heading-section ftco-animate">
+            <span class="subheading">Blog Posts</span>
+            <h2 class="mb-4">Recent Blog</h2>
+            <p>
+              Separated they live in. A small river named Duden flows by their
+              place and supplies it with the necessary regelialia. It is a
+              paradisematic country
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 col-lg-4 ftco-animate">
+            <div class="blog-entry">
+              <a
+                href="blog-single.html"
+                class="block-20 d-flex align-items-end"
+                style="background-image: url('images/image_1.jpg')"
+              >
+                <div class="meta-date text-center p-2">
+                  <span class="day">15</span>
+                  <span class="mos">Oct.</span>
+                  <span class="yr">2019</span>
+                </div>
+              </a>
+              <div class="text p-4">
+                <h3 class="heading">
+                  <a href="#"
+                    >Finance And Legal Working Streams Occur Throughout</a
+                  >
+                </h3>
+                <p>
+                  Far far away, behind the word mountains, far from the
+                  countries Vokalia and Consonantia, there live the blind texts.
+                </p>
+                <div class="d-flex align-items-center mt-4">
+                  <p class="mb-0">
+                    <a href="#" class="btn btn-primary"
+                      >Read More
+                      <span class="ion-ios-arrow-round-forward"></span
+                    ></a>
+                  </p>
+                  <p class="ml-auto mb-0">
+                    <a href="#" class="mr-2">Admin</a>
+                    <a href="#" class="meta-chat"
+                      ><span class="icon-chat"></span> 3</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4 ftco-animate">
+            <div class="blog-entry">
+              <a
+                href="blog-single.html"
+                class="block-20 d-flex align-items-end"
+                style="background-image: url('images/image_2.jpg')"
+              >
+                <div class="meta-date text-center p-2">
+                  <span class="day">15</span>
+                  <span class="mos">Oct.</span>
+                  <span class="yr">2019</span>
+                </div>
+              </a>
+              <div class="text p-4">
+                <h3 class="heading">
+                  <a href="#"
+                    >Finance And Legal Working Streams Occur Throughout</a
+                  >
+                </h3>
+                <p>
+                  Far far away, behind the word mountains, far from the
+                  countries Vokalia and Consonantia, there live the blind texts.
+                </p>
+                <div class="d-flex align-items-center mt-4">
+                  <p class="mb-0">
+                    <a href="#" class="btn btn-primary"
+                      >Read More
+                      <span class="ion-ios-arrow-round-forward"></span
+                    ></a>
+                  </p>
+                  <p class="ml-auto mb-0">
+                    <a href="#" class="mr-2">Admin</a>
+                    <a href="#" class="meta-chat"
+                      ><span class="icon-chat"></span> 3</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4 ftco-animate">
+            <div class="blog-entry">
+              <a
+                href="blog-single.html"
+                class="block-20 d-flex align-items-end"
+                style="background-image: url('images/image_3.jpg')"
+              >
+                <div class="meta-date text-center p-2">
+                  <span class="day">15</span>
+                  <span class="mos">Oct.</span>
+                  <span class="yr">2019</span>
+                </div>
+              </a>
+              <div class="text p-4">
+                <h3 class="heading">
+                  <a href="#"
+                    >Finance And Legal Working Streams Occur Throughout</a
+                  >
+                </h3>
+                <p>
+                  Far far away, behind the word mountains, far from the
+                  countries Vokalia and Consonantia, there live the blind texts.
+                </p>
+                <div class="d-flex align-items-center mt-4">
+                  <p class="mb-0">
+                    <a href="#" class="btn btn-primary"
+                      >Read More
+                      <span class="ion-ios-arrow-round-forward"></span
+                    ></a>
+                  </p>
+                  <p class="ml-auto mb-0">
+                    <a href="#" class="mr-2">Admin</a>
+                    <a href="#" class="meta-chat"
+                      ><span class="icon-chat"></span> 3</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="ftco-footer ftco-bg-dark ftco-section">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-md-6 col-lg-3">
+            <div class="ftco-footer-widget mb-5">
+              <div class="myposh-text">
+                <div
+                  style="
+                    padding-left: 10rem;
+                    width: 100px;
+                    height: 100px;
+                    background-color: #fff;
+                    text-align: center;
+                    line-height: 50px;
+                    font-weight: bold;
+                  "
+                ></div>
+                <div
+                  style="padding-left: 2.5rem; font-weight: bold; color: white"
+                >
+                  <span>MyPosH</span>
+                  <p>XXXX</p>
+                </div>
+
+                <a href="about.html" style="color: blue; padding-left: 2.5rem"
+                  >Read More</a
+                >
+              </div>
+              <ul
+                class="ftco-footer-social list-unstyled float-md-left float-lft mt-3"
+                style="padding-left: 1rem"
+              >
+                <li class="ftco-animate">
+                  <a href="#"><span class="icon-twitter"></span></a>
+                </li>
+                <li class="ftco-animate">
+                  <a href="#"><span class="icon-facebook"></span></a>
+                </li>
+                <li class="ftco-animate">
+                  <a href="#"><span class="icon-instagram"></span></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="ftco-footer-widget mb-5 ml-md-4">
+              <h2 class="ftco-heading-2">Links</h2>
+              <ul class="list-unstyled" style="font-size: 18px">
+                <li>
+                  <a href="#"
+                    ><span class="ion-ios-arrow-round-forward mr-2"></span
+                    >Home</a
+                  >
+                </li>
+                <li>
+                  <a href="#"
+                    ><span class="ion-ios-arrow-round-forward mr-2"></span
+                    >About</a
+                  >
+                </li>
+                <li>
+                  <a href="#"
+                    ><span class="ion-ios-arrow-round-forward mr-2"></span
+                    >Services</a
+                  >
+                </li>
+                <li>
+                  <a href="#"
+                    ><span class="ion-ios-arrow-round-forward mr-2"></span
+                    >Projects</a
+                  >
+                </li>
+                <li>
+                  <a href="#"
+                    ><span class="ion-ios-arrow-round-forward mr-2"></span
+                    >Contact</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="ftco-footer-widget mb-5">
+              <div class="myposh-text">
+                <h2 class="ftco-heading-2">Feedback</h2>
+              </div>
+              <form action="#" method="POST">
+                <label for="name" style="color: white">Name:</label>
+                <input type="text" id="name" name="name" required /><br /><br />
+                <label for="email" style="color: white">Email: </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                /><br /><br />
+                <label for="feedback" style="color: white">Feedback:</label
+                ><br />
+                <textarea
+                  id="feedback"
+                  name="feedback"
+                  rows="4"
+                  cols="30"
+                  required
+                ></textarea
+                ><br /><br />
+                <input type="submit" value="Submit" />
+              </form>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <!-- Fourth column content (Contact Information) -->
+            <div class="ftco-footer-widget mb-5">
+              <h2 class="ftco-heading-2">Callback</h2>
+              <form action="#" method="POST">
+                <div class="form-group">
+                  <label for="name">Name:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    name="name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="email">Email:</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="mobile">Mobile No:</label>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="mobile"
+                    name="mobile"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="organization">Organization:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="organization"
+                    name="organization"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="datetime">Date Time Schedule:</label>
+                  <input
+                    type="datetime-local"
+                    class="form-control"
+                    id="datetime"
+                    name="datetime"
+                    required
+                  />
+                </div>
+                <button type="submit">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="ftco-footer-widget mb-5">
+          <ul class="list-unstyled" style="display: flex; gap: 16rem">
+            <li><strong>Contact ID:</strong> Your Contact ID</li>
+            <li><strong>Email ID:</strong> Your Email ID</li>
+            <li><strong>Address</strong> Your ADDRESS</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <!-- Content for the last row, if needed -->
+        </div>
+      </div>
+    </footer>
+
+    <div id="ftco-loader" class="show fullscreen">
+      <svg class="circular" width="48px" height="48px">
+        <circle
+          class="path-bg"
+          cx="24"
+          cy="24"
+          r="22"
+          fill="none"
+          stroke-width="4"
+          stroke="#eeeeee"
+        />
+        <circle
+          class="path"
+          cx="24"
+          cy="24"
+          r="22"
+          fill="none"
+          stroke-width="4"
+          stroke-miterlimit="10"
+          stroke="#F96D00"
+        />
+      </svg>
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/jquery.stellar.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/aos.js"></script>
+    <script src="js/jquery.animateNumber.min.js"></script>
+    <script src="js/scrollax.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&amp;sensor=false"></script>
+    <script src="js/google-map.js"></script>
+    <script src="js/main.js"></script>
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-23581568-13");
+    </script>
+    <script
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js/v8b253dfea2ab4077af8c6f58422dfbfd1689876627854"
+      integrity="sha512-bjgnUKX4azu3dLTVtie9u6TKqgx29RBwfj3QXYt5EKfWM/9hPSAI/4qcV5NACjwAo8UtTeWefx6Zq5PHcMm7Tg=="
+      data-cf-beacon='{"rayId":"802007121bd28a1e","version":"2023.8.0","b":1,"token":"cd0b4b3a733644fc843ef0b185f98241","si":100}'
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
