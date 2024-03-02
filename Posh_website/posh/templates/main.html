@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,21 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- FAVICON -->
-    <link rel="shortcut icon" href="assets/img/MyPosh.svg" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
 
     <!-- ICONS -->
     <link
     href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
     rel="stylesheet"/>
     <!-- CSS -->
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
     
     <title>MYPOSH</title>
 </head>
 <body>
     <!-- LOADER -->
     <div class="load" id="load">
-        <img src="assets/img/ZNeT.gif" alt="loader" class="load__gif" >
+        <img src="{% static 'assets/img/ZNeT.gif' %}" alt="loader" class="load__gif" >
     </div>
 
     <!-- HEADER -->
@@ -67,7 +68,7 @@
         <!-- HOME -->
         <section class="home" id="home">
             <div class="home__container container grid">
-                <img src="assets/img/intro.svg" alt="" class="home__img">
+                <img src="{% static 'assets/img/intro.svg' %}" alt="" class="home__img">
 
                 <div class="home__data">
                     <h1 class="home__title">
@@ -87,7 +88,7 @@
         <!-- ABOUT -->
         <section class="about section container" id="about">
             <div class="about__container grid">
-                <img src="assets/img/services.svg" alt="services" class="about__img">
+                <img src="{% static 'assets/img/services.svg' %}" alt="services" class="about__img">
             
                 <div class="about__data">
                     <h2 class="section__title about__title">
@@ -406,10 +407,10 @@
 
 
     <!-- SCROLL REVEAL -->
-    <script src="assets/js/scrollreveal.min.js"></script>
+    <script src="{% static 'assets/js/scrollreveal.min.js' %}"></script>
 
     <!-- MAIN JS -->
-    <script src="assets/js/main.js"></script>
+    <script src="{% static 'assets/js/main.js' %}"></script>
 
 </body>
 </html>
