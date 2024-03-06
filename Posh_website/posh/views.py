@@ -1,4 +1,8 @@
 from django.shortcuts import render
+from django.views import View
 
-def main(request):
-    return render(request, 'main.html', {})
+def home(request):
+    return render(request, 'home.html', {})
+
+def register(request):
+    return render(request, 'register.html', {})

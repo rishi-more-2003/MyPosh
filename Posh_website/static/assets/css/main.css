@@ -44,7 +44,7 @@
     --z-fixed: 100;
 }
 
-@media screen and (min-width: 968px){
+@media screen and (min-width: 1000px){
 
     :root{
         --big-font-size: 3.5rem;
@@ -60,7 +60,7 @@
 
 /* BASE */
 *{
-    box-sizing: border-box;
+    /* box-sizing: border-box; */
     padding: 0;
     margin: 0;
     text-decoration: none;
