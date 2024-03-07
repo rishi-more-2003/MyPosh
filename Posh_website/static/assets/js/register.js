@@ -93,4 +93,19 @@ for (const field of requiredFields) {
   });
 }
 
+const toggles = document.querySelectorAll(".toggle");
+const passwordInputs = document.querySelectorAll(".input-field .inp input[type='password']");
 
+toggles.forEach((toggle, index) => {
+    toggle.addEventListener("click", () => {
+        const passwordInput = passwordInputs[index];
+
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggle.classList.replace("ri-eye-off-fill", "ri-eye-fill");
+        } else {
+            passwordInput.type = "password";
+            toggle.classList.replace("ri-eye-fill", "ri-eye-off-fill");
+        }
+    });
+});

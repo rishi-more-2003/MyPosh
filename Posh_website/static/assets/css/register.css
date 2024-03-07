@@ -63,6 +63,12 @@
         --smaller-font-size: .813rem;
     }
 
+    .align-columns-two{
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column-reverse;
+    }
+
 }
 
 html{
@@ -154,14 +160,12 @@ form .fields .input-field{
 } 
 
 form .fields .password-input-field{
-    display: flex;
-    width: calc(100% / 2 - 15px);
-    flex-direction: column;
     margin: 4px 0;
+    width: calc(100% / 2 - 30px);;
 }
 
 .input-field label,
-.password-input-field{
+.password-input-field label{
     font-size: 12px;
     font-weight: 500;
     color: var(--text-color-light);
@@ -182,7 +186,7 @@ select{
 }
 
 .input-field input:is(:focus),
-.input-field select:is(:focus)
+.input-field select:is(:focus),
 .password-input-field input:is(:focus){
     box-shadow: 0 3px 6px var(--first-color-alt);
 }
@@ -274,6 +278,23 @@ form .buttons button, .backBtn{
     margin-right: 14px;
 }
 
+.align-columns-two{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;   
+}
+
+.flexble{
+    display: flex;
+    align-items: center;
+    margin-top: var(--mb-0-5);
+}
+
+#password1,
+#password{
+    margin-right: 10px;
+}
+
 @media screen and (max-width: 750px){
 
     .container form{
@@ -288,18 +309,23 @@ form .buttons button, .backBtn{
         width: calc(100% / 2 - 15%);
     }    
 
-    form .fields .password-input-field{
+    .align-columns-two{
         display: flex;
-        width: calc(80% );
-        flex-direction: column;
-        margin: 4px 0;
+        justify-content: space-between;
+        flex-direction: row-reverse;
     }
 }
 
-@media screen and (max-width: 550px){
+@media screen and (max-width: 600px){
 
     form .fields .input-field{
         width: 100%;
+    }
+
+    .align-columns-two{
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column-reverse;
     }
 }
 
@@ -351,4 +377,3 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none; 
   margin: 0; 
 }
-
