@@ -290,6 +290,10 @@ form .buttons button, .backBtn{
     margin-top: var(--mb-0-5);
 }
 
+.buttons .backBtn .btnText a{
+    color: var(--fiest-color);
+}
+
 #password1,
 #password{
     margin-right: 10px;

@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
+
+    <!-- ICONS -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+    rel="stylesheet"/>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/login.css' %}">
+    
+    <title>MYPOSH</title>
+</head>
+<body> 
+    <div class="container">
+            <header>
+                Sign In
+            </header>
+            <form action="#">
+                <div class="form-two">
+                    <div class="details personal">
+                        <span class="title">
+                            Login Details
+                        </span>
+    
+                        <div class="fields">
+                            <div class="input-field">
+                                <label>Email ID/Mobile</label>
+                                <input type="text" placeholder="Enter your Email or Mobile" required>
+                            </div> 
+        
+                            <div class="input-field">
+                                <label class="required-field">Password</label>
+                                    <div class="flexble">
+                                        <input type="password" id= "password" name="password" placeholder="Enter your Password" required>
+                                        <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
+                                    </div>
+                            </div>
+                        </div>
+    
+                        <div class="buttons">
+                            <div class="backBtn">
+                                <i class="ri-arrow-left-s-line"></i>
+                                <span class="btnText">
+                                    <a href="{% url 'home'%}">
+                                        Back
+                                    </a>
+                                </span>
+                            </div>
+    
+                            <button class="nextBtn" id="submitButton">
+                                <span class="btnText">Submit</span>
+                                <i class="ri-skip-right-fill"></i>
+                            </button>
+                        </div> 
+                    
+                    </div>       
+                </div>
+            </form>
+    </div>
+    <script src="{% static 'assets/js/login.js' %}"></script>
+    </body>
+</html>
