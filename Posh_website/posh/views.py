@@ -1,11 +1,73 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
+from django.contrib.auth.models import User
+from django.contrib import messages
+from .models import IndividualUser
+from django.contrib.auth import authenticate, login, logout
 
 def home(request):
     return render(request, 'home.html', {})
 
 def register(request):
-    return render(request, 'register.html', {})
 
-def login(request):
+    if request.method == 'POST':
+        prefix = request.POST['prefix'] #dropdown
+        fname = request.POST['fname'] #text
+        mname = request.POST['mname'] #text
+        lname = request.POST['lname'] #text
+        dob = request.POST['date'] #date
+        gender = request.POST['gen'] #dropdown
+        occupation = request.POST['occupation'] #text
+        state = request.POST['state'] #dropdown
+        city = request.POST['city'] #dropdown
+        pincode = request.POST['pincode'] #number
+        password = request.POST['password1'] #password
+        con_password = request.POST['password2'] #password
+        email = request.POST['email'] #email
+        phone = request.POST['phone'] #tel
+
+        # Perform password validation
+        if password != con_password:
+            return render(request, 'register.html')
+
+        user = IndividualUser.objects.create_user(
+            email=email,
+            phone=phone,
+            password=password,
+            prefix=prefix,
+            fname=fname,
+            mname=mname,
+            lname=lname,
+            dob=dob,
+            gender=gender,
+            occupation=occupation,
+            state=state,
+            city=city,
+            pincode=pincode,
+        )
+        user.is_active = True
+        user.save()
+
+        # Redirect to the desired page after successful registration
+        return redirect('/')  
+
+    return render(request, 'register.html')
+
+def signin(request):
+    if request.method == 'POST':
+        email_or_phone = request.POST.get('email')
+        password = request.POST.get('password')
+
+    # Authenticate user by email or phone
+        user = authenticate(request, username=email_or_phone, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            messages.error(request, 'Invalid login credentials')
+
     return render(request, 'login.html', {})
+
+def logout(request):
+    pass

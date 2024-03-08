@@ -28,7 +28,8 @@
         <header>
             Registration
         </header>
-        <form action="#">
+        <form method="POST">
+            {% csrf_token %}
             <div class="form-first">
                 <div class="details personal">
                     <span class="title">
@@ -44,27 +45,27 @@
                                     <option value="miss">Miss</option>
                                 </select>
                                 <label>First Name</label>
-                                <input type="text" placeholder="Enter First Name" required>
+                                <input type="text" name="fname" placeholder="Enter First Name" required>
                         </div>
 
                         <div class="input-field">
                             <label>Middle Name</label>
-                            <input type="text" placeholder="Enter Middle Name" required>
+                            <input type="text" name="mname" placeholder="Enter Middle Name" required>
                         </div>
 
                         <div class="input-field">
                             <label>Last Name</label>
-                            <input type="text" placeholder="Enter Last Name" required>
+                            <input type="text" name='lname' placeholder="Enter Last Name" required>
                         </div>
 
                         <div class="input-field">
                             <label for="date-input">Date of Birth</label>
-                            <input type="date" id="date-input" placeholder="Enter birth date" required>
+                            <input type="date" name='date' id="date-input" placeholder="Enter birth date" required>
                         </div>
 
                         <div class="input-field">
                             <label>Gender</label>
-                            <select id="gender" class="form-control" required>
+                            <select id="gender" name="gen" class="form-control" required>
                                 <option value="" disabled selected>Select your gender</option>
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
@@ -74,23 +75,23 @@
  
                         <div class="input-field">
                             <label>Occupation</label>
-                            <input type="text" placeholder="Enter your Occupation" required>
+                            <input type="text" name="occupation" placeholder="Enter your Occupation" required>
                         </div>
 
                         <div class="input-field">
                             <label>State</label>
-                            <select onchange="print_city('state', this.selectedIndex);" id="sts" name ="stt" class="form-control" required></select>
+                            <select name='state' onchange="print_city('state', this.selectedIndex);" id="sts" name ="stt" class="form-control" required></select>
                         </div>
 
                         <div class="input-field">
                             <label>City</label>
-                            <select id ="state" class="form-control" required ></select>
+                            <select name='city' id ="state" class="form-control" required ></select>
                             <script language="javascript">print_state("sts");</script>
                         </div>
 
                         <div class="input-field">
                             <label>Pincode</label>
-                            <input type="number" placeholder="Enter Pincode" required>
+                            <input type="number" name='pincode' placeholder="Enter Pincode" required>
                         </div>
 
                         <div class="align-columns-two">
@@ -98,7 +99,7 @@
                                 <div class="inp">
                                     <label class="required-field">Password</label>
                                     <div class="flexble">
-                                        <input type="password" id= "password" name="password" placeholder="Enter your Password" required>
+                                        <input type="password" id= "password" name="password1" placeholder="Enter your Password" required>
                                         <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
                                     </div>
                                 </div>
@@ -106,7 +107,7 @@
                                 <div class="inp">
                                     <label class="required-field">Confirm Password</label>
                                     <div class="flexble">
-                                    <input type="password" id= "password1" name="password" placeholder="Confirm your Password" required>
+                                    <input type="password" id= "password1" name="password2" placeholder="Confirm your Password" required>
                                     <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
                                     </div>
                                 </div>
@@ -117,7 +118,7 @@
                             <label class="required-field">Email</label>
                             <p id="error-msg">Please Enter A Valid Email Id</p>
                             <div class="combine">
-                                <input type="email" id="email-id" placeholder="Enter your email" oninput="checker()" required>
+                                <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
                                 <button class="ValBtn one" disabled>Validate</button>
                             </div>
                         </div>
@@ -126,7 +127,7 @@
                             <label class="required-field">Mobile Number</label>
                             <p id="errormsg">Please Enter A Valid Phone Number</p>
                             <div class="combine">
-                                <input type="tel" id="phone" placeholder="Enter mobile number" minlength="10" maxlength="10" oninput="checkerphone()" required>
+                                <input type="tel" name='phone' id="phone" placeholder="Enter mobile number" minlength="10" maxlength="10" oninput="checkerphone()" required>
                                 <button class="ValBtn two" disabled>Validate</button>
                             </div>
                         </div>
@@ -139,13 +140,13 @@
                         <div class="backBtn">
                             <i class="ri-arrow-left-s-line"></i>
                             <span class="btnText">
-                                <a href="{% url 'home'%}">
+                                <a href="{% url 'home' %}">
                                     Back
                                 </a>
                             </span>
                         </div>
 
-                        <button class="nextBtn" id="submitButton">
+                        <button type="submit" class="nextBtn" id="submitButton">
                             <span class="btnText">Submit</span>
                             <i class="ri-skip-right-fill"></i>
                         </button>
