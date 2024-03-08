@@ -28,7 +28,7 @@
         <header>
             Registration
         </header>
-        <form method="POST">
+        <form method="POST" action="{% url 'register' %}">
             {% csrf_token %}
             <div class="form-first">
                 <div class="details personal">
@@ -119,9 +119,21 @@
                             <p id="error-msg">Please Enter A Valid Email Id</p>
                             <div class="combine">
                                 <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
+                                <button type="button" class="ValBtn one" id="sendOTP">Send OTP</button>
+                            </div>
+
+                            {% if otp_sent %}
+                                <div class="input-field otp-field">
+                                    <label class="required-field">OTP</label>
+                                    <input type="text" name='otp' id="otp" placeholder="Enter OTP" required>
+                                </div>
+                            {% endif %}
+
+                            <!-- <div class="combine">
+                                <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
                                 <button class="ValBtn one" disabled>Validate</button>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="input-field phone-field">
                             <label class="required-field">Mobile Number</label>

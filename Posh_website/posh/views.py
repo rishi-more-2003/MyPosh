@@ -4,9 +4,16 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import IndividualUser
 from django.contrib.auth import authenticate, login, logout
+from django.core.mail import send_mail
+import random
+from django.conf import settings
 
 def home(request):
     return render(request, 'home.html', {})
+
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
 
 def register(request):
 
@@ -23,12 +30,44 @@ def register(request):
         pincode = request.POST['pincode'] #number
         password = request.POST['password1'] #password
         con_password = request.POST['password2'] #password
+        
         email = request.POST['email'] #email
         phone = request.POST['phone'] #tel
 
         # Perform password validation
         if password != con_password:
             return render(request, 'register.html')
+        
+        otp = generate_otp()
+        
+        subject = 'OTP for MyPosh Email Verification'
+        email_from = settings.EMAIL_HOST
+        message = 'Your OTP is: ' + otp
+
+        # Send OTP via email
+        send_mail(
+            subject,
+            message,
+            email_from,
+            [email],
+            fail_silently=False,
+        )
+
+        request.session['otp'] = otp
+
+        # Proceed with user registration if OTP is provided
+        if 'otp' in request.POST:
+            user_otp = request.POST['otp']
+            if user_otp == request.session.get('otp'):
+                del request.session['otp'] # Delete OTP from session after verification
+
+                # Your user creation logic here...
+
+                # Redirect to the desired page after successful registration
+                return redirect('/login/')
+            else:
+                messages.error(request, 'Invalid OTP')
+                return render(request, 'register.html', {'otp_sent': True}) # Render the form with OTP sent indicator
 
         user = IndividualUser.objects.create_user(
             email=email,
