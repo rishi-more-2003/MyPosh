@@ -48,7 +48,26 @@
                     <li class="nav__item">
                         <a href="#contact" class="nav__link">Contact Us</a>
                     </li>
+                    {% if request.user.is_authenticated %}
 
+                    <li class="nav__item dropdown__item">
+                        <div class="nav__link">            
+                            {{request.user.fname}} 
+                            <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                        </div>
+                        <ul class="dropdown__menu">
+                            <li>
+                                <a href="#" class="dropdown__link">
+                                     Profile
+                                </a> 
+                             </li>
+                            <li>
+                               <a href="{% url 'logout'%}" class="dropdown__link">
+                                    Logout
+                               </a> 
+                            </li>
+                        
+                    {% else %}
                     <!-- DROPDOWN Register-->
 
                     <li class="nav__item dropdown__item">
@@ -140,6 +159,7 @@
                     </li>
                 </ul>
 
+                {% endif %}
                 <div class="nav__close" id="nav-close">
                     <i class="ri-close-line"></i>
                 </div>

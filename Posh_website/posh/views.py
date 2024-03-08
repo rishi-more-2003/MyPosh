@@ -48,8 +48,16 @@ def register(request):
         user.is_active = True
         user.save()
 
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            messages.error(request, 'Invalid login credentials')
+
         # Redirect to the desired page after successful registration
-        return redirect('/')  
+        return redirect('/login/')  
 
     return render(request, 'register.html')
 
@@ -69,5 +77,6 @@ def signin(request):
 
     return render(request, 'login.html', {})
 
-def logout(request):
-    pass
+def signout(request):
+    logout(request)
+    return redirect('/')
