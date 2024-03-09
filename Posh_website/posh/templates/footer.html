@@ -1,0 +1,96 @@
+{%load static%}
+<!-- FOOTER -->
+   <footer class="footer section">
+    <div class="footer__container container grid">
+        <div class="footer__content">
+            <a href="{% url 'home' %}" class="footer__logo">
+                <i class="ri-pages-line footer__logo-icon"></i> MYPOSH
+            </a>
+
+            <h3 class="footer__title">
+                Subscribe to our newsletter <br> to stay updated.
+            </h3>
+
+            <div class="footer__subscribe">
+                <input type="email" placeholder="Enter your email" class="footer__input">
+                <button class="button button--flex footer__button">
+                    Subscribe
+                    <i class="ri-arrow-right-line button__icon"></i>
+                </button>
+            </div>
+        </div>
+        <div class="footer__content">
+            <h3 class="footer__title">Our Address</h3>
+            <ul class="footer__data">
+                <li class="footer__information">1234 - India</li>
+                <li class="footer__information">Mumbai - MH</li>
+                <li class="footer__information">123-456-789</li>
+            </ul>
+        </div>
+
+        <div class="footer__content">
+            <h3 class="footer__title">Contact Us</h3>
+            <ul class="footer__data">
+                <li class="footer__information">+999 876 123</li>
+                <div class="footer__social">
+                    <a href="https://www.facebook.com" class="footer__social-link">
+                        <i class="ri-facebook-fill"></i>
+                    </a>
+                    <a href="https://www.instagram.com" class="footer__social-link">
+                        <i class="ri-instagram-line"></i>
+                    </a>
+                    <a href="https://twitter.com" class="footer__social-link">
+                        <i class="ri-twitter-fill"></i>
+                    </a>
+                </div>
+            </ul>
+        </div>
+
+        <div class="footer__content">
+            <h3 class="footer__title">Links</h3>
+            <div class="footer__cards">
+                <a href="{% url 'home' %}#home" class="footer__card">Home</a>
+                <a href="{% url 'home' %}#about" class="footer__card">About</a>
+                <a href="{% url 'home' %}#services" class="footer__card">Services</a>
+                <a href="{% url 'home' %}#faqs" class="footer__card">FAQs</a>
+                <a href="{% url 'home' %}#contact" class="footer__card">Contact Us</a>
+            </div>
+            <!-- <ul class="footer_data">
+                <li class="footer__information">
+                    <a href="#home">Home</a>
+                </li>
+                <li class="footer__information">
+                    <a href="#about">About</a>
+                </li>
+                <li class="footer__information">
+                    <a href="#services">Services</a>
+                </li>
+                <li class="footer__information">
+                    <a href="#projects">Projects</a>
+                </li>
+                <li class="footer__information">
+                    <a href="#contact">Contact</a>
+                </li>
+            </ul> -->
+        </div>
+
+    </div>
+    <p class="footer__copy">&#169; MYPOSH. All rights reserved.</p>
+</footer>
+
+<!-- SCROLL UP -->
+<a href="#" class="scrollup" id="scroll-up">
+    <i class="ri-arrow-up-line scrollup__icon"></i>
+</a>
+
+
+<!-- SCROLL REVEAL -->
+<script src="{% static 'assets/js/scrollreveal.min.js' %}"></script>
+
+<!-- MAIN JS -->
+<script src="{% static 'assets/js/main.js' %}"></script>
+
+{% block js %}{% endblock %}
+
+</body>
+</html>

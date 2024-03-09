@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
+
+    <!-- ICONS -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+    rel="stylesheet"/>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
+    {% block styles %}{% endblock %}
+    <title>MYPOSH</title>
+</head>
+<body>
+    <!-- LOADER -->
+    <div class="load" id="load">
+        <img src="{% static 'assets/img/ZNeT.gif' %}" alt="loader" class="load__gif" >
+    </div>
+
+    <!-- HEADER -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <a href="{% url 'home' %}" class="nav__logo">
+                <i class="ri-pages-line nav__logo-icon"></i>MYPOSH
+            </a>
+            <!-- {% comment %} NAV-MENU {% endcomment %} -->
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item">
+                        <a href="{% url 'home' %}#home" class="nav__link active-link">Home</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="{% url 'home' %}#about" class="nav__link">About</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="{% url 'home' %}#services" class="nav__link">Services</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="{% url 'home' %}#faqs" class="nav__link">FAQs</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="{% url 'home' %}#contact" class="nav__link">Contact Us</a>
+                    </li>
+                    {% if request.user.is_authenticated %}
+
+                    <li class="nav__item dropdown__item">
+                        <div class="nav__link">            
+                            {{request.user.fname}} 
+                            <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                        </div>
+                        <ul class="dropdown__menu">
+                            <li>
+                                <a href="{% url 'profile' %}" class="dropdown__link">
+                                     Profile
+                                </a> 
+                             </li>
+                            <li>
+                               <a href="{% url 'logout'%}" class="dropdown__link">
+                                    Logout
+                               </a> 
+                            </li>
+                        
+                    {% else %}
+                    <!-- DROPDOWN Register-->
+
+                    <li class="nav__item dropdown__item">
+                        <div class="nav__link">
+                            Register
+                            <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                        </div>
+                        <ul class="dropdown__menu">
+                            <li>
+                               <a href="#" class="dropdown__link">
+                                    Establishment 
+                               </a> 
+                            </li>
+
+                             <!-- DROPDOWN SUBMENU -->
+
+                            <li class="dropdown__subitem">
+                                <div class="dropdown__link">
+                                    Posh Associate 
+                                    <i class="ri-arrow-right-s-line dropdrop__add"></i>
+                                </div> 
+
+                                <ul class="dropdown__submenu">
+                                    <li>
+                                       <a href="{% url 'register'%}" class="dropdown__sublink">
+                                            Individual
+                                       </a> 
+                                    </li>
+                                    <li>
+                                        <a href="" class="dropdown__sublink">
+                                             NGO
+                                        </a> 
+                                     </li>
+                                     <li>
+                                        <a href="" class="dropdown__sublink">
+                                             Posh Consultancy
+                                        </a> 
+                                     </li>
+                                </ul>
+                             </li>
+                        </ul>
+                    </li>
+
+                     <!-- DROPDOWN Login-->
+
+                    <li class="nav__item dropdown__item">
+                        <div class="nav__link">
+                            Login
+                            <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                        </div>
+                        <ul class="dropdown__menu">
+                            <li>
+                               <a href="#" class="dropdown__link">
+                                    Establishment 
+                               </a> 
+                            </li>
+                            <li>
+                                <a href="#" class="dropdown__link">
+                                    Employee 
+                                </a> 
+                             </li>
+
+                             <!-- DROPDOWN SUBMENU -->
+
+                            <li class="dropdown__subitem">
+                                <div class="dropdown__link">
+                                    Posh Associate
+                                    <i class="ri-arrow-right-s-line"></i>
+                                </div> 
+                                <ul class="dropdown__submenu">
+                                    <li>
+                                       <a href="{% url 'login'%}" class="dropdown__sublink">
+                                            Individual
+                                       </a> 
+                                    </li>
+                                    <li>
+                                        <a href="" class="dropdown__sublink">
+                                             NGO
+                                        </a> 
+                                     </li>
+                                     <li>
+                                        <a href="" class="dropdown__sublink">
+                                             Posh Consultancy
+                                        </a> 
+                                     </li>
+                                </ul>
+                             </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                {% endif %}
+                <div class="nav__close" id="nav-close">
+                    <i class="ri-close-line"></i>
+                </div>
+            </div>
+
+            <div class="nav__btns">
+                <!-- Theme change button -->
+                <i class="ri-moon-line change-theme" id='theme-button'></i>
+                <div class="nav__toggle" id="nav-toggle">
+                    <i class="ri-menu-line"></i>
+                </div>
+            </div>    
+        </nav>
+    </header>
