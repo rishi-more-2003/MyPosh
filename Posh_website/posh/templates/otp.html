@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
+
+    <!-- ICONS -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+    rel="stylesheet"/>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/otp.css' %}">
+
+    <title>MYPOSH</title>
+</head>
+<body>
+    <div class="otp-card">
+        <form action="">
+        <h1>OTP Verification</h1>
+        <p id="otp-message">Code has been sent to blabla</p>
+        <div class="otp-card-inputs" id="otp-card-inputs">
+            <input type="text" maxlength="1" autofocus>
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+        </div>
+        <p id="resend-message">Didn't get the OTP? <span id="timer"></span></p>
+            <div class="backBtn">
+                <span class="btnText">
+                <a href="{% url 'home'%}" id="resend-link" class="disabled-link">
+                    Generate OTP
+                </a>
+                </span>
+            </div> 
+        <button disabled>Verify</button>
+    </form>
+    </div>
+    <script src="{% static 'assets/js/otp.js' %}"></script>
+</body>
+</html>

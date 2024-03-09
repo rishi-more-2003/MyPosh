@@ -11,8 +11,11 @@ from django.conf import settings
 def home(request):
     return render(request, 'home.html', {})
 
+def otp(request):
+    return render(request, 'otp.html', {})
+
 def generate_otp():
-    return str(random.randint(100000, 999999))
+    return str(random.randint(10000, 99999))
 
 
 def register(request):
