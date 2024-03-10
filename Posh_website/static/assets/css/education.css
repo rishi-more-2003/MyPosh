@@ -1,0 +1,173 @@
+button {
+    padding: 8px;
+    background-color: hsl(30, 100%, 62%);
+    color: #fff;
+    width: 150px;
+    font-size: large;
+    font-weight: bolder;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+} 
+
+button:focus{
+    outline: none;
+}
+
+button#saveEducationBtn:hover{
+    background-color: hsl(30, 100%, 62%);
+}
+
+/* Add this to your existing CSS or create a new CSS file */
+
+.add_education{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.add_skills{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+@media screen and (max-width: 500px){
+    .add_education{
+        display: flex;
+        flex-direction: column;
+        align-items: center
+    }
+    .add_skills{
+        display: flex;
+        flex-direction: column;
+        align-items: center
+    }
+}
+
+/* Style for each card (list item) */
+#education-list li,
+#skills-list li {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+    box-shadow: 1px 1px 1px hsl(30, 100%, 62%);;
+}
+
+#skills-list li{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    min-width: 100%;
+}
+
+button.btn.btn-danger.btn-sm,
+button.btn.btn-warning.btn-sm.mr-2 {
+    width: 100px;
+    margin-left: 5px;
+}
+
+/* Style for the content inside the card */
+
+#education-list li .card-content, 
+#skills-list li .skillcard-content {
+    display: flex;
+    flex-direction: row;
+}
+
+#skills-list li .skillcard-content {
+    width: 80%;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+
+/* Style for the left side of the card */
+#education-list li .left-side {
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+}
+
+#skills-list li .skillleft-side {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Style for the right side of the card */
+#education-list li .right-side {
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    width: 24%;
+    align-items: flex-start;
+}
+
+/* Style for each input field inside the card */
+#education-list li .card-content input,
+#education-list li .card-content textarea {
+    margin-bottom: 10px;
+}
+
+#skills-list li .skillcard-content input,
+#skills-list  li .skillcard-content textarea {
+    margin-bottom: 10px;
+}
+
+#skills-list li .skillleft-side{
+    margin-right: 10px;
+}
+
+/* Additional styling for the card layout */
+#education-list li .left-side,
+#education-list li .right-side {
+    margin-right: 10px;
+}
+
+.modal-header .close{
+    margin-right: -60px;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+.college_name, .skill_name {
+    font-size: large;
+    font-weight: 500;
+    width: 100%;
+}
+
+.degree {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-size: inherit;
+    font-style: italic;
+}
+
+.desc {
+    font-size: medium;
+    font-weight: 300;
+}
+
+.year {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.grade {
+    font-size: larger;
+    font-weight: 300;
+}
+
+li.skill-list-group-item {
+    min-width: 100rem;
+}
+

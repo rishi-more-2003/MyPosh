@@ -806,6 +806,7 @@ body.dark-theme{
 
     .nav__menu{
         margin-left: auto;
+        margin-top: 15px;
     }
 
     .home__container,

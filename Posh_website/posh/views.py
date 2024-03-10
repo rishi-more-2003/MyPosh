@@ -17,6 +17,9 @@ def otp(request):
 def profile(request):
     return render(request, 'profile.html', {})
 
+def index(request):
+    return render(request, 'tp.html')
+
 def generate_otp():
     return str(random.randint(10000, 99999))
 

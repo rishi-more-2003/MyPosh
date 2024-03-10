@@ -1,0 +1,39 @@
+
+<div class="container-skills">
+    <div class="add_skills">
+        <h2>Skills</h2>
+        <button id="add-skills-btn" data-toggle="modal" data-target="#addskillsModal">+ Add</button>
+    </div>
+
+    <!-- skills Section -->
+    <div id="skills-section">
+        <ul id="skills-list">
+            <!-- skillsal experiences will be dynamically added here -->
+        </ul>
+    </div>
+
+    <!-- Add skills Modal -->
+    <div class="modal fade" id="addskillsModal" tabindex="-1" role="dialog" aria-labelledby="addskillsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addskillsModalLabel">Add skills</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- School -->
+                    <div class="form-group">
+                        <label for="skillsInput">School</label>
+                        <input type="text" id="skillsInput" class="form-control" placeholder="Enter the skill name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveskillsBtn">Save skills</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>

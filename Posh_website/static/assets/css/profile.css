@@ -1,17 +1,169 @@
-body {
-    background: #f5f5f5;
-    margin-top: 20px;
+/* GOOGLE FONTS */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* VARIABLE CSS */
+:root {
+    --header-height: 3.5rem;
+
+    /* Colors */
+    --first-color: hsl(30, 100%, 52%);
+    --first-color-alt: hsl(29, 54%, 73%);
+    --first-color-light: hsl(30, 100%, 85%);
+    --first-color-lighten: hsl(30, 100%, 95%);
+    --title-color: hsl(30, 3%, 15%);
+    --text-color: hsl(30, 4%, 25%);
+    --text-color-light: hsl(30, 4%, 45%);
+    --body-color: hsl(30, 0%, 100%);;
+    --container-color: #FFF;
+    --background-footer-color: rgb(29, 26, 26); 
+    --footer-text-color: rgb(245, 244, 244);
+
+    /* Font Size -> 1rem = 16px */
+    --body-font: 'Poppins', sans-serif;
+    --big-font-size: 2rem;
+    --h1-font-size: 1.5rem;
+    --h2-font-size: 1.25rem;
+    --h3-font-size: 1rem;
+    --normal-font-size: .938rem;
+    --small-font-size: .813rem;
+    --smaller-font-size: .75rem;
+
+    /* Font weight */
+    --font-medium: 500;
+    --font-semi-bold: 600;
+
+    /* Margins-Bottom */
+    --mb-0-5: .5rem;
+    --mb-0-75: .75rem;
+    --mb-1: 1rem;
+    --mb-1-5: 1.5rem;
+    --mb-2: 2rem;
+    --mb-2-5: 2.5rem;
+
+    --z-tooptip: 10;
+    --z-fixed: 100;
 }
 
-.ui-w-80 {
-    width : 80px;
+@media screen and (min-width: 1000px){
+
+    :root{
+        --big-font-size: 3.5rem;
+        --h1-font-size: 2.25rem;
+        --h2-font-size: 1.5rem;
+        --h3-font-size: 1.25rem;
+        --normal-font-size: 1rem;
+        --small-font-size: .875rem;
+        --smaller-font-size: .813rem;
+    }
+
+}
+
+html{
+    scroll-behavior: smooth;
+}
+
+body,
+button,
+input,
+textarea{
+    font-family: var(--body-font);
+    font-size: var(--normal-font-size);
+}
+
+body{
+    margin: var(--header-height) 0 0 0;
+    background-color: var(--body-color);
+    color: var(--text-color);
+    transition: .4s;
+    margin-top: 6rem;
+}
+
+button{
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+h1, h2, h3{
+    color: var(--title-color);
+    font-weight: var(--font-semi-bold);
+}
+
+ul{
+    list-style: none;
+}
+
+a{
+    max-width: 100%;
     height: auto;
 }
 
+.card.overflow-hidden{
+    border-radius: 6px;
+    padding: 30px;
+    margin: 0 15px;
+    background-color: var(--first-color);
+    background-color: #FFF;
+    box-shadow: 5px 5px 0px var(--first-color);
+
+}
+
+.font-weight-bold.py-3.mb-4{
+    display: block;
+    padding-left: 20px;
+    color: var(--text-color);
+    font-size: var(--h1-font-size);
+    font-weight: var(--font-medium);
+}
+
+.non-editable {
+    cursor: not-allowed;
+  }
+
+/* #profile-pic */
+.ui-w-80 {
+    width : 150px;
+    height: auto;
+}
+
+.btn-primary{
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+}
+
+.btn-primary:hover{
+    background-color: var(--first-color-light);
+    border-color: var(--first-color-light);
+}
+
+.list-group-item.active {
+    z-index: 2;
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+}
+
+.list-group-item:hover {
+    background-color: var(--first-color-light);
+    border-color: var(--first-color-alt);
+}
+
+/* upload button */
 .btn-default {
-    border-color: rgba(24, 28, 33, 0.1);
-    background  : rgba(0, 0, 0, 0);
-    color       : #4E5155;
+    border-color: var(--first-color-light);
+    /* background: rgba(0, 0, 0, 0); */
+    color: var(--text-color);
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    margin: 25px 0;
+    cursor: pointer;
+    font-size: var(--h3-font-size);
+}
+
+.btn-default:hover{
+    box-shadow: 1px 1px 0px var(--first-color);
 }
 
 label.btn {
@@ -19,34 +171,19 @@ label.btn {
 }
 
 .btn-outline-primary {
-    border-color: #26B4FF;
+    border-color: var(--first-color);
     background  : transparent;
-    color       : #26B4FF;
+    color       : var(--first-color);
 }
 
-.btn {
-    cursor: pointer;
+.btn-outline-primary:hover {
+    border-color: var(--first-color-light);
+    background  : var(--first-color-light);
+    color: var(--text-color);
 }
 
 .text-light {
     color: #babbbc;
-}
-
-.btn-facebook {
-    border-color: rgba(0, 0, 0, 0);
-    background  : #3B5998;
-    color       : #fff;
-}
-
-.btn-instagram {
-    border-color: rgba(0, 0, 0, 0);
-    background  : #000;
-    color       : #fff;
-}
-
-.card {
-    background-clip: padding-box;
-    box-shadow     : 0 1px 4px rgba(24, 28, 33, 0.012);
 }
 
 .row-bordered {
@@ -60,6 +197,39 @@ label.btn {
     height    : 1px;
     opacity   : 0;
 }
+
+.media{
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body.media.align-items-center{
+    margin-top: 10px;
+    margin-bottom: -50px;
+}
+
+
+/* .btn-facebook {
+    border-color: rgba(0, 0, 0, 0);
+    background  : #3B5998;
+    color       : #fff;
+} 
+
+.btn-instagram {
+    border-color: rgba(0, 0, 0, 0);
+    background  : #000;
+    color       : #fff;
+}
+
+*/
+
+/* 
+
+
+
+
+
+
 
 .account-settings-links .list-group-item.active {
     font-weight: bold;
@@ -107,4 +277,4 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 .light-style .account-settings-links .list-group-item {
     padding     : 0.85rem 1.5rem;
     border-color: rgba(24, 28, 33, 0.03);
-}
+} */
