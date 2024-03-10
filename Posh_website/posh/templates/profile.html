@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block styles %}
+{% block stylescss %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
 {% endblock %}
 
 {% block js %}
 {{ block.super }}
+<script src="{% static 'assets/js/profile.js' %}"></script>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript"></script>
-<script src="{% static 'assets/js/profile.js' %}"></script>
 {% endblock %}
 
 {% block content %}

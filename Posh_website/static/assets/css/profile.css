@@ -4,7 +4,7 @@ body {
 }
 
 .ui-w-80 {
-    width : 80px !important;
+    width : 80px;
     height: auto;
 }
 
@@ -29,7 +29,7 @@ label.btn {
 }
 
 .text-light {
-    color: #babbbc !important;
+    color: #babbbc;
 }
 
 .btn-facebook {
@@ -62,49 +62,49 @@ label.btn {
 }
 
 .account-settings-links .list-group-item.active {
-    font-weight: bold !important;
+    font-weight: bold;
 }
 
 html:not(.dark-style) .account-settings-links .list-group-item.active {
-    background: transparent !important;
+    background: transparent;
 }
 
 .account-settings-multiselect~.select2-container {
-    width: 100% !important;
+    width: 100%;
 }
 
 .light-style .account-settings-links .list-group-item {
     padding     : 0.85rem 1.5rem;
-    border-color: rgba(24, 28, 33, 0.03) !important;
+    border-color: rgba(24, 28, 33, 0.03);
 }
 
 .light-style .account-settings-links .list-group-item.active {
-    color: #4e5155 !important;
+    color: #4e5155;
 }
 
 .material-style .account-settings-links .list-group-item {
     padding     : 0.85rem 1.5rem;
-    border-color: rgba(24, 28, 33, 0.03) !important;
+    border-color: rgba(24, 28, 33, 0.03);
 }
 
 .material-style .account-settings-links .list-group-item.active {
-    color: #4e5155 !important;
+    color: #4e5155;
 }
 
 .dark-style .account-settings-links .list-group-item {
     padding     : 0.85rem 1.5rem;
-    border-color: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.03);
 }
 
 .dark-style .account-settings-links .list-group-item.active {
-    color: #fff !important;
+    color: #fff;
 }
 
 .light-style .account-settings-links .list-group-item.active {
-    color: #4E5155 !important;
+    color: #4E5155;
 }
 
 .light-style .account-settings-links .list-group-item {
     padding     : 0.85rem 1.5rem;
-    border-color: rgba(24, 28, 33, 0.03) !important;
+    border-color: rgba(24, 28, 33, 0.03);
 }
