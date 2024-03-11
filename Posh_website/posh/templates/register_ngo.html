@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- FAVICON  {% static 'assets/img/MyPosh.svg' %}--> 
+        <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
+
+        
+        <!-- ICONS -->
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+        <!-- CSS {% static 'assets/css/main.css' %}-->
+        <link rel="stylesheet" href="{% static 'assets/css/register_ngo.css' %}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
+        <script src="{% static 'assets/js/cities.js' %}"></script>
+        <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"
+      />
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+        <title>Registration Form</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            Registration
+        </header>
+        <form method="POST" action="{% url 'register_ngo' %}">
+            {% csrf_token %}
+            <div class="form-first">
+                <div class="details personal">
+                    <span class="title">
+                        NGO Details
+                    </span>
+
+                    <div class="fields">
+                        <div class="input-field">
+                            <label>Name</label>
+                            <input type="text" name="ngo-name" placeholder="Enter NGO Name" required>
+                        </div>
+
+                        <div class="input-field">
+                            <label for="date-input">Date of Set-up</label>
+                            <input type="date" name='date' id="date-input" placeholder="Enter birth date" required>
+                        </div>
+                    </div>
+                </div>  
+
+                    <div class="details location">
+                        <span class="title">
+                            Location Details
+                        </span>
+                        <div class="fields location">
+                            <div class="input-field">
+                                <label>State</label>
+                                <select name='state' onchange="print_city('state', this.selectedIndex);" id="sts" name ="stt" class="form-control" required></select>
+                            </div>
+                        
+                            <div class="input-field">
+                                <label>City</label>
+                                <select name='city' id ="state" class="form-control" required ></select>
+                                <script language="javascript">print_state("sts");</script>
+                            </div>
+
+                            <div class="input-field">
+                                <label>Pincode</label>
+                                <input type="number" name='pincode' placeholder="Enter Pincode" required>
+                            </div>
+                        </div>
+
+                    <div class="details address">
+                        <div class="input-field address-field">
+                            <label>Address</label>
+                            <textarea type="text" name="address" cols="40" rows="5" placeholder="Enter your NGO Address" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                    <div class="details contact">
+                        <span class="title">
+                            NGO Contact Details
+                        </span>
+
+                        <div class="align-columns-two">
+                            <div class="input-field new"> 
+                                <div class="inp">
+                                    <label class="required-field">Password</label>
+                                    <div class="flexble">
+                                        <input type="password" id= "password" name="password1" placeholder="Enter your Password" required>
+                                        <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
+                                    </div>
+                                </div>
+    
+                                <div class="inp">
+                                    <label class="required-field">Confirm Password</label>
+                                    <div class="flexble">
+                                    <input type="password" id= "password1" name="password2" placeholder="Confirm your Password" required>
+                                    <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                    <div class="fields">
+                    <div class="details ID">   
+                        <div class="input-field email-field">
+                            <label class="required-field">Email</label>
+                            <p id="error-msg">Please Enter A Valid Email Id</p>
+                            <div class="combine">
+                                <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
+                                <button type="button" class="ValBtn one" id="sendOTP">Send OTP</button>
+                            </div>
+
+                            {% if otp_sent %}
+                                <div class="input-field otp-field">
+                                    <label class="required-field">OTP</label>
+                                    <input type="text" name='otp' id="otp" placeholder="Enter OTP" required>
+                                </div>
+                            {% endif %}
+
+                            <!-- <div class="combine">
+                                <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
+                                <button class="ValBtn one" disabled>Validate</button>
+                            </div>
+                        </div> -->
+
+                        <div class="input-field phone-field">
+                            <label class="required-field">Mobile Number</label>
+                            <p id="errormsg">Please Enter A Valid Phone Number</p>
+                            <div class="combine">
+                                <input type="tel" name='phone' id="phone" placeholder="Enter mobile number" minlength="10" maxlength="10" oninput="checkerphone()" required>
+                                <button class="ValBtn two" disabled>Validate</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                </div> 
+
+                    <div class="buttons">
+                        <div class="backBtn">
+                            <i class="ri-arrow-left-s-line"></i>
+                            <span class="btnText">
+                                <a href="{% url 'home' %}">
+                                    Back
+                                </a>
+                            </span>
+                        </div>
+
+                        <button type="submit" class="nextBtn" id="submitButton">
+                            <span class="btnText">Submit</span>
+                            <i class="ri-skip-right-fill"></i>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+        </form>
+    </div>
+<script src="{% static 'assets/js/register.js' %}"></script>
+</body>
+</html>

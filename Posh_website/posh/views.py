@@ -23,6 +23,12 @@ def index(request):
 def generate_otp():
     return str(random.randint(10000, 99999))
 
+def register_ngo(request):
+    return render(request, 'register_ngo.html', {})
+
+def register_consultancy(request):
+    return render(request, 'register_consultancy.html', {})
+
 
 def register(request):
 
