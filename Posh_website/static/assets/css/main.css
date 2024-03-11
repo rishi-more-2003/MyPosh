@@ -895,6 +895,9 @@ body.dark-theme{
     .nav__list{
         column-gap: 1.5rem;
     }
+    .nav__logo{
+        margin-top: 15px;
+    }
 }
 
 @media screen and (max-width: 829px){
@@ -909,6 +912,11 @@ body.dark-theme{
     .container{
         margin-left: auto;
         margin-right: auto;
+    }
+
+    .nav__logo{
+        margin-top: 15px;
+        font-size: large;
     }
 
     .section{
@@ -1035,6 +1043,11 @@ body.dark-theme{
 @media screen and (min-width:1200px) {
     .home__container{
         column-gap: 2rem;
+    }
+
+    .nav__logo{
+        margin-top: 15px;
+        font-size: large;
     }
 
     .about__container{
