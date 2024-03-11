@@ -5,7 +5,7 @@
 {{ block.super }}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'assets/css/education.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/list_item.css' %}">
 <link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
 <script src="{% static 'assets/js/cities.js' %}"></script>
@@ -21,7 +21,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'assets/js/profile.js' %}"></script>
-<script src="{% static 'assets/js/education.js' %}"></script>
+<script src="{% static 'assets/js/list_item.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -39,17 +39,21 @@
                         <a class="list-group-item list-group-item-action" data-toggle="list"
                             href="#account-education">Education</a>
                         <a class="list-group-item list-group-item-action" data-toggle="list"
-                        href="#account-skill">Skills</a>
+                            href="#account-skill">Skills</a>
                         <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-change-password">Change password</a>
+                            href="#account-certification">Certifications</a>
                         <a class="list-group-item list-group-item-action" data-toggle="list"
                             href="#account-info">Info</a>
                         <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-social-links">Social links</a>
+                            href="#account-experience">Experience</a>
                         <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-connections">Connections</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-notifications">Notifications</a>
+                            href="#account-change-password">Change password</a>
+                        {% comment %} <a class="list-group-item list-group-item-action" data-toggle="list"
+                            href="#account-social-links">Social links</a> {% endcomment %}
+                        {% comment %} <a class="list-group-item list-group-item-action" data-toggle="list"
+                            href="#account-connections">Connections</a> {% endcomment %}
+                        {% comment %} <a class="list-group-item list-group-item-action" data-toggle="list"
+                            href="#account-notifications">Notifications</a> {% endcomment %}
                     </div>
                 </div>
                 <div class="col-md-9">
@@ -193,6 +197,61 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="tab-pane fade" id="account-certification">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    {% include "certifications.html" %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="account-info">
+                            <div class="card-body pb-2">
+                                <!-- Full Description -->
+                                <div class="form-group">
+                                    <label for="descriptionInput">Description</label>
+                                    <textarea id="descriptionInput" class="form-control" rows="5" placeholder="Describe yourself in up to 500 words"></textarea>
+                                </div>
+
+                                <!-- Short Description -->
+                                <div class="form-group">
+                                    <label for="shortDescriptionInput">Bio for Profile</label>
+                                    <textarea id="shortDescriptionInput" class="form-control" rows="2" placeholder="Provide a brief, 100-word description"></textarea>
+                                </div>
+                                {% comment %} <div class="form-group">
+                                    <label class="form-label">Birthday</label>
+                                    <input type="text" class="form-control" value="May 3, 1995">
+                                </div> {% endcomment %}
+                                {% comment %} <div class="form-group">
+                                    <label class="form-label">Country</label>
+                                    <select class="custom-select">
+                                        <option>USA</option>
+                                        <option selected>Canada</option>
+                                        <option>UK</option>
+                                        <option>Germany</option>
+                                        <option>France</option>
+                                    </select>
+                                </div> {% endcomment %}
+                            </div>
+                            {% comment %} <hr class="border-light m-0">
+                            <div class="card-body pb-2">
+                                <h6 class="mb-4">Contacts</h6> {% endcomment %}
+                                {% comment %} <div class="form-group">
+                                    <label class="form-label">Phone</label>
+                                    <input type="text" class="form-control" value="+0 (123) 456 7891">
+                                </div> {% endcomment %}
+                                {% comment %} <div class="form-group">
+                                    <label class="form-label">Website</label>
+                                    <input type="text" class="form-control" value>
+                                </div> {% endcomment %}
+                            {% comment %} </div> {% endcomment %}
+                        </div>
+                        <div class="tab-pane fade" id="account-experience">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    {% include "experience.html" %}
+                                </div>
+                            </div>
+                        </div>
                         <div class="tab-pane fade" id="account-change-password">
                             <div class="card-body pb-2">
                                 <div class="form-group">
@@ -209,42 +268,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="account-info">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    <label class="form-label">Bio</label>
-                                    <textarea class="form-control"
-                                        rows="5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris nunc arcu, dignissim sit amet sollicitudin iaculis, vehicula id urna. Sed luctus urna nunc. Donec fermentum, magna sit amet rutrum pretium, turpis dolor molestie diam, ut lacinia diam risus eleifend sapien. Curabitur ac nibh nulla. Maecenas nec augue placerat, viverra tellus non, pulvinar risus.</textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Birthday</label>
-                                    <input type="text" class="form-control" value="May 3, 1995">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Country</label>
-                                    <select class="custom-select">
-                                        <option>USA</option>
-                                        <option selected>Canada</option>
-                                        <option>UK</option>
-                                        <option>Germany</option>
-                                        <option>France</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <hr class="border-light m-0">
-                            <div class="card-body pb-2">
-                                <h6 class="mb-4">Contacts</h6>
-                                <div class="form-group">
-                                    <label class="form-label">Phone</label>
-                                    <input type="text" class="form-control" value="+0 (123) 456 7891">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Website</label>
-                                    <input type="text" class="form-control" value>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="account-social-links">
+                        {% comment %} <div class="tab-pane fade" id="account-social-links">
                             <div class="card-body pb-2">
                                 <div class="form-group">
                                     <label class="form-label">Twitter</label>
@@ -267,14 +291,14 @@
                                     <input type="text" class="form-control" value="https://www.instagram.com/user">
                                 </div>
                             </div>
-                        </div>
-                        <div class="tab-pane fade" id="account-connections">
-                            <div class="card-body">
+                        </div> {% endcomment %}
+                        {% comment %} <div class="tab-pane fade" id="account-connections"> {% endcomment %}
+                            {% comment %} <div class="card-body">
                                 <button type="button" class="btn btn-twitter">Connect to
                                     <strong>Twitter</strong></button>
                             </div>
-                            <hr class="border-light m-0">
-                            <div class="card-body">
+                            <hr class="border-light m-0"> {% endcomment %}
+                            {% comment %} <div class="card-body">
                                 <h5 class="mb-2">
                                     <a href="javascript:void(0)" class="float-right text-muted text-tiny"><i
                                             class="ion ion-md-close"></i> Remove</a>
@@ -284,21 +308,21 @@
                                 <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
                                     data-cfemail="f9979498818e9c9595b994989095d79a9694">[email&#160;protected]</a>
                             </div>
-                            <hr class="border-light m-0">
-                            <div class="card-body">
+                            <hr class="border-light m-0"> {% endcomment %}
+                            {% comment %} <div class="card-body">
                                 <button type="button" class="btn btn-facebook">Connect to
                                     <strong>Facebook</strong></button>
                             </div>
-                            <hr class="border-light m-0">
-                            <div class="card-body">
+                            <hr class="border-light m-0"> {% endcomment %}
+                            {% comment %} <div class="card-body">
                                 <button type="button" class="btn btn-instagram">Connect to
                                     <strong>Instagram</strong></button>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="account-notifications">
+                            </div> {% endcomment %}
+                        {% comment %} </div> {% endcomment %}
+                        {% comment %} <div class="tab-pane fade" id="account-notifications">
                             <div class="card-body pb-2">
-                                <h6 class="mb-4">Activity</h6>
-                                <div class="form-group">
+                                <h6 class="mb-4">Activity</h6> {% endcomment %}
+                                {% comment %} <div class="form-group">
                                     <label class="switcher">
                                         <input type="checkbox" class="switcher-input" checked>
                                         <span class="switcher-indicator">
@@ -307,8 +331,8 @@
                                         </span>
                                         <span class="switcher-label">Email me when someone comments on my article</span>
                                     </label>
-                                </div>
-                                <div class="form-group">
+                                </div> {% endcomment %}
+                                {% comment %} <div class="form-group">
                                     <label class="switcher">
                                         <input type="checkbox" class="switcher-input" checked>
                                         <span class="switcher-indicator">
@@ -318,8 +342,8 @@
                                         <span class="switcher-label">Email me when someone answers on my forum
                                             thread</span>
                                     </label>
-                                </div>
-                                <div class="form-group">
+                                </div> {% endcomment %}
+                                {% comment %} <div class="form-group">
                                     <label class="switcher">
                                         <input type="checkbox" class="switcher-input">
                                         <span class="switcher-indicator">
@@ -328,12 +352,12 @@
                                         </span>
                                         <span class="switcher-label">Email me when someone follows me</span>
                                     </label>
-                                </div>
-                            </div>
-                            <hr class="border-light m-0">
+                                </div> {% endcomment %}
+                            {% comment %} </div> {% endcomment %}
+                            {% comment %} <hr class="border-light m-0">
                             <div class="card-body pb-2">
-                                <h6 class="mb-4">Application</h6>
-                                <div class="form-group">
+                                <h6 class="mb-4">Application</h6> {% endcomment %}
+                                {% comment %} <div class="form-group">
                                     <label class="switcher">
                                         <input type="checkbox" class="switcher-input" checked>
                                         <span class="switcher-indicator">
@@ -342,8 +366,8 @@
                                         </span>
                                         <span class="switcher-label">News and announcements</span>
                                     </label>
-                                </div>
-                                <div class="form-group">
+                                </div> {% endcomment %}
+                                {% comment %} <div class="form-group">
                                     <label class="switcher">
                                         <input type="checkbox" class="switcher-input">
                                         <span class="switcher-indicator">
@@ -352,8 +376,8 @@
                                         </span>
                                         <span class="switcher-label">Weekly product updates</span>
                                     </label>
-                                </div>
-                                <div class="form-group">
+                                </div> {% endcomment %}
+                                {% comment %} <div class="form-group">
                                     <label class="switcher">
                                         <input type="checkbox" class="switcher-input" checked>
                                         <span class="switcher-indicator">
@@ -362,9 +386,9 @@
                                         </span>
                                         <span class="switcher-label">Weekly blog digest</span>
                                     </label>
-                                </div>
-                            </div>
-                        </div>
+                                </div> {% endcomment %}
+                            {% comment %} </div> {% endcomment %}
+                        {% comment %} </div> {% endcomment %}
                     </div>
                 </div>
             </div>

@@ -1,0 +1,81 @@
+<div class="container-experience">
+    <div class="add_experience">
+        <h2>Experience/Career</h2>
+        <button id="add-experience-btn" data-toggle="modal" data-target="#addExperienceModal">+ Add</button>
+    </div>
+
+    <!-- Experience Section -->
+    <div id="experience-section">
+        <ul id="experience-list">
+            <!-- Experience details will be dynamically added here -->
+        </ul>
+    </div>
+
+    <!-- Add Experience Modal -->
+    <div class="modal fade" id="addExperienceModal" tabindex="-1" role="dialog" aria-labelledby="addExperienceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addExperienceModalLabel">Add Experience</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Title -->
+                    <div class="form-group">
+                        <label for="titleInput">Title</label>
+                        <input type="text" id="titleInput" class="form-control">
+                    </div>
+
+                    <!-- Company Name -->
+                    <div class="form-group">
+                        <label for="companyNameInput">Company Name</label>
+                        <input type="text" id="companyNameInput" class="form-control">
+                    </div>
+
+                    <!-- Currently Working Checkbox -->
+                    <div class="form-check">
+                        <input type="checkbox" id="currentlyWorkingInput" class="form-check-input">
+                        <label for="currentlyWorkingInput" class="form-check-label">I am currently working in this role</label>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="startDateexp">Start Date</label>
+                            <input type="month" id="startDateexp" class="form-control">
+                        </div>
+                        <div class="form-group col-md-6" id='end-date'>
+                            <label for="endDateexp">End Date</label>
+                            <input type="month" id="endDateexp" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Industry -->
+                    <div class="form-group">
+                        <label for="industryInput">Industry</label>
+                        <input type="text" id="industryInput" class="form-control">
+                    </div>
+
+                    <!-- Location -->
+                    <div class="form-group">
+                        <label for="locationInput">Location</label>
+                        <input type="text" id="locationInput" class="form-control">
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="descriptionInputexp">Description</label>
+                        <textarea id="descriptionInputexp" class="form-control" rows="3" placeholder="Give a description of your experience in 250 words"></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveExperienceBtn">Save Experience</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

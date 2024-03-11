@@ -1,68 +1,68 @@
-<div class="container-education">
-    <div class="add_education">
-        <h2>Education Details</h2>
-        <button id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add</button>
+<div class="container-certifications">
+    <div class="add_certification">
+        <h2>Certification Details</h2>
+        <button id="add-certification-btn" data-toggle="modal" data-target="#addCertificationModal">+ Add</button>
     </div>
 
-    <!-- Education Section -->
-    <div id="education-section">
-        <ul id="education-list">
-            <!-- Educational experiences will be dynamically added here -->
+    <!-- Certification Section -->
+    <div id="certification-section">
+        <ul id="certification-list">
+            <!-- Certification experiences will be dynamically added here -->
         </ul>
     </div>
 
-    <!-- Add Education Modal -->
-    <div class="modal fade" id="addEducationModal" tabindex="-1" role="dialog" aria-labelledby="addEducationModalLabel" aria-hidden="true">
+    <!-- Add Certification Modal -->
+    <div class="modal fade" id="addCertificationModal" tabindex="-1" role="dialog" aria-labelledby="addCertificationModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addEducationModalLabel">Add Education</h5>
+                    <h5 class="modal-title" id="addCertificationModalLabel">Add Certification</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- School -->
+                    <!-- Certification Name -->
                     <div class="form-group">
-                        <label for="schoolInput">School</label>
-                        <input type="text" id="schoolInput" class="form-control" placeholder="Enter the school name">
+                        <label for="certificationNameInput">Name</label>
+                        <input type="text" id="certificationNameInput" class="form-control" placeholder="Enter the certification name">
                     </div>
 
-                    <!-- Degree -->
+                    <!-- Issuing Organization -->
                     <div class="form-group">
-                        <label for="degreeInput">Degree</label>
-                        <input type="text" id="degreeInput" class="form-control" placeholder="Enter your degree">
+                        <label for="issuingOrganizationInput">Issuing Organization</label>
+                        <input type="text" id="issuingOrganizationInput" class="form-control" placeholder="Enter the issuing organization">
                     </div>
 
-                    <!-- Field of Study -->
-                    <div class="form-group">
-                        <label for="fieldOfStudyInput">Field of Study</label>
-                        <input type="text" id="fieldOfStudyInput" class="form-control" placeholder="Enter your field of study">
-                    </div>
-
-                    <!-- Start Date -->
+                    <!-- Issue Date -->
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="startDateMonth">Start Date</label>
-                            <input type="month" id="startDate" class="form-control" placeholder="Enter start month">
+                            <label for="issueDateMonth">Issue Date</label>
+                            <input type="month" id="issueDate" class="form-control" placeholder="Enter issue month">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="startDateYear">End Date/Expected</label>
-                            <input type="month" id="endDate" class="form-control" placeholder="Enter start year">
+                            <label for="expirationDateMonth">Expiration Date</label>
+                            <input type="month" id="expirationDate" class="form-control" placeholder="Enter expiration month">
                         </div>
                     </div>
 
-                    <!-- Description -->
+                    <!-- Credential ID -->
                     <div class="form-group">
-                        <label for="descriptionInput">Description</label>
-                        <textarea id="descriptionInput" class="form-control" rows="5" placeholder="Enter a description of your education"></textarea>
+                        <label for="credentialIdInput">Credential ID</label>
+                        <input type="text" id="credentialIdInput" class="form-control" placeholder="Enter the credential ID">
+                    </div>
+
+                    <!-- Credential URL -->
+                    <div class="form-group">
+                        <label for="credentialUrlInput">Credential URL</label>
+                        <input type="link" id="credentialUrlInput" class="form-control" placeholder="Enter the credential URL">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveEducationBtn">Save Education</button>
+                    <button type="button" class="btn btn-primary" id="saveCertificationBtn">Save Certification</button>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+</div>

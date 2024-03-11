@@ -20,7 +20,9 @@ button#saveEducationBtn:hover{
 
 /* Add this to your existing CSS or create a new CSS file */
 
-.add_education{
+.add_education,
+.add_certification,
+.add_experience{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -33,12 +35,14 @@ button#saveEducationBtn:hover{
 }
 
 @media screen and (max-width: 500px){
-    .add_education{
+    .add_education,
+    .add_experience{
         display: flex;
         flex-direction: column;
         align-items: center
     }
-    .add_skills{
+    .add_skills,
+    .add_certification{
         display: flex;
         flex-direction: column;
         align-items: center
@@ -47,7 +51,9 @@ button#saveEducationBtn:hover{
 
 /* Style for each card (list item) */
 #education-list li,
-#skills-list li {
+#certification-list li,
+#skills-list li,
+#experience-list li {
     border: 1px solid #ddd;
     padding: 10px;
     margin-bottom: 15px;
@@ -73,6 +79,8 @@ button.btn.btn-warning.btn-sm.mr-2 {
 /* Style for the content inside the card */
 
 #education-list li .card-content, 
+#certification-list li .card-content, 
+#experience-list li .card-content, 
 #skills-list li .skillcard-content {
     display: flex;
     flex-direction: row;
@@ -86,7 +94,9 @@ button.btn.btn-warning.btn-sm.mr-2 {
 
 
 /* Style for the left side of the card */
-#education-list li .left-side {
+#education-list li .left-side, 
+#certification-list li .left-side,
+#experience-list li .left-side{
     display: flex;
     flex-direction: column;
     width: 75%;
@@ -99,7 +109,9 @@ button.btn.btn-warning.btn-sm.mr-2 {
 }
 
 /* Style for the right side of the card */
-#education-list li .right-side {
+#education-list li .right-side, 
+#experience-list li .right-side, 
+#certification-list li .right-side{
     display: flex;
     flex-direction: column;
     margin-left: auto;
@@ -109,7 +121,14 @@ button.btn.btn-warning.btn-sm.mr-2 {
 
 /* Style for each input field inside the card */
 #education-list li .card-content input,
-#education-list li .card-content textarea {
+#experience-list li .card-content input,
+#education-list li .card-content textarea,
+#experience-list li .card-content textarea {
+    margin-bottom: 10px;
+}
+
+#certification-list li .card-content input,
+#certification-list li .card-content textarea {
     margin-bottom: 10px;
 }
 
@@ -124,8 +143,20 @@ button.btn.btn-warning.btn-sm.mr-2 {
 
 /* Additional styling for the card layout */
 #education-list li .left-side,
-#education-list li .right-side {
+#education-list li .right-side, 
+#experience-list li .right-side, 
+#experience-list li .left-side {
     margin-right: 10px;
+}
+
+#experience-list li .right-side{
+    margin-right: -10px;
+}
+
+#certification-list li .left-side,
+#certification-list li .right-side {
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 .modal-header .close{
@@ -138,25 +169,31 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0; 
 }
 
-.college_name, .skill_name {
+.college_name, .skill_name, .company_name {
     font-size: large;
     font-weight: 500;
     width: 100%;
 }
 
-.degree {
+.issuing_organization, .title {
+    font-size: medium;
+    font-weight: bold;
+    width: 100%;
+}
+
+.degree{
     margin-top: 5px;
     margin-bottom: 10px;
     font-size: inherit;
     font-style: italic;
 }
 
-.desc {
+.desc, .credential_id, .credential_url, .location, .description{
     font-size: medium;
     font-weight: 300;
 }
 
-.year {
+.year, .issue_date, .expiration_date, .date {
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
