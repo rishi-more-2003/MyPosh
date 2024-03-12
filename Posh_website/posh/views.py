@@ -29,6 +29,8 @@ def register_ngo(request):
 def register_consultancy(request):
     return render(request, 'register_consultancy.html', {})
 
+def register_establishment(request):
+    return render(request, 'register_establishment.html', {})
 
 def register(request):
 

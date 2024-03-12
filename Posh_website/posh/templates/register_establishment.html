@@ -1,0 +1,290 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- FAVICON  {% static 'assets/img/MyPosh.svg' %}--> 
+        <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
+
+        
+        <!-- ICONS -->
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+        <!-- CSS {% static 'assets/css/main.css' %}-->
+        <link rel="stylesheet" href="{% static 'assets/css/register_ngo.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/css/register_establishment.css' %}">
+        {% comment %} <link rel="stylesheet" href="{% static 'assets/css/register_ngo.css' %}"> {% endcomment %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
+        <script src="{% static 'assets/js/cities.js' %}"></script>
+        <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"
+      />
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+        <title>Registration Form</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            Registration
+        </header>
+        <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            <div class="form-first">
+                <div class="details personal">
+                    <span class="title">
+                        Establishment Details
+                    </span>
+
+                    <div class="fields">
+                        <div class="input-field">
+                            <label>Name</label>
+                            <input type="text" name="name" placeholder="Enter Establishment Name" required>
+                        </div>
+
+                        <div class="input-field">
+                            <label for="date-input">Date of Setup</label>
+                            <input type="date" name='setdate' id="date-input" placeholder="Enter date of setup" required>
+                        </div>
+
+                        <div class="input-field">
+                            <label>Nature of Establishment</label>
+                            <select id="natureOfEstablishment" name="gen" class="form-control" required>
+                                <option value="" disabled selected>Select</option>
+                                <option value="principal">Principal Employer</option>
+                                <option value="vendor">Vendor</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- Section for Principal Employer -->
+                <div id="principalEmployerSection" class="details principal-employer-section">
+                    <span class="title" id='prin-title'>
+                         Principal Employer Section
+                    </span>
+                    <span class="title">
+                        No. of Direct Employees
+                    </span>
+                    <div class="fields">
+                        <div class="input-field">
+                            <label>Male</label>
+                            <input type="number" name="male" placeholder="Total male employees" required>
+                        </div>   
+                        <div class="input-field"> 
+                            <label>Female</label>
+                            <input type="number" name="female" placeholder="Total female employees" required>
+                        </div>  
+                        <div class="input-field">
+                            <label>Others</label>
+                            <input type="number" name="others" placeholder="" >
+                        </div>
+                    </div>
+                    <span class="title">
+                        No. of Indirect Employees
+                    </span>
+                    <div class="fields">
+                        <div class="input-field">
+                            <label>Male</label>
+                            <input type="number" name="male" placeholder="Total male employees" required>
+                        </div>   
+                        <div class="input-field"> 
+                            <label>Female</label>
+                            <input type="number" name="female" placeholder="Total female employees" required>
+                        </div>  
+                        <div class="input-field">
+                            <label>Others</label>
+                            <input type="number" name="others" placeholder="">
+                        </div>
+                    </div>
+                        <!-- Number of Vendors/Contractors -->
+                        <div class="input-field">
+                            <label>No. of Vendors/Contractors</label>
+                            <input type="number" id="vendorCount" name="vendor_count" oninput="generateVendorDetails()" placeholder="Enter count" required>
+                        </div>
+
+                        <!-- Generated Vendor/Contractor Details -->
+                        <div id="vendorDetailsSection" class="details vendor-details">
+                            <!-- The dynamically generated vendor details will be appended here -->
+                        </div>
+                </div>
+                    <!-- Section for Vendor -->
+                <div id="vendorSection" class="details vendor-section">
+                        <!-- Fields specific to Vendor -->
+                        <span class="title" id='ven-title'>
+                            Vendor Section
+                       </span>
+                        <span class="title">
+                            No. of Employees in Head Office
+                        </span>
+                        <div class="fields">
+                            <div class="input-field">
+                                <label>Male</label>
+                                <input type="number" name="male" placeholder="Total male employees" required>
+                            </div>   
+                            <div class="input-field"> 
+                                <label>Female</label>
+                                <input type="number" name="female" placeholder="Total female employees" required>
+                            </div>  
+                            <div class="input-field">
+                                <label>Others</label>
+                                <input type="number" name="others" placeholder="">
+                            </div>
+                        </div>
+                        <span class="title">
+                            No. Of Employees Deployed on Site
+                        </span>
+                        <div class="fields">
+                            <div class="input-field">
+                                <label>Male</label>
+                                <input type="number" name="male" placeholder="Total male employees" required>
+                            </div>   
+                            <div class="input-field"> 
+                                <label>Female</label>
+                                <input type="number" name="female" placeholder="Total female employees" required>
+                            </div>  
+                            <div class="input-field">
+                                <label>Others</label>
+                                <input type="number" name="others" placeholder="" >
+                            </div>
+                        </div>
+                            <!-- Number of Vendors/Contractors -->
+                        <div class="input-field">
+                            <label>No. of Sites/Principal Employer</label>
+                            <input type="number" id="siteCount" name="site_count" oninput="generateSiteDetails()" placeholder="Enter count" required>
+                        </div>
+    
+                        <!-- Generated Vendor/Contractor Details -->
+                        <div id="siteDetailsSection" class="details site-details">
+                            <!-- The dynamically generated vendor details will be appended here -->
+                        </div>
+                </div>
+
+                <div class="details personal">
+                    <span class="title">
+                        Base Location(Head Office)
+                    </span>
+
+                    <div class="fields">
+                        <div class="input-field">
+                            <label>State</label>
+                            <select name='state' onchange="print_city('states', this.selectedIndex);" id="stss" name ="stt" class="form-control" required></select>
+                        </div>
+
+                        <div class="input-field">
+                            <label>City</label>
+                            <select name='city' id ="states" class="form-control" required ></select>
+                            <script language="javascript">print_state("stss");</script>
+                        </div>
+
+                        <div class="input-field">
+                            <label>Pincode</label>
+                            <input type="number" name='pincode' placeholder="Enter Pincode" required>
+                        </div>
+                    </div>
+
+                    <div class="details address">
+                        <div class="input-field address-field">
+                            <label>Official Address</label>
+                            <textarea type="text" name="address" cols="40" rows="5" placeholder="Enter Address" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Number of Locations -->
+                    <div class="input-field">
+                        <label>No. of Locations</label>
+                        <input type="number" id="locationCount" name="location_count" oninput="generateLocationDetails()" placeholder="Enter count" required>
+                    </div>
+
+                    <!-- Generated Vendor/Contractor Details -->
+                    <div id="locationDetailsSection" class="details location-details">
+                        <!-- The dynamically generated vendor details will be appended here -->
+                    </div>
+                </div>
+
+                <div class="details contact">
+                    <span class="title">
+                        NGO Contact Details
+                    </span>
+
+                    <div class="align-columns-two">
+                        <div class="input-field new"> 
+                            <div class="inp">
+                                <label class="required-field">Password</label>
+                                <div class="flexble">
+                                    <input type="password" id= "password" name="password1" placeholder="Enter your Password" required>
+                                    <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
+                                </div>
+                            </div>
+
+                            <div class="inp">
+                                <label class="required-field">Confirm Password</label>
+                                <div class="flexble">
+                                <input type="password" id= "password1" name="password2" placeholder="Confirm your Password" required>
+                                <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                <div class="fields">
+                <div class="details ID">   
+                    <div class="input-field email-field">
+                        <label class="required-field">Email</label>
+                        <p id="error-msg">Please Enter A Valid Email Id</p>
+                        <div class="combine">
+                            <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
+                            <button type="button" class="ValBtn one" id="sendOTP">Send OTP</button>
+                        </div>
+
+                        {% if otp_sent %}
+                            <div class="input-field otp-field">
+                                <label class="required-field">OTP</label>
+                                <input type="text" name='otp' id="otp" placeholder="Enter OTP" required>
+                            </div>
+                        {% endif %}
+
+                        <!-- <div class="combine">
+                            <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
+                            <button class="ValBtn one" disabled>Validate</button>
+                        </div>
+                    </div> -->
+
+                    <div class="input-field phone-field">
+                        <label class="required-field">Mobile Number</label>
+                        <p id="errormsg">Please Enter A Valid Phone Number</p>
+                        <div class="combine">
+                            <input type="tel" name='phone' id="phone" placeholder="Enter mobile number" minlength="10" maxlength="10" oninput="checkerphone()" required>
+                            <button class="ValBtn two" disabled>Validate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div> 
+
+                    <div class="buttons">
+                        <div class="backBtn">
+                            <i class="ri-arrow-left-s-line"></i>
+                            <span class="btnText">
+                                <a href="{% url 'home' %}">
+                                    Back
+                                </a>
+                            </span>
+                        </div>
+
+                        <button type="submit" class="nextBtn" id="submitButton">
+                            <span class="btnText">Submit</span>
+                            <i class="ri-skip-right-fill"></i>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+        </form>
+    </div>
+<script src="{% static 'assets/js/register.js' %}"></script>
+<script src="{% static 'assets/js/register_establishment.js' %}"></script>
+</body>
+</html>
