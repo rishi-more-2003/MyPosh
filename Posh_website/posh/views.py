@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 import random
 from django.conf import settings
+from .utils import generate_unique_id
 
 def home(request):
     return render(request, 'home.html', {})
@@ -21,7 +22,7 @@ def index(request):
     return render(request, 'tp.html')
 
 def generate_otp():
-    return str(random.randint(10000, 99999))
+    return str(random.randint(100000, 999999))
 
 def register_ngo(request):
     return render(request, 'register_ngo.html', {})
@@ -50,6 +51,9 @@ def register(request):
         
         email = request.POST['email'] #email
         phone = request.POST['phone'] #tel
+        username = generate_unique_id(phone, email)
+        
+        print(prefix, fname)
 
         # Perform password validation
         if password != con_password:
@@ -57,9 +61,9 @@ def register(request):
         
         otp = generate_otp()
         
-        subject = 'OTP for MyPosh Email Verification'
+        subject = 'MyPosh Email Verification'
         email_from = settings.EMAIL_HOST
-        message = 'Your OTP is: ' + otp
+        message = 'Your OTP for email verification for MyPosh profile is: ' + otp + '\nPlease do not share this OTP with anyone.'
 
         # Send OTP via email
         send_mail(
@@ -87,6 +91,7 @@ def register(request):
                 return render(request, 'register.html', {'otp_sent': True}) # Render the form with OTP sent indicator
 
         user = IndividualUser.objects.create_user(
+            username = username,
             email=email,
             phone=phone,
             password=password,
@@ -104,16 +109,26 @@ def register(request):
         user.is_active = True
         user.save()
 
-        user = authenticate(request, username=email, password=password)
+        user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            subject = 'Welcome to MyPosh'
+            message = 'Your username is ' + username + ' and password is ' + password + '\n Please do not share this information with anyone.'
+            send_mail(
+                subject,
+                message,
+                email_from,
+                [email],
+                fail_silently=False,
+            )
+        
             login(request, user)
             return redirect('/')
         else:
             messages.error(request, 'Invalid login credentials')
-
+            
         # Redirect to the desired page after successful registration
-        return redirect('/login/')  
+        return redirect('/login/') 
 
     return render(request, 'register.html')
 

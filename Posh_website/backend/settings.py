@@ -129,10 +129,10 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTHENTICATION_BACKENDS = (
-    'posh.authentication.EmailOrPhoneBackend', # our custom authentication backend
-    'django.contrib.auth.backends.ModelBackend' # fallback to default authentication backend if first fails 
-    )
+# AUTHENTICATION_BACKENDS = (
+#     'posh.authentication.EmailOrPhoneBackend', # our custom authentication backend
+#     'django.contrib.auth.backends.ModelBackend' # fallback to default authentication backend if first fails 
+#     )
 
 AUTH_USER_MODEL = 'posh.IndividualUser'
  
@@ -141,5 +141,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'myposh.help@gmail.com'
-EMAIL_HOST_PASSWORD = 'posh@123'
+EMAIL_HOST_PASSWORD = 'gggqtxfwmijfmmyp'
  
