@@ -889,6 +889,20 @@ body.dark-theme{
         top: -0.025rem;
     }
 
+    a.nav__link.login-btn {
+        border: 1px 1px 0px var(--first-color);
+        background-color: var(--first-color);
+        color: white;
+        padding: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        border-radius: 20px;
+    }
+
+    a.nav__link.login-btn:hover {
+        background-color: var(--first-color-alt);
+    }
+
 }
 
 @media screen and (max-width: 991px){
@@ -898,11 +912,19 @@ body.dark-theme{
     .nav__logo{
         margin-top: 15px;
     }
+
+    .home__title{
+        font-size: var(--h1-font-size);
+    }
 }
 
 @media screen and (max-width: 829px){
     .nav__list{
         column-gap: 0.8rem;
+    }
+
+    .home__title{
+        font-size: var(--h1-font-size);
     }
 }
 
@@ -912,6 +934,10 @@ body.dark-theme{
     .container{
         margin-left: auto;
         margin-right: auto;
+    }
+
+    .home__title{
+        font-size: var(--h1-font-size);
     }
 
     .nav__logo{
@@ -1037,10 +1063,23 @@ body.dark-theme{
         transition: top .3s;
         top: -0.025rem;
     }
+
+    a.nav__link.login-btn {
+        border: 1px 1px 0px var(--first-color);
+        background-color: var(--first-color);
+        color: white;
+        padding: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        border-radius: 20px;
+    }
+
+    a.nav__link.login-btn:hover {
+        background-color: var(--first-color-alt);
+    }
     
 }
-
-@media screen and (min-width:1200px) {
+@media screen and (min-width:1200px){
     .home__container{
         column-gap: 2rem;
     }
@@ -1048,6 +1087,10 @@ body.dark-theme{
     .nav__logo{
         margin-top: 15px;
         font-size: large;
+    }
+
+    .home__title{
+        font-size: var(--h1-font-size);
     }
 
     .about__container{
@@ -1104,6 +1147,84 @@ body.dark-theme{
         transition: top .3s;
         top: -0.025rem;
     }
+    
+    a.nav__link.login-btn {
+        border: 1px 1px 0px var(--first-color);
+        background-color: var(--first-color);
+        color: white;
+        padding: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        border-radius: 20px;
+    }
+
+    a.nav__link.login-btn:hover {
+        background-color: var(--first-color-alt);
+    }
+
+}
+@media screen and (min-width:1330px) {
+
+    .home__title{
+        font-size: var(--big-font-size);
+    }
+
+    ul.nav__list {
+        margin-right: -170px;
+    }
+
+    a.nav__logo {
+        margin-left: -170px;
+    }
+
+    .home__container.container.grid {
+        margin-top: -30px;
+    }
+
+    .home__data {
+        margin-left: -160px;
+    }
+
+    img.home__img {
+        margin-right: -180px;
+        width: 120%;
+    }
+
+    img.about__img {
+        margin-left: -170px;
+    }
+
+    .about__data {
+        margin-right: -170px;
+    }
+
+    .steps__bg {
+        margin-left: -150px;
+        margin-right: -150px;
+    }
+
+    section#faqs {
+        padding-top: 70px;
+    }
+
+    .contact__box {
+        margin-left: -150px;
+    }
+
+    form.contact__form {
+        margin-right: -150px;
+    }
+    
+    section#contact {
+        padding-top: 70px;
+    }
+
+    footer.footer.section {
+        padding-top: 70px;
+        padding-bottom: 5px;
+    }
+
+
 
 }
 

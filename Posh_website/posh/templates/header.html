@@ -111,9 +111,13 @@
                         </ul>
                     </li>
 
+                    <li class="nav__item">
+                        <a href="{% url 'login' %}" class="nav__link login-btn">Login</a>
+                    </li>
+
                      <!-- DROPDOWN Login-->
 
-                    <li class="nav__item dropdown__item">
+                   {% comment %} <li class="nav__item dropdown__item">
                         <div class="nav__link">
                             Login
                             <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
@@ -154,10 +158,10 @@
                                         </a> 
                                      </li>
                                 </ul>
-                             </li>
+                             </li> 
                         </ul>
                     </li>
-                </ul>
+                </ul> {% endcomment %}
 
                 {% endif %}
                 <div class="nav__close" id="nav-close">
@@ -167,10 +171,10 @@
 
             <div class="nav__btns">
                 <!-- Theme change button -->
-                <i class="ri-moon-line change-theme" id='theme-button'></i>
+                {% comment %} <i class="ri-moon-line change-theme" id='theme-button'></i> {% endcomment %}
                 <div class="nav__toggle" id="nav-toggle">
                     <i class="ri-menu-line"></i>
-                </div>
-            </div>    
+                </div> 
+            </div>     
         </nav>
     </header>
