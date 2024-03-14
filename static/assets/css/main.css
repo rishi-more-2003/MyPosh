@@ -186,6 +186,7 @@ a{
     cursor: pointer;
 }
 
+
 @media screen and (max-width: 767px) {
     .nav__menu{
         position: fixed;
@@ -1162,6 +1163,10 @@ body.dark-theme{
         background-color: var(--first-color-alt);
     }
 
+    ul.dropdown__menu {
+        margin-left: -22px;
+    }
+
 }
 @media screen and (min-width:1330px) {
 
@@ -1224,7 +1229,9 @@ body.dark-theme{
         padding-bottom: 5px;
     }
 
-
+    ul.dropdown__menu {
+        margin-left: -22px;
+    }
 
 }
 

@@ -14,6 +14,7 @@
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
         <!-- CSS {% static 'assets/css/main.css' %}-->
         <link rel="stylesheet" href="{% static 'assets/css/register.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/css/otp.css' %}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
         <script src="{% static 'assets/js/cities.js' %}"></script>
         <link
@@ -30,6 +31,7 @@
         </header>
         <form method="POST" action="{% url 'register' %}">
             {% csrf_token %}
+            {% include "otp.html" %}
             <div class="form-first">
                 <div class="details personal">
                     <span class="title">
@@ -95,39 +97,39 @@
                         </div>
 
                         <div class="align-columns-two">
-                            <div class="input-field new"> 
-                                <div class="inp">
-                                    <label class="required-field">Password</label>
-                                    <div class="flexble">
-                                        <input type="password" id= "password" name="password1" placeholder="Enter your Password" required>
-                                        <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
-                                    </div>
+                            <div class="input-field phone-field">
+                                <label class="required-field">Mobile Number</label>
+                                <p id="errormsg">Please Enter A Valid Phone Number</p>
+                                <div class="inp combine">
+                                    <input type="tel" name='phone' id="phone" placeholder="Enter mobile number" minlength="10" maxlength="10" oninput="checkerphone()" required>
+                                    <button class="ValBtn two" disabled>Get OTP</button>
                                 </div>
+                            </div>
     
-                                <div class="inp">
+                            {% comment %} <div class="inp">
                                     <label class="required-field">Confirm Password</label>
                                     <div class="flexble">
                                     <input type="password" id= "password1" name="password2" placeholder="Confirm your Password" required>
                                     <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
                                     </div>
                                 </div>
-                            </div>
-
-                    <div class="details ID">   
+                            </div> {% endcomment %}
+ 
                         <div class="input-field email-field">
                             <label class="required-field">Email</label>
                             <p id="error-msg">Please Enter A Valid Email Id</p>
                             <div class="combine">
                                 <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
-                                <button type="button" class="ValBtn one" id="sendOTP">Send OTP</button>
+                                <button type="submit" name='verifotp' class="ValBtn one" id="sendOTP" onclick="openPopup()" disabled>Get OTP</button>
                             </div>
+                        </div>
 
-                            {% if otp_sent %}
+                            {% comment %} {% if otp_sent %}
                                 <div class="input-field otp-field">
                                     <label class="required-field">OTP</label>
                                     <input type="text" name='otp' id="otp" placeholder="Enter OTP" required>
                                 </div>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
 
                             <!-- <div class="combine">
                                 <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
@@ -135,18 +137,17 @@
                             </div>
                         </div> -->
 
-                        <div class="input-field phone-field">
+                        {% comment %} <div class="input-field phone-field">
                             <label class="required-field">Mobile Number</label>
                             <p id="errormsg">Please Enter A Valid Phone Number</p>
                             <div class="combine">
                                 <input type="tel" name='phone' id="phone" placeholder="Enter mobile number" minlength="10" maxlength="10" oninput="checkerphone()" required>
-                                <button class="ValBtn two" disabled style='display:none;'>Validate</button>
+                                <button class="ValBtn two" disabled style='display:none;'>Get OTP</button>
                             </div>
-                        </div>
+                        </div> {% endcomment %}
                     </div>
                 </div>
-                </div>
-                </div> 
+            </div> 
 
                     <div class="buttons">
                         <div class="backBtn">
@@ -158,7 +159,7 @@
                             </span>
                         </div>
 
-                        <button type="submit" class="nextBtn" id="submitButton">
+                        <button type="submit" class="nextBtn" id="submitButton" name='form-submit'>
                             <span class="btnText">Submit</span>
                             <i class="ri-skip-right-fill"></i>
                         </button>
@@ -168,6 +169,8 @@
             </div>
         </form>
     </div>
+    <div class="overlay" id="overlay"></div>
 <script src="{% static 'assets/js/register.js' %}"></script>
+<script src="{% static 'assets/js/otp.js' %}"></script>
 </body>
 </html>

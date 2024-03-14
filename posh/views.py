@@ -5,6 +5,8 @@ from django.contrib import messages
 from .models import IndividualUser
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 import random
 from django.conf import settings
 from .utils import generate_unique_id
@@ -22,7 +24,19 @@ def index(request):
     return render(request, 'tp.html')
 
 def generate_otp():
-    return str(random.randint(100000, 999999))
+    return str(random.randint(10000, 99999))
+
+def send_verification_email(email, otp):
+    subject = 'MyPosh Email Verification'
+    email_from = settings.EMAIL_HOST
+    to_email = [email]
+
+    # Render HTML email template with OTP
+    html_message = render_to_string('email_verification_template.html', {'otp': otp})
+
+    email = EmailMessage(subject, html_message, email_from, to_email)
+    email.content_subtype = "html"  # Set the content type to HTML
+    email.send()  # Optionally, set fail_silently to False to raise exceptions on errors
 
 def register_ngo(request):
     return render(request, 'register_ngo.html', {})

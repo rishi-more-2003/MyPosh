@@ -44,6 +44,7 @@ function countdown() {
     if (timeLeft == -1) {
         clearTimeout(timerId);
         resendLink.classList.remove('disabled-link');
+        resendLink.removeAttribute('disabled');
         resendLink.style.color = 'green'; 
         resendMessage.innerHTML = 'Click below to resend';
     } else {
@@ -51,3 +52,18 @@ function countdown() {
         timeLeft--;
     }
 }
+
+const overlay = document.getElementById('overlay');
+let popup = document.getElementById('otp-popup');
+
+function openPopup(){
+    popup.classList.add("open-popup");  
+    overlay.style.display = 'block';
+}
+
+function closePopup(){
+    popup.classList.remove("open-popup"); 
+    overlay.style.display = 'none';
+}
+
+

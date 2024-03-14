@@ -63,18 +63,26 @@
         --smaller-font-size: .813rem;
     }
 
-    .align-columns-two{
+    /* .align-columns-two{
         display: flex;
         justify-content: space-between;
         flex-direction: column-reverse;
+    } */
+
+    .align-columns-two {
+        display: flex;
+        flex-direction: row-reverse;
+        column-gap: 8rem;
+        align-items: center;
+        justify-content: flex-end;
     }
 
-    .details.ID {
+    /* .details.ID {
         display: flex;
         flex-direction: row;
         align-items: center;
         column-gap: 3rem;
-    }
+    } */
 }
 
 html{
@@ -284,11 +292,11 @@ form .buttons button, .backBtn{
     margin-right: 14px;
 }
 
-.align-columns-two{
+/* .align-columns-two{
     display: flex;
     justify-content: space-between;
     flex-direction: row-reverse;   
-}
+} */
 
 .flexble{
     display: flex;
@@ -305,6 +313,14 @@ form .buttons button, .backBtn{
     margin-right: 10px;
 }
 
+.align-columns-two {
+    display: flex;
+    flex-direction: row-reverse;
+    column-gap: 8rem;
+    align-items: center;
+    justify-content: flex-end;
+}
+
 @media screen and (max-width: 750px){
 
     .container form{
@@ -319,10 +335,11 @@ form .buttons button, .backBtn{
         width: calc(100% / 2 - 15%);
     }    
 
-    .align-columns-two{
+    .align-columns-two {
+        width: 100%;
         display: flex;
-        justify-content: space-between;
-        flex-direction: row-reverse;
+        flex-direction: column-reverse;
+        align-items: flex-start;
     }
 
     .details.ID {
@@ -332,6 +349,7 @@ form .buttons button, .backBtn{
         column-gap: 3rem;
         flex-wrap: wrap;
     }
+
 }
 
 @media screen and (max-width: 600px){
@@ -402,4 +420,3 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none; 
   margin: 0; 
 }
-
