@@ -60,18 +60,10 @@ def register(request):
         state = request.POST['state'] #dropdown
         city = request.POST['city'] #dropdown
         pincode = request.POST['pincode'] #number
-        password = request.POST['password1'] #password
-        con_password = request.POST['password2'] #password
         
         email = request.POST['email'] #email
         phone = request.POST['phone'] #tel
         username = generate_unique_id(phone, email)
-        
-        print(prefix, fname)
-
-        # Perform password validation
-        if password != con_password:
-            return render(request, 'register.html')
         
         otp = generate_otp()
         
@@ -108,7 +100,7 @@ def register(request):
             username = username,
             email=email,
             phone=phone,
-            password=password,
+            password=phone,
             prefix=prefix,
             fname=fname,
             mname=mname,
@@ -123,11 +115,11 @@ def register(request):
         user.is_active = True
         user.save()
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=username, password=phone)
 
         if user is not None:
             subject = 'Welcome to MyPosh'
-            message = 'Your username is ' + username + ' and password is ' + password + '\n Please do not share this information with anyone.'
+            message = 'Your username is ' + username + ' and password is  YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
             send_mail(
                 subject,
                 message,
@@ -148,11 +140,10 @@ def register(request):
 
 def signin(request):
     if request.method == 'POST':
-        email_or_phone = request.POST.get('email')
+        username = request.POST.get('uid')
         password = request.POST.get('password')
 
-    # Authenticate user by email or phone
-        user = authenticate(request, username=email_or_phone, password=password)
+        user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
