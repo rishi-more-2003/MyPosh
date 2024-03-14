@@ -1,7 +1,7 @@
 
     <div class="otp-card" id="otp-popup">      
-        <form method="POST" action="{% url 'register' %}" id="register-form-email-otp">
-            {% csrf_token %}
+        {% comment %} <form method="POST" action="{% url 'register' %}" id="register-form-email-otp">
+            {% csrf_token %} {% endcomment %}
         <h1>OTP Verification</h1>
         <p id="otp-message">An OTP has been sent to the specified recipient.</p>
         <div class="otp-card-inputs" id="otp-card-inputs">
@@ -10,6 +10,7 @@
             <input type="text" name="otp3" maxlength="1">
             <input type="text" name="otp4" maxlength="1">
             <input type="text" name="otp5" maxlength="1">
+            <input type="text" name="otp6" maxlength="1">
         </div>
         <p id="resend-message">If you haven't received the OTP yet, you can request it again. <span id="timer"></span></p>
         <div class="backBtn verify">
@@ -20,5 +21,5 @@
             </span>
         </div> 
         <button type="button" id="verify-otp" name="verify-otp" onclick="closePopup()" disabled>Verify</button>
-    </form>
+    {% comment %} </form> {% endcomment %}
     </div>

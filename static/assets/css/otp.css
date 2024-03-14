@@ -110,7 +110,7 @@ body.dark-theme{
     display: grid;
     gap: 30px;
     justify-content: center;
-    grid-template-columns: repeat(5, auto);
+    grid-template-columns: repeat(6, auto);
 }
 
 .otp-card-inputs input{
