@@ -69,103 +69,105 @@ def register(request):
             request.session['otp'] = otp
             if "verify-otp" in request.POST:
                 user_otp =  request.POST['otp1'] + request.POST['otp2']+ request.POST['otp3']+ request.POST['otp4']+ request.POST['otp5']+ request.POST['otp6']
+                print(user_otp)
                 if user_otp == request.session.get('otp'):
                     del request.session['otp'] # Delete OTP from session after verification
                     print('SUCCESS')
+                    
+                    
                 # Your user creation logic here...
 
                 # Redirect to the desired page after successful registration
-                return render(request,'register.html')
             else:
                 messages.error(request, 'Invalid OTP')
                 return render(request, 'register.html', {'otp_sent': True})
 
     # if request.method == 'POST':
-        # prefix = request.POST['prefix'] #dropdown
-        # fname = request.POST['fname'] #text
-        # mname = request.POST['mname'] #text
-        # lname = request.POST['lname'] #text
-        # dob = request.POST['date'] #date
-        # gender = request.POST['gen'] #dropdown
-        # occupation = request.POST['occupation'] #text
-        # state = request.POST['state'] #dropdown
-        # city = request.POST['city'] #dropdown
-        # pincode = request.POST['pincode'] #number
+        prefix = request.POST['prefix'] #dropdown
+        fname = request.POST['fname'] #text
+        mname = request.POST['mname'] #text
+        lname = request.POST['lname'] #text
+        dob = request.POST['date'] #date
+        gender = request.POST['gen'] #dropdown
+        occupation = request.POST['occupation'] #text
+        state = request.POST['state'] #dropdown
+        city = request.POST['city'] #dropdown
+        pincode = request.POST['pincode'] #number
         
-        # email = request.POST['email'] #email
-        # phone = request.POST['phone'] #tel
-        # username = generate_unique_id(phone, email)
+        email = request.POST['email'] #email
+        phone = request.POST['phone'] #tel
+        username = generate_unique_id(phone, email)
         
-        # otp = generate_otp()
+        otp = generate_otp()
         
-        # subject = 'MyPosh Email Verification'
-        # email_from = settings.EMAIL_HOST
-        # message = 'Your OTP for email verification for MyPosh profile is: ' + otp + '\nPlease do not share this OTP with anyone.'
+        subject = 'MyPosh Email Verification'
+        email_from = settings.EMAIL_HOST
+        message = 'Your OTP for email verification for MyPosh profile is: ' + otp + '\nPlease do not share this OTP with anyone.'
 
-        # # Send OTP via email
-        # send_mail(
-        #     subject,
-        #     message,
-        #     email_from,
-        #     [email],
-        #     fail_silently=False,
-        # )
+        # Send OTP via email
+        send_mail(
+            subject,
+            message,
+            email_from,
+            [email],
+            fail_silently=False,
+        )
 
-        # request.session['otp'] = otp
+        request.session['otp'] = otp
 
-        # # Proceed with user registration if OTP is provided
-        # if 'otp' in request.POST:
-        #     user_otp = request.POST['otp']
-        #     if user_otp == request.session.get('otp'):
-        #         del request.session['otp'] # Delete OTP from session after verification
+        # Proceed with user registration if OTP is provided
+        if 'otp' in request.POST:
+            user_otp = request.POST['otp']
+            if user_otp == request.session.get('otp'):
+                del request.session['otp'] # Delete OTP from session after verification
 
-        #         # Your user creation logic here...
+                # Your user creation logic here...
 
-        #         # Redirect to the desired page after successful registration
-        #         return redirect('/login/')
-        #     else:
-        #         messages.error(request, 'Invalid OTP')
-        #         return render(request, 'register.html', {'otp_sent': True}) # Render the form with OTP sent indicator
+                # Redirect to the desired page after successful registration
+                return redirect('/login/')
+            else:
+                messages.error(request, 'Invalid OTP')
+                return render(request, 'register.html', {'otp_sent': True}) # Render the form with OTP sent indicator
 
-        # user = IndividualUser.objects.create_user(
-        #     username = username,
-        #     email=email,
-        #     phone=phone,
-        #     password=phone,
-        #     prefix=prefix,
-        #     fname=fname,
-        #     mname=mname,
-        #     lname=lname,
-        #     dob=dob,
-        #     gender=gender,
-        #     occupation=occupation,
-        #     state=state,
-        #     city=city,
-        #     pincode=pincode,
-        # )
-        # user.is_active = True
-        # user.save()
+        user = IndividualUser.objects.create_user(
+            username = username,
+            email=email,
+            phone=phone,
+            password=phone,
+            prefix=prefix,
+            fname=fname,
+            mname=mname,
+            lname=lname,
+            dob=dob,
+            gender=gender,
+            occupation=occupation,
+            state=state,
+            city=city,
+            pincode=pincode,
+        )
+        user.is_active = True
+        user.save()
 
-        # user = authenticate(request, username=username, password=phone)
+        user = authenticate(request, username=username, password=phone)
 
-        # if user is not None:
-        #     subject = 'Welcome to MyPosh'
-        #     message = 'Your username is ' + username + ' and password is  YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
-        #     send_mail(
-        #         subject,
-        #         message,
-        #         email_from,
-        #         [email],
-        #         fail_silently=False,
-        #     )
+        if user is not None:
+            subject = 'Welcome to MyPosh'
+            message = 'Your username is ' + username + ' and password is  YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
+            send_mail(
+                subject,
+                message,
+                email_from,
+                [email],
+                fail_silently=False,
+            )
         
-        #     login(request, user)
-        #     return redirect('/')
-        # else:
-        #     messages.error(request, 'Invalid login credentials')
+            login(request, user)
+            return redirect('/')
+        else:
+            messages.error(request, 'Invalid login credentials')
             
-        # # Redirect to the desired page after successful registration
-        # return redirect('/login/') 
+        # Redirect to the desired page after successful registration
+        return redirect('/login/') 
 
     return render(request, 'register.html')
 
