@@ -29,9 +29,11 @@
         <header>
             Registration
         </header>
+        {% include "otp.html" %}
         <form method="POST" action="{% url 'register' %}">
+            
             {% csrf_token %}
-            {% include "otp.html" %}
+           
             <div class="form-first">
                 <div class="details personal">
                     <span class="title">
@@ -46,8 +48,8 @@
                                     <option value="mrs">Mrs</option>
                                     <option value="miss">Miss</option>
                                 </select>
-                                <label>First Name</label>
-                                <input type="text" name="fname" placeholder="Enter First Name" required>
+                            <label>First Name</label>
+                            <input type="text" name="fname" placeholder="Enter First Name" required>
                         </div>
 
                         <div class="input-field">
@@ -115,14 +117,16 @@
                                 </div>
                             </div> {% endcomment %}
  
-                        <div class="input-field email-field">
-                            <label class="required-field">Email</label>
-                            <p id="error-msg">Please Enter A Valid Email Id</p>
-                            <div class="combine">
-                                <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
-                                <button type="submit" name='verifotp' class="ValBtn one" id="sendOTP" onclick="openPopup()" disabled>Get OTP</button>
+                            <div class="input-field email-field">
+                                <label class="required-field">Email</label>
+                                <p id="error-msg">Please Enter A Valid Email Id</p>
+                                <div class="combine">
+                                    <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
+                                    <button type="submit" name='verifotp' class="ValBtn one" id="sendOTP" onclick="openPopup()" disabled>Get OTP</button>
+                                </div>
                             </div>
                         </div>
+
 
                             {% comment %} {% if otp_sent %}
                                 <div class="input-field otp-field">
@@ -147,7 +151,6 @@
                         </div> {% endcomment %}
                     </div>
                 </div>
-            </div> 
 
                     <div class="buttons">
                         <div class="backBtn">
@@ -164,12 +167,11 @@
                             <i class="ri-skip-right-fill"></i>
                         </button>
                     </div>
-                </div>
-                
             </div>
+                
         </form>
     </div>
-    <div class="overlay" id="overlay"></div>
+<div class="overlay" id="overlay"></div>
 <script src="{% static 'assets/js/register.js' %}"></script>
 <script src="{% static 'assets/js/otp.js' %}"></script>
 </body>
