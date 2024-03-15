@@ -110,28 +110,28 @@ toggles.forEach((toggle, index) => {
     });
 });
 
-document.getElementById("sendOTP").addEventListener("click", function() {
-    var email = document.getElementById("email-id").value;
-    // Send AJAX request to Django view to send OTP
-    fetch("{% url 'register' %}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": "{{ csrf_token }}"
-        },
-        body: JSON.stringify({ email: email })
-    })
-    .then(response => {
-        if (response.ok) {
-            // Display the OTP input field
-            document.querySelector(".otp-field").style.display = "block";
-        } else {
-            // Handle error response
-            console.error("Failed to send OTP");
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-    });
-});
+// document.getElementById("sendOTP").addEventListener("click", function() {
+//     var email = document.getElementById("email-id").value;
+//     // Send AJAX request to Django view to send OTP
+//     fetch("{% url 'register' %}", {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//             "X-CSRFToken": "{{ csrf_token }}"
+//         },
+//         body: JSON.stringify({ email: email })
+//     })
+//     .then(response => {
+//         if (response.ok) {
+//             // Display the OTP input field
+//             document.querySelector(".otp-field").style.display = "block";
+//         } else {
+//             // Handle error response
+//             console.error("Failed to send OTP");
+//         }
+//     })
+//     .catch(error => {
+//         console.error("Error:", error);
+//     });
+// });
 

@@ -50,7 +50,8 @@ def register_establishment(request):
 def register(request):
 
     if request.method == 'POST':
-        if 'verifotp' in request.POST:
+        print('YOOOOOOOOOo')
+        if request.POST.get('email'):
             otp = generate_otp()
             email = request.POST['email'] #email
             subject = 'MyPosh Email Verification'
@@ -67,18 +68,30 @@ def register(request):
             )
 
             request.session['otp'] = otp
-            if "verify-otp" in request.POST:
-                user_otp =  request.POST['otp1'] + request.POST['otp2']+ request.POST['otp3']+ request.POST['otp4']+ request.POST['otp5']+ request.POST['otp6']
-                if user_otp == request.session.get('otp'):
-                    del request.session['otp'] # Delete OTP from session after verification
-                    print('SUCCESS')
-                # Your user creation logic here...
 
-                # Redirect to the desired page after successful registration
-                return render(request,'register.html')
+        elif request.POST.get('otp1') and request.POST.get('otp2') and request.POST.get('otp3') and request.POST.get('otp4') and request.POST.get('otp5') and request.POST.get('otp6'):
+            user_otp =  request.POST['otp1'] + request.POST['otp2']+ request.POST['otp3']+ request.POST['otp4']+ request.POST['otp5']+ request.POST['otp6']
+            if user_otp == request.session.get('otp'):
+                del request.session['otp'] # Delete OTP from session after verification
+                print('SUCCESS')
             else:
-                messages.error(request, 'Invalid OTP')
-                return render(request, 'register.html', {'otp_sent': True})
+                print('REJECT')
+
+        # if 'verifotp' in request.POST:
+
+        #     request.session['otp'] = otp
+        #     if "verify-otp" in request.POST:
+        #         user_otp =  request.POST['otp1'] + request.POST['otp2']+ request.POST['otp3']+ request.POST['otp4']+ request.POST['otp5']+ request.POST['otp6']
+        #         if user_otp == request.session.get('otp'):
+        #             del request.session['otp'] # Delete OTP from session after verification
+        #             print('SUCCESS')
+        #         # Your user creation logic here...
+
+        #         # Redirect to the desired page after successful registration
+        #         return render(request,'register.html')
+        #     else:
+        #         messages.error(request, 'Invalid OTP')
+        #         return render(request, 'register.html', {'otp_sent': True})
 
     # if request.method == 'POST':
         # prefix = request.POST['prefix'] #dropdown
