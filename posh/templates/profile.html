@@ -77,26 +77,32 @@
                                     <!-- Prefix Column -->
                                     <div class="col-md-2 form-group">
                                         <label class="form-label">Prefix</label>
-                                        <input type="text" class="form-control" value="Mr.">
+                                        <select name="prefix" class="form-control">
+                                            <option value="Mr." {% if user.prefix == "Mr." %} selected {% endif %}>Mr.</option>
+                                            <option value="Mrs." {% if user.prefix == "Mrs." %} selected {% endif %}>Mrs.</option>
+                                            <option value="Miss" {% if user.prefix == "Miss" %} selected {% endif %}>Miss</option>
+                                        </select>
                                     </div>
-                            
+                                    
+
                                     <!-- First Name Column -->
                                     <div class="col-md-3 form-group">
                                         <label class="form-label">First Name</label>
-                                        <input type="text" class="form-control" value="Nelle">
+                                        <input type="text" name="fname" class="form-control" value="{{ user.fname }}">
                                     </div>
-                            
+
                                     <!-- Middle Name Column -->
                                     <div class="col-md-3 form-group">
                                         <label class="form-label">Middle Name</label>
-                                        <input type="text" class="form-control" value="">
+                                        <input type="text" name="mname" class="form-control" value="{{ user.mname }}">
                                     </div>
-                            
+
                                     <!-- Last Name Column -->
                                     <div class="col-md-4 form-group">
                                         <label class="form-label">Last Name</label>
-                                        <input type="text" class="form-control" value="Maxwell">
+                                        <input type="text" name="lname" class="form-control" value="{{ user.lname }}">
                                     </div>
+
                                 </div>
                                 <div class="row">
                                     <!-- Date of Birth Column -->
@@ -136,33 +142,36 @@
                                     <!-- State Column -->
                                     <div class="col-md-4 form-group">
                                         <label class="form-label">State</label>
-                                        <select name='state' onchange="print_city('state', this.selectedIndex);" id="sts" name ="stt" class="form-control" required></select>
+                                        <input type="text" name="lname" class="form-control" value="{{ user.state }}">
+                                        <select name='state' onchange="print_city('state', {{ user.state }});" id="sts" name ="stt" class="form-control" required>
+                                            <option value="{{ user.state }}" {% if user.prefix == "Mr." %} selected {% endif %}>Mr.</option>
+                                        </select>
                                     </div>
                             
                                     <!-- City Column -->
                                     <div class="col-md-4 form-group">
                                         <label class="form-label">City</label>
-                                        <select name='city' id ="state" class="form-control" required ></select>
+                                        <select name='city' id ="state" name='city' class="form-control" value="{{ user.city }}" required ></select>
                                         <script language="javascript">print_state("sts");</script>
                                     </div>
                             
                                     <!-- Pincode Column -->
                                     <div class="col-md-4 form-group">
                                         <label class="form-label">Pincode</label>
-                                        <input type="text" class="form-control" value="">
+                                        <input type="text" name='pincode' class="form-control" value="{{ user.pincode }}">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <!-- Email Column -->
                                     <div class="col-md-6 form-group">
                                         <label class="form-label">Email</label>
-                                        <input type="email" class="form-control non-editable" value="example@example.com" readonly >
+                                        <input type="email" name='email' class="form-control non-editable" value="{{ user.email }}" readonly >
                                     </div>
                             
                                     <!-- Phone Column -->
                                     <div class="col-md-6 form-group">
                                         <label class="form-label">Phone</label>
-                                        <input type="tel" class="form-control non-editable" value="+1 555-1234" readonly>
+                                        <input type="tel" name='phone' class="form-control non-editable" value="{{ user.phone }}" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group">
