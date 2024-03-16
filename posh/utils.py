@@ -9,4 +9,4 @@ def generate_unique_id(phone_number, email):
     
     # Return the first 10 characters of the hash
     # You can adjust the length as per your requirement
-    return hashed_string[:10].upper()
+    return 'IN'+hashed_string[:10].upper()
