@@ -21,7 +21,29 @@ def otp(request):
     return render(request, 'otp.html', {})
 
 def profile(request):
-    return render(request, 'profile.html', {})
+    user = request.user
+    email = user.email
+    phone = user.phone
+    prefix = user.prefix
+    first_name = user.fname  
+    mid_name = user.mname  
+    last_name = user.lname 
+    state = user.state
+    city = user.city 
+    pincode = user.pincode
+    # last_name = user.lname 
+    context = {
+        'email': email,
+        'phone': phone,
+        'fname': first_name,
+        'lname': last_name,
+        'mname': mid_name,
+        'prefix': prefix,
+        'sts': state,
+        'city': city,
+        'pincode': pincode,
+    }
+    return render(request, 'profile.html', context)
 
 def index(request):
     return render(request, 'tp.html')
