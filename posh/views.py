@@ -52,34 +52,35 @@ def register_establishment(request):
 
 def register(request):
     if request.method == 'POST':
-
+        
         if request.POST.get('email'):  # Check if it's the initial form submission
-            otp = generate_otp()
-            subject = 'MyPosh Email Verification'
-            email = request.POST.get('email')
-            email_from = settings.EMAIL_HOST
-            message = 'Your OTP for email verification for MyPosh profile is: ' + otp + '\nPlease do not share this OTP with anyone.'
+            if 'otp' not in request.session: # If OTP is not in session, generate a new OTP and send it to user's email
+                otp = generate_otp()
+                subject = 'MyPosh Email Verification'
+                email = request.POST.get('email')
+                email_from = settings.EMAIL_HOST
+                message = 'Your OTP for email verification for MyPosh profile is: ' + otp + '\nPlease do not share this OTP with anyone.'
 
-            # Send OTP via email
-            send_mail(
-                subject,
-                message,
-                email_from,
-                [email],
-                fail_silently=False,
-            )
-            request.session['otp'] = otp
+                # Send OTP via email
+                send_mail(
+                    subject,
+                    message,
+                    email_from,
+                    [email],
+                    fail_silently=False,
+                )
+                request.session['otp'] = otp
 
         elif all(request.POST.get(field) for field in ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']):  # OTP verification
             user_otp = ''.join(request.POST.get(field) for field in ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6'])
             if user_otp == request.session.get('otp'):
-                del request.session['otp'] # Delete OTP from session after verification
                 return JsonResponse({'status': 'success'})
             else:
                 return JsonResponse({'status': 'error'})
             
 
         if all(request.POST.get(field) for field in ['prefix', 'fname', 'mname', 'lname', 'date', 'gen', 'occupation', 'state', 'city', 'pincode', 'email', 'phone']):
+            email = request.POST.get('email')
             prefix = request.POST.get('prefix')
             fname = request.POST.get('fname')
             mname = request.POST.get('mname')
@@ -119,6 +120,7 @@ def register(request):
             if user is not None:
                 subject = 'Welcome to MyPosh'
                 message = 'Your username is ' + username + ' and password is  YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
+                email_from = settings.EMAIL_HOST
                 send_mail(
                     subject,
                     message,
