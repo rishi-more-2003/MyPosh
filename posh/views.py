@@ -56,19 +56,10 @@ def register(request):
         if request.POST.get('email'):  # Check if it's the initial form submission
             if 'otp' not in request.session: # If OTP is not in session, generate a new OTP and send it to user's email
                 otp = generate_otp()
-                subject = 'MyPosh Email Verification'
                 email = request.POST.get('email')
-                email_from = settings.EMAIL_HOST
-                message = 'Your OTP for email verification for MyPosh profile is: ' + otp + '\nPlease do not share this OTP with anyone.'
-
-                # Send OTP via email
-                send_mail(
-                    subject,
-                    message,
-                    email_from,
-                    [email],
-                    fail_silently=False,
-                )
+                send_verification_email(email, otp)
+                
+                # Save user data in session
                 request.session['otp'] = otp
 
         elif all(request.POST.get(field) for field in ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']):  # OTP verification
