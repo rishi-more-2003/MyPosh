@@ -161,8 +161,6 @@ def signin(request):
         if user is not None:
             login(request, user)
             return redirect('/')
-        else:
-            messages.error(request, 'Invalid login credentials')
 
     return render(request, 'login.html', {})
 

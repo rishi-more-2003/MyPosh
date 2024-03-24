@@ -142,18 +142,18 @@
                                     <!-- State Column -->
                                     <div class="col-md-4 form-group">
                                         <label class="form-label">State</label>
-                                        <input type="text" name="lname" class="form-control" value="{{ user.state }}">
-                                        <select name='state' onchange="print_city('state', {{ user.state }});" id="sts" name ="stt" class="form-control" required>
-                                            <option value="{{ user.state }}" {% if user.prefix == "Mr." %} selected {% endif %}>Mr.</option>
-                                        </select>
+                                        <select name='state' onchange="print_selected_city('city', this.selectedIndex, '{{ user.city }}');" id="states" class="form-control" required></select>
                                     </div>
-                            
+                                    
                                     <!-- City Column -->
                                     <div class="col-md-4 form-group">
                                         <label class="form-label">City</label>
-                                        <select name='city' id ="state" name='city' class="form-control" value="{{ user.city }}" required ></select>
-                                        <script language="javascript">print_state("sts");</script>
+                                        <select name='city' id ="city" class="form-control" required >
+                                            <option value="state">{{ user.city }}</option>
+                                        </select>
+                                        <script language="javascript">print_selected_state("states", '{{ user.state }}');</script>
                                     </div>
+                                    
                             
                                     <!-- Pincode Column -->
                                     <div class="col-md-4 form-group">
