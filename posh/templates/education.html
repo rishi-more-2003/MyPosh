@@ -1,13 +1,3 @@
-{% comment %} <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Page Title</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="education.css">
-</head>
-<body> {% endcomment %}
 
 <div class="container-education">
     <div class="add_education">
@@ -36,43 +26,43 @@
                     <!-- School -->
                     <div class="form-group">
                         <label for="schoolInput">School</label>
-                        <input type="text" id="schoolInput" class="form-control" placeholder="Enter the school name">
+                        <input type="text" id="schoolInput" name='edu_school' class="form-control" placeholder="Enter the school name">
                     </div>
 
                     <!-- Degree -->
                     <div class="form-group">
                         <label for="degreeInput">Degree</label>
-                        <input type="text" id="degreeInput" class="form-control" placeholder="Enter your degree">
+                        <input type="text" id="degreeInput" name='edu-degree' class="form-control" placeholder="Enter your degree">
                     </div>
 
                     <!-- Field of Study -->
                     <div class="form-group">
                         <label for="fieldOfStudyInput">Field of Study</label>
-                        <input type="text" id="fieldOfStudyInput" class="form-control" placeholder="Enter your field of study">
+                        <input type="text" id="fieldOfStudyInput" name='edu-field_of_study' class="form-control" placeholder="Enter your field of study">
                     </div>
 
                     <!-- Start Date -->
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="startDateMonth">Start Date</label>
-                            <input type="month" id="startDate" class="form-control" placeholder="Enter start month">
+                            <input type="month" id="startDate" name='edu-start_date' class="form-control" placeholder="Enter start month">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="startDateYear">End Date/Expected</label>
-                            <input type="month" id="endDate" class="form-control" placeholder="Enter start year">
+                            <input type="month" id="endDate" name='edu-end_date' class="form-control" placeholder="Enter start year">
                         </div>
                     </div>
 
                     <!-- Grade -->
                     <div class="form-group">
                         <label for="gradeInput">Grade</label>
-                        <input type="number" id="gradeInput" class="form-control" placeholder="Enter your grade">
+                        <input type="text" id="gradeInput" name='edu-grade' class="form-control" placeholder="Enter your grade">
                     </div>
 
                     <!-- Description -->
                     <div class="form-group">
                         <label for="descriptionInput">Description</label>
-                        <textarea id="descriptionInput" class="form-control" rows="5" placeholder="Enter a description of your education"></textarea>
+                        <textarea id="descriptionInput" class="form-control" name='edu-description' rows="5" placeholder="Enter a description of your education"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -84,9 +74,3 @@
     </div>
     </div>
 
-    {% comment %} <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="education.js"></script>
-    </body>
-</html> {% endcomment %}

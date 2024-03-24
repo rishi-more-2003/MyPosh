@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views import View
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import IndividualUser
+from .models import IndividualUser, Education
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -42,6 +42,31 @@ def profile(request):
         user.marital = request.POST.get('marital', '')
         user.save()
 
+        # Handle education data
+        school = request.POST.get('edu_school')
+        degree = request.POST.get('edu-degree')
+        field_of_study = request.POST.get('edu-field_of_study')
+        start_date = request.POST.get('edu-start_date')
+        end_date = request.POST.get('edu-end_date')
+        grade = request.POST.get('edu-grade')
+        description = request.POST.get('edu-description', '')
+
+        print(school)
+
+        if school and degree and field_of_study and start_date and end_date and grade:
+            print(school)
+            Education.objects.create(
+                school=school,
+                degree=degree,
+                field_of_study=field_of_study,
+                start_date=start_date,
+                end_date=end_date,
+                grade=grade,
+                description=description
+            )
+
+        messages.success(request, 'Profile updated successfully.')
+
         return redirect('profile')  # Redirect to the profile page to display updated data
 
     # If the request method is GET, display the profile form with current user data
@@ -59,6 +84,12 @@ def profile(request):
     occupation = user.occupation
     marital = user.marital
     aadhar = user.aadhar
+
+    # Check if user has educations
+    educations = None
+    if user.educations is not None:
+        educations = user.educations.all()
+
     context = {
         'email': email,
         'phone': phone,
@@ -74,6 +105,7 @@ def profile(request):
         'occupation': occupation,
         'marital': marital,
         'aadhar': aadhar,
+        'educations': educations,
     }
     return render(request, 'profile.html', context)
 

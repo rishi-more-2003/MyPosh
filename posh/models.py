@@ -15,6 +15,15 @@ class IndividualUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+class Education(models.Model):
+    school = models.CharField(max_length=100)
+    degree = models.CharField(max_length=100)
+    field_of_study = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    grade = models.CharField(max_length=10)
+    description = models.TextField()
+
 class IndividualUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=10, blank=False, unique=True, default = 'POS' + str(timezone.now().strftime('%Y%m%d%H%M%S')))
     prefix = models.CharField(max_length=10, blank=False) 
@@ -39,8 +48,12 @@ class IndividualUser(AbstractBaseUser, PermissionsMixin):
     aadhar = models.CharField(max_length=20, blank=True) 
     marital = models.CharField(max_length=10, blank=True)
 
+    # Add a foreign key to the Education model
+    educations = models.ForeignKey(Education, related_name='user_educations', on_delete=models.CASCADE, blank=True, null=True)
+
     objects = IndividualUserManager()
 
     USERNAME_FIELD =  'username'
     REQUIRED_FIELDS = ['phone','email']
+
 
