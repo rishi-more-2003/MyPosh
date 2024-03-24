@@ -13,6 +13,7 @@ from django.conf import settings
 from .utils import generate_unique_id
 from django.http import JsonResponse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     return render(request, 'home.html', {})
@@ -20,18 +21,41 @@ def home(request):
 def otp(request):
     return render(request, 'otp.html', {})
 
+@login_required
 def profile(request):
     user = request.user
+    if request.method == 'POST':
+        # Handle form submission for updating profile data
+        user.email = request.POST.get('email')
+        user.phone = request.POST.get('phone')
+        user.prefix = request.POST.get('prefix')
+        user.fname = request.POST.get('fname')
+        user.mname = request.POST.get('mname')
+        user.lname = request.POST.get('lname')
+        user.state = request.POST.get('state', user.state)
+        user.city = request.POST.get('city', user.city)
+        user.pincode = request.POST.get('pincode')
+        user.dob = request.POST.get('dob')
+        user.gender = request.POST.get('gender')
+        user.occupation = request.POST.get('occupation')
+        user.save()
+
+        messages.success(request, 'Profile updated successfully.')
+        return redirect('profile')  # Redirect to the profile page to display updated data
+
+    # If the request method is GET, display the profile form with current user data
     email = user.email
     phone = user.phone
     prefix = user.prefix
-    first_name = user.fname  
-    mid_name = user.mname  
-    last_name = user.lname 
+    first_name = user.fname
+    mid_name = user.mname
+    last_name = user.lname
     state = user.state
-    city = user.city 
+    city = user.city
     pincode = user.pincode
-    # last_name = user.lname 
+    dob = user.dob
+    gender = user.gender
+    occupation = user.occupation
     context = {
         'email': email,
         'phone': phone,
@@ -39,14 +63,14 @@ def profile(request):
         'lname': last_name,
         'mname': mid_name,
         'prefix': prefix,
-        'sts': state,
+        'state': state,
         'city': city,
         'pincode': pincode,
+        'dob': dob,
+        'gender': gender,
+        'occupation': occupation,
     }
     return render(request, 'profile.html', context)
-
-def index(request):
-    return render(request, 'tp.html')
 
 def generate_otp():
     return str(random.randint(100000, 999999))

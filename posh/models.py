@@ -40,6 +40,6 @@ class IndividualUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD =  'username'
     REQUIRED_FIELDS = ['phone','email']
 
-class Profile(IndividualUserManager):
-    profile = models.ImageField(blank=True)
+class Profile(IndividualUser):
+    profile_pic = models.ImageField(blank=True)
 

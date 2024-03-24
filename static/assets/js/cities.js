@@ -68,16 +68,18 @@ function print_selected_state(state_id, state){
 	// given the id of the <select> tag as function argument, it inserts <option> tags
 	var option_str = document.getElementById(state_id);
 	option_str.length=0;
-	option_str.options[0] = new Option(state,'');
+	option_str.options[0] = new Option(state, state);
 	option_str.selectedIndex = 0;
 	for (var i=0; i<state_arr.length; i++) {
 		option_str.options[option_str.length] = new Option(state_arr[i],state_arr[i]);
 	}
 	option_str.options[0].hidden = true;
+	option_str.options[0].disabled = false;
 }
 
-function print_selected_city(city_id, city_index, city){
+function print_selected_city(city_id, city_index){
 	var option_str = document.getElementById(city_id);
+	option_str.disabled = false;
 	option_str.length=0;	// Fixed by Julian Woods
 	option_str.options[0] = new Option('Select City','');
 	option_str.selectedIndex = 0;
