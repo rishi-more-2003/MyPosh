@@ -35,11 +35,12 @@ class IndividualUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=False)
 
 
+    profile_pic = models.ImageField(blank=True)
+    aadhar = models.CharField(max_length=20, blank=True) 
+    marital = models.CharField(max_length=10, blank=True)
+
     objects = IndividualUserManager()
 
     USERNAME_FIELD =  'username'
     REQUIRED_FIELDS = ['phone','email']
-
-class Profile(IndividualUser):
-    profile_pic = models.ImageField(blank=True)
 

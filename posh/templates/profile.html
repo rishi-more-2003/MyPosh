@@ -131,10 +131,10 @@
                                     <div class="col-md-3 form-group">
                                         <label class="form-label">Marital Status</label>
                                         <select class="form-control" name='marital'>
-                                            <option value="" disabled selected>Not selected</option>
-                                            <option value="married">Married</option>
-                                            <option value="unmarried">Unmarried</option>
-                                            <option value="others">Others</option>
+                                            <option value="not selected" {% if user.marital == "not selected" %} selected {% endif %}>Not selected</option>
+                                            <option value="married" {% if user.marital == "married" %} selected {% endif %}>Married</option>
+                                            <option value="unmarried" {% if user.marital == "unmarried" %} selected {% endif %}>Unmarried</option>
+                                            <option value="others" {% if user.marital == "others" %} selected {% endif %}>Others</option>
                                         </select>
                                     </div>
 
@@ -178,7 +178,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Aadhar Card</label>
-                                    <input type="number" name='aadhar' class="form-control mb-1" >
+                                    <input type="number" name='aadhar' class="form-control mb-1" value="{{ user.aadhar }}" >
                                 </div>
                                 {% comment %} <div class="form-group">
                                     <label class="form-label">E-mail</label>
@@ -405,8 +405,8 @@
             </div>
         </div>
         <div class="text-right mt-3">
+            <button type="button" class="btn btn-default">Back</button>
             <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
-            <button type="button" class="btn btn-default">Cancel</button>
         </div>
     </div>
 

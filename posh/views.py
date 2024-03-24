@@ -38,9 +38,10 @@ def profile(request):
         user.dob = request.POST.get('dob')
         user.gender = request.POST.get('gender')
         user.occupation = request.POST.get('occupation')
+        user.aadhar = request.POST.get('aadhar', '')
+        user.marital = request.POST.get('marital', '')
         user.save()
 
-        messages.success(request, 'Profile updated successfully.')
         return redirect('profile')  # Redirect to the profile page to display updated data
 
     # If the request method is GET, display the profile form with current user data
@@ -56,6 +57,8 @@ def profile(request):
     dob = user.dob
     gender = user.gender
     occupation = user.occupation
+    marital = user.marital
+    aadhar = user.aadhar
     context = {
         'email': email,
         'phone': phone,
@@ -69,6 +72,8 @@ def profile(request):
         'dob': dob,
         'gender': gender,
         'occupation': occupation,
+        'marital': marital,
+        'aadhar': aadhar,
     }
     return render(request, 'profile.html', context)
 
