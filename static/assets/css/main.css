@@ -1167,6 +1167,10 @@ body.dark-theme{
         margin-left: -22px;
     }
 
+    ul.dropdown__menu.profile{
+        margin-left: -12px;
+    }
+
 }
 @media screen and (min-width:1330px) {
 
@@ -1231,6 +1235,10 @@ body.dark-theme{
 
     ul.dropdown__menu {
         margin-left: -22px;
+    }
+
+    ul.dropdown__menu.profile{
+        margin-left: -12px;
     }
 
 }

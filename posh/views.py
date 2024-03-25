@@ -40,8 +40,7 @@ def profile(request):
         user.occupation = request.POST.get('occupation')
         user.aadhar = request.POST.get('aadhar', '')
         user.marital = request.POST.get('marital', '')
-        user.save()
-
+        
         # Handle education data
         school = request.POST.get('edu_school')
         degree = request.POST.get('edu-degree')
@@ -65,6 +64,7 @@ def profile(request):
                 description=description
             )
 
+        user.save()
         messages.success(request, 'Profile updated successfully.')
 
         return redirect('profile')  # Redirect to the profile page to display updated data
