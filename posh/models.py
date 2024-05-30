@@ -16,6 +16,7 @@ class IndividualUserManager(BaseUserManager):
         return user
 
 class Education(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='education')
     school = models.CharField(max_length=100)
     degree = models.CharField(max_length=100)
     field_of_study = models.CharField(max_length=100)
@@ -25,6 +26,7 @@ class Education(models.Model):
     description = models.TextField()
 
 class IndividualUser(AbstractBaseUser, PermissionsMixin):
+    #During registration
     username = models.CharField(max_length=10, blank=False, unique=True, default = 'POS' + str(timezone.now().strftime('%Y%m%d%H%M%S')))
     prefix = models.CharField(max_length=10, blank=False) 
     fname = models.CharField(max_length=150, blank=False)
@@ -43,13 +45,11 @@ class IndividualUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
 
-
-    profile_pic = models.ImageField(blank=True)
+    #After registration
+    profile_pic = models.ImageField(blank=True, upload_to='users/')
     aadhar = models.CharField(max_length=20, blank=True) 
     marital = models.CharField(max_length=10, blank=True)
-
-    # Add a foreign key to the Education model
-    educations = models.ForeignKey(Education, related_name='user_educations', on_delete=models.CASCADE, blank=True, null=True)
+    description = models.TextField(max_length=500, blank=True)
 
     objects = IndividualUserManager()
 

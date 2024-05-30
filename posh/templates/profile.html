@@ -22,6 +22,27 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'assets/js/profile.js' %}"></script>
 <script src="{% static 'assets/js/list_item.js' %}"></script>
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const output = document.getElementById('profile-image');
+            output.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function resetImage() {
+        const profileImage = document.getElementById('profile-image');
+        profileImage.src = "{% static 'assets/img/default_profile.svg' %}";
+
+        // Set hidden input value to signal reset
+        document.getElementById('resetProfilePic').value = '1';
+
+        // If you also want to clear the file input
+        document.getElementById('uploadPhoto').value = '';
+    }
+</script>
 {% endblock %}
 
 {% block content %}
@@ -31,48 +52,28 @@
         </h4>
         <div class="card overflow-hidden">
             <div class="row no-gutters row-bordered row-border-light">
-                <div class="col-md-3 pt-0">
-                    <div class="list-group list-group-flush account-settings-links">
-                        <a class="list-group-item list-group-item-action active" data-toggle="list"
-                            href="#account-general">General</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-education">Education</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-skill">Skills</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-certification">Certifications</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-info">Info</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-experience">Experience</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-change-password">Change password</a>
-                        {% comment %} <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-social-links">Social links</a> {% endcomment %}
-                        {% comment %} <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-connections">Connections</a> {% endcomment %}
-                        {% comment %} <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-notifications">Notifications</a> {% endcomment %}
-                    </div>
-                </div>
-                <div class="col-md-9">
+                <div class="col-md-12">
                     <div class="tab-content">
                         <div class="tab-pane fade active show" id="account-general">
+                            <hr class="border-light m-0">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
                             <div class="card-body media align-items-center">
-                                <img id="profile-image" src="{% static 'assets/img/default_profile.svg' %}" alt="profile pic"
-                                    class="d-block ui-w-80">
+                                {% if profile_pic %}
+                                    <img id="profile-image" src="{{ profile_pic }}" alt="Profile Picture" style="max-width: 200px; max-height: 200px;" class="d-block ui-w-80">
+                                {% else %}
+                                    <img id="profile-image" src="{% static 'assets/img/default_profile.svg' %}" alt="profile pic" class="d-block ui-w-80">
+                                {% endif %}
                                 <div class="media-body ml-4">
                                     <label class="btn btn-outline-primary">
                                         Upload new photo
-                                        <input type="file" id="uploadPhoto" class="account-settings-fileinput">
+                                        <input type="file" name="profile_pic" id="uploadPhoto" class="account-settings-fileinput" onchange="previewImage(event)">
                                     </label> &nbsp;
-                                    <button type="button" id="resetPhoto" class="btn btn-default md-btn-flat">Reset</button>
+                                    <button type="button" id="resetPhoto" class="btn btn-default md-btn-flat" onclick="resetImage()">Reset</button>
+                                    <input type="hidden" name="reset_profile_pic" id="resetProfilePic" value="0">
                                     <div class="text-light small mt-1">Allowed JPG, GIF, or PNG. Max size of 800K</div>
                                 </div>
                             </div>
-                            <hr class="border-light m-0">
-                            <form method="post">
-                                {% csrf_token %}
                             <div class="card-body">
                                 <div class="row">
                                     <!-- Prefix Column -->
@@ -180,102 +181,55 @@
                                     <label class="form-label">Aadhar Card</label>
                                     <input type="number" name='aadhar' class="form-control mb-1" value="{{ user.aadhar }}" >
                                 </div>
-                                {% comment %} <div class="form-group">
-                                    <label class="form-label">E-mail</label>
-                                    <input type="text" class="form-control mb-1" value="nmaxwell@mail.com">
-                                    <div class="alert alert-warning mt-3">
-                                        Your email is not confirmed. Please check your inbox.<br>
-                                        <a href="javascript:void(0)">Resend confirmation</a>
-                                    </div> 
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Company</label>
-                                    <input type="text" class="form-control" value="Company Ltd.">
-                                </div> {% endcomment %}
-                            </div>
-                            <div class="text-right mt-3">
-                                <button type="button" class="btn btn-default">Back</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
-                            </div>
-                        </form>
-                        </div>
-                        <div class="tab-pane fade" id="account-education">
-                            <form method="post">
-                                {% csrf_token %}
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    {% include "education.html" %}
-                                </div>
-                            </div>
-                            <div class="text-right mt-3">
-                                <button type="button" class="btn btn-default">Back</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
-                            </div>
-                        </form>
-                        </div>
-                        <div class="tab-pane fade" id="account-skill">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    {% include "skills.html" %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="account-certification">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    {% include "certifications.html" %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="account-info">
-                            <div class="card-body pb-2">
                                 <!-- Full Description -->
                                 <div class="form-group">
                                     <label for="longdescriptionInput">Description</label>
-                                    <textarea id="longdescriptionInput" class="form-control" rows="5" placeholder="Describe yourself in up to 500 words"></textarea>
+                                    <textarea id="longdescriptionInput" name="description" class="form-control" rows="5" placeholder="Describe yourself in up to 500 words">{{ user.description }}</textarea>
                                 </div>
+                            </div>
+                            <hr>
+                            <div class="tab-pane" id="account-education">
+                                <div class="card-body pb-2">
+                                    <div class="form-group">
+                                        {% include "education.html" %}
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="tab-pane" id="account-experience">
+                                <div class="card-body pb-2">
+                                    <div class="form-group">
+                                        {% include "experience.html" %}
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="tab-pane" id="account-skill">
+                                <div class="card-body pb-2">
+                                    <div class="form-group">
+                                        {% include "skills.html" %}
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="tab-pane" id="account-certification">
+                                <div class="card-body pb-2">
+                                    <div class="form-group">
+                                        {% include "certifications.html" %}
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="text-right mt-3">
+                                <button type="button" class="btn btn-default">Back</button>
+                                <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
+                            </div>
+                        </form>
+                        </div>
+                        
 
-                                <!-- Short Description -->
-                                <div class="form-group">
-                                    <label for="shortDescriptionInput">Bio for Profile</label>
-                                    <textarea id="shortDescriptionInput" class="form-control" rows="2" placeholder="Provide a brief, 100-word description"></textarea>
-                                </div>
-                                {% comment %} <div class="form-group">
-                                    <label class="form-label">Birthday</label>
-                                    <input type="text" class="form-control" value="May 3, 1995">
-                                </div> {% endcomment %}
-                                {% comment %} <div class="form-group">
-                                    <label class="form-label">Country</label>
-                                    <select class="custom-select">
-                                        <option>USA</option>
-                                        <option selected>Canada</option>
-                                        <option>UK</option>
-                                        <option>Germany</option>
-                                        <option>France</option>
-                                    </select>
-                                </div> {% endcomment %}
-                            </div>
-                            {% comment %} <hr class="border-light m-0">
-                            <div class="card-body pb-2">
-                                <h6 class="mb-4">Contacts</h6> {% endcomment %}
-                                {% comment %} <div class="form-group">
-                                    <label class="form-label">Phone</label>
-                                    <input type="text" class="form-control" value="+0 (123) 456 7891">
-                                </div> {% endcomment %}
-                                {% comment %} <div class="form-group">
-                                    <label class="form-label">Website</label>
-                                    <input type="text" class="form-control" value>
-                                </div> {% endcomment %}
-                            {% comment %} </div> {% endcomment %}
-                        </div>
-                        <div class="tab-pane fade" id="account-experience">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    {% include "experience.html" %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="account-change-password">
+
+                        {% comment %} <div class="tab-pane fade" id="account-change-password">
                             <div class="card-body pb-2">
                                 <div class="form-group">
                                     <label class="form-label">Current password</label>
@@ -290,128 +244,7 @@
                                     <input type="password" class="form-control">
                                 </div>
                             </div>
-                        </div>
-                        {% comment %} <div class="tab-pane fade" id="account-social-links">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    <label class="form-label">Twitter</label>
-                                    <input type="text" class="form-control" value="https://twitter.com/user">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Facebook</label>
-                                    <input type="text" class="form-control" value="https://www.facebook.com/user">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Google+</label>
-                                    <input type="text" class="form-control" value>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">LinkedIn</label>
-                                    <input type="text" class="form-control" value>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Instagram</label>
-                                    <input type="text" class="form-control" value="https://www.instagram.com/user">
-                                </div>
-                            </div>
                         </div> {% endcomment %}
-                        {% comment %} <div class="tab-pane fade" id="account-connections"> {% endcomment %}
-                            {% comment %} <div class="card-body">
-                                <button type="button" class="btn btn-twitter">Connect to
-                                    <strong>Twitter</strong></button>
-                            </div>
-                            <hr class="border-light m-0"> {% endcomment %}
-                            {% comment %} <div class="card-body">
-                                <h5 class="mb-2">
-                                    <a href="javascript:void(0)" class="float-right text-muted text-tiny"><i
-                                            class="ion ion-md-close"></i> Remove</a>
-                                    <i class="ion ion-logo-google text-google"></i>
-                                    You are connected to Google:
-                                </h5>
-                                <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-                                    data-cfemail="f9979498818e9c9595b994989095d79a9694">[email&#160;protected]</a>
-                            </div>
-                            <hr class="border-light m-0"> {% endcomment %}
-                            {% comment %} <div class="card-body">
-                                <button type="button" class="btn btn-facebook">Connect to
-                                    <strong>Facebook</strong></button>
-                            </div>
-                            <hr class="border-light m-0"> {% endcomment %}
-                            {% comment %} <div class="card-body">
-                                <button type="button" class="btn btn-instagram">Connect to
-                                    <strong>Instagram</strong></button>
-                            </div> {% endcomment %}
-                        {% comment %} </div> {% endcomment %}
-                        {% comment %} <div class="tab-pane fade" id="account-notifications">
-                            <div class="card-body pb-2">
-                                <h6 class="mb-4">Activity</h6> {% endcomment %}
-                                {% comment %} <div class="form-group">
-                                    <label class="switcher">
-                                        <input type="checkbox" class="switcher-input" checked>
-                                        <span class="switcher-indicator">
-                                            <span class="switcher-yes"></span>
-                                            <span class="switcher-no"></span>
-                                        </span>
-                                        <span class="switcher-label">Email me when someone comments on my article</span>
-                                    </label>
-                                </div> {% endcomment %}
-                                {% comment %} <div class="form-group">
-                                    <label class="switcher">
-                                        <input type="checkbox" class="switcher-input" checked>
-                                        <span class="switcher-indicator">
-                                            <span class="switcher-yes"></span>
-                                            <span class="switcher-no"></span>
-                                        </span>
-                                        <span class="switcher-label">Email me when someone answers on my forum
-                                            thread</span>
-                                    </label>
-                                </div> {% endcomment %}
-                                {% comment %} <div class="form-group">
-                                    <label class="switcher">
-                                        <input type="checkbox" class="switcher-input">
-                                        <span class="switcher-indicator">
-                                            <span class="switcher-yes"></span>
-                                            <span class="switcher-no"></span>
-                                        </span>
-                                        <span class="switcher-label">Email me when someone follows me</span>
-                                    </label>
-                                </div> {% endcomment %}
-                            {% comment %} </div> {% endcomment %}
-                            {% comment %} <hr class="border-light m-0">
-                            <div class="card-body pb-2">
-                                <h6 class="mb-4">Application</h6> {% endcomment %}
-                                {% comment %} <div class="form-group">
-                                    <label class="switcher">
-                                        <input type="checkbox" class="switcher-input" checked>
-                                        <span class="switcher-indicator">
-                                            <span class="switcher-yes"></span>
-                                            <span class="switcher-no"></span>
-                                        </span>
-                                        <span class="switcher-label">News and announcements</span>
-                                    </label>
-                                </div> {% endcomment %}
-                                {% comment %} <div class="form-group">
-                                    <label class="switcher">
-                                        <input type="checkbox" class="switcher-input">
-                                        <span class="switcher-indicator">
-                                            <span class="switcher-yes"></span>
-                                            <span class="switcher-no"></span>
-                                        </span>
-                                        <span class="switcher-label">Weekly product updates</span>
-                                    </label>
-                                </div> {% endcomment %}
-                                {% comment %} <div class="form-group">
-                                    <label class="switcher">
-                                        <input type="checkbox" class="switcher-input" checked>
-                                        <span class="switcher-indicator">
-                                            <span class="switcher-yes"></span>
-                                            <span class="switcher-no"></span>
-                                        </span>
-                                        <span class="switcher-label">Weekly blog digest</span>
-                                    </label>
-                                </div> {% endcomment %}
-                            {% comment %} </div> {% endcomment %}
-                        {% comment %} </div> {% endcomment %}
                     </div>
                 </div>
             </div>

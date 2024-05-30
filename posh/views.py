@@ -38,31 +38,19 @@ def profile(request):
         user.dob = request.POST.get('dob')
         user.gender = request.POST.get('gender')
         user.occupation = request.POST.get('occupation')
+
         user.aadhar = request.POST.get('aadhar', '')
         user.marital = request.POST.get('marital', '')
-        
-        # Handle education data
-        school = request.POST.get('edu_school')
-        degree = request.POST.get('edu-degree')
-        field_of_study = request.POST.get('edu-field_of_study')
-        start_date = request.POST.get('edu-start_date')
-        end_date = request.POST.get('edu-end_date')
-        grade = request.POST.get('edu-grade')
-        description = request.POST.get('edu-description', '')
+        user.description = request.POST.get('description', '')
 
-        print(school)
+        # Handle profile picture reset
+        if request.POST.get('reset_profile_pic') == '1':
+            user.profile_pic.delete(save=False)  # This deletes the old image file
+            user.profile_pic = None  # Set to None to use the default image
 
-        if school and degree and field_of_study and start_date and end_date and grade:
-            print(school)
-            Education.objects.create(
-                school=school,
-                degree=degree,
-                field_of_study=field_of_study,
-                start_date=start_date,
-                end_date=end_date,
-                grade=grade,
-                description=description
-            )
+        # Handle profile picture upload
+        elif 'profile_pic' in request.FILES:
+            user.profile_pic = request.FILES['profile_pic']
 
         user.save()
         messages.success(request, 'Profile updated successfully.')
@@ -82,13 +70,9 @@ def profile(request):
     dob = user.dob
     gender = user.gender
     occupation = user.occupation
+    description = user.description
     marital = user.marital
     aadhar = user.aadhar
-
-    # Check if user has educations
-    educations = None
-    if user.educations is not None:
-        educations = user.educations.all()
 
     context = {
         'email': email,
@@ -105,7 +89,8 @@ def profile(request):
         'occupation': occupation,
         'marital': marital,
         'aadhar': aadhar,
-        'educations': educations,
+        'description': description,
+        'profile_pic': user.profile_pic.url if user.profile_pic else None,
     }
     return render(request, 'profile.html', context)
 
