@@ -12,6 +12,9 @@ urlpatterns = [
     path('login/', views.signin, name="login"),
     path('profile/', views.profile, name="profile"),
     path('logout/', views.signout, name="logout"),
+    path('profile/education/create', views.education, name="education"),
+    path('profile/education/delete/<int:pk>', views.delete_education, name="delete_education"),
+    path('profile/education/edit/<int:pk>/', views.edit_education, name="edit_education"),
 ]
 
 if settings.DEBUG:

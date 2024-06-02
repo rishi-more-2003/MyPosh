@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views import View
 from django.contrib.auth.models import User
@@ -12,14 +12,116 @@ import random
 from django.conf import settings
 from .utils import generate_unique_id
 from django.http import JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+import datetime
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 
 def home(request):
     return render(request, 'home.html', {})
 
 def otp(request):
     return render(request, 'otp.html', {})
+
+@csrf_exempt
+def edit_education(request, pk):
+    education = get_object_or_404(Education, pk=pk)
+    if request.method == 'POST':
+        try:
+            education.school = request.POST.get('edu_school')
+            education.degree = request.POST.get('edu_degree')
+            education.field_of_study = request.POST.get('edu_field_of_study')
+
+            # Parse dates
+            edu_start_date = request.POST.get('edu_start_date')
+            edu_end_date = request.POST.get('edu_end_date')
+            if edu_start_date:
+                education.start_date = datetime.datetime.strptime(edu_start_date, '%Y-%m').date().replace(day=1)
+            if edu_end_date:
+                education.end_date = datetime.datetime.strptime(edu_end_date, '%Y-%m').date().replace(day=1)
+
+            education.grade = request.POST.get('edu_grade')
+            education.description = request.POST.get('edu_description')
+
+            education.save()
+
+            response_data = {
+                'success': True,
+                'message': 'Education details updated successfully.'
+            }
+        except ValueError as e:
+            response_data = {
+                'success': False,
+                'message': str(e)
+            }
+        return JsonResponse(response_data)
+
+    data = {
+        'school': education.school,
+        'degree': education.degree,
+        "field_of_study": education.field_of_study,
+        "start_date": education.start_date.strftime('%Y-%m'),  # Format date to "YYYY-MM"
+        "end_date": education.end_date.strftime('%Y-%m'),  # Format date to "YYYY-MM"
+        "grade": education.grade,
+        "description": education.description,
+    }
+    # print(data)
+    return JsonResponse(data)
+
+def delete_education(request, pk):
+    instance = Education.objects.get(pk=pk)
+    instance.delete()
+    # education_list = Education.objects.all()
+    return HttpResponseRedirect(reverse('education'))
+
+@login_required
+def education(request):
+    user = request.user
+    if request.method == 'POST':
+        school = request.POST.get('edu_school')
+        degree = request.POST.get('edu_degree')
+        field_of_study = request.POST.get('edu_field_of_study')
+        start_date = request.POST.get('edu_start_date')
+        end_date = request.POST.get('edu_end_date')
+        grade = request.POST.get('edu_grade')
+        description = request.POST.get('edu_description')
+
+        # Parse dates
+        try:
+            start_date = datetime.datetime.strptime(start_date, '%Y-%m').date()
+        except (ValueError, TypeError):
+            start_date = None
+
+        try:
+            end_date = datetime.datetime.strptime(end_date, '%Y-%m').date()
+        except (ValueError, TypeError):
+            end_date = None
+
+        # Create and save the education instance
+        education = Education(
+            user=user,
+            school=school,
+            degree=degree,
+            field_of_study=field_of_study,
+            start_date=start_date,
+            end_date=end_date,
+            grade=grade,
+            description=description
+        )
+        education.save()
+        
+        return redirect('education')  # Redirect to a success page or the same page
+    
+    user = get_object_or_404(IndividualUser, username = request.user)
+    education_list = user.education.all()  # Fetch all related education instances
+    context = {
+        'user': user,
+        'education_list': education_list,
+    }
+
+    return render(request, 'education.html', context)
 
 @login_required
 def profile(request):

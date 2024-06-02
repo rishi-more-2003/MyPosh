@@ -1,76 +1,324 @@
+{% extends "base.html" %}
+{% load static %}
 
-<div class="container-education">
-    <div class="add_education">
-        <h2>Education Details</h2>
-        <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add</button>
-    </div>
+{% block stylescss %}
+{{ block.super }}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'assets/css/list_item.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
+<script src="{% static 'assets/js/cities.js' %}"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<style>
+    .education-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+        padding: 10px 0;
+    }
+    .buttons {
+        text-align: right;
+        margin-left: 20px;
+    }
+    .buttons form,
+    .buttons a {
+        display: inline-block;
+        margin-left: 5px;
+    }
+    .buttons button {
+        margin-left: 5px;
+    }
+</style>
+{% endblock %}
 
-    <!-- Education Section -->
-    <div id="education-section">
-        <ul id="education-list">
-            <!-- Educational experiences will be dynamically added here -->
-        </ul>
-    </div>
+{% block js %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'assets/js/profile.js' %}"></script>
+<script src="{% static 'assets/js/list_item.js' %}"></script>
+<script>
+    $(document).ready(function() {
 
-    <!-- Add Education Modal -->
-    <div class="modal fade" id="addEducationModal" tabindex="-1" role="dialog" aria-labelledby="addEducationModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addEducationModalLabel">Add Education</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- School -->
-                    <div class="form-group">
-                        <label for="schoolInput">School</label>
-                        <input type="text" id="schoolInput" name='edu_school' class="form-control" placeholder="Enter the school name">
-                    </div>
+        // Helper function to format date to "Month, Year"
+        function formatDateToMonthYear(dateStr) {
+            const options = { year: 'numeric', month: 'long' };
+            return new Date(dateStr).toLocaleDateString('en-US', options);
+        }
 
-                    <!-- Degree -->
-                    <div class="form-group">
-                        <label for="degreeInput">Degree</label>
-                        <input type="text" id="degreeInput" name='edu-degree' class="form-control" placeholder="Enter your degree">
-                    </div>
+        // Helper function to format date to "YYYY-MM"
+        function formatDateToYYYYMM(dateStr) {
+            const date = new Date(dateStr);
+            const month = date.getMonth() + 1;
+            return `${date.getFullYear()}-${month < 10 ? '0' + month : month}`;
+        }
 
-                    <!-- Field of Study -->
-                    <div class="form-group">
-                        <label for="fieldOfStudyInput">Field of Study</label>
-                        <input type="text" id="fieldOfStudyInput" name='edu-field_of_study' class="form-control" placeholder="Enter your field of study">
-                    </div>
+        // When the edit modal is shown
+        $('#editEducationModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var pk = button.data('pk'); // Extract info from data-* attributes
+    
+            if (!pk) {
+                console.error('Primary key (pk) is null.');
+                return;
+            }
+    
+            // Change the URL without reloading the page
+            history.pushState(null, '', '/profile/education/edit/' + pk + '/');
+    
+            // Set the form's action attribute to the update URL
+            $('#editEducationForm').attr('action', '/profile/education/edit/' + pk + '/');
+    
+            // Make an AJAX call to fetch the education details
+            $.ajax({
+                url: '/profile/education/edit/' + pk + '/',
+                type: 'GET',
+                success: function(data) {
+                    // Populate the form fields with the data received
+                    $('#educ_school').val(data.school);
+                    $('#educ_degree').val(data.degree);
+                    $('#educ_field_of_study').val(data.field_of_study);
+                    $('#educ_start_date').val(formatDateToYYYYMM(data.start_date));
+                    $('#educ_end_date').val(formatDateToYYYYMM(data.end_date));
+                    $('#educ_grade').val(data.grade);
+                    $('#educ_description').val(data.description);
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(errmsg);
+                }
+            });
+        });
+    
+        // Form submission handler
+        $('#editEducationForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+    
+            // Gather form data
+            var formData = {
+                'edu_school': $('#educ_school').val(),
+                'edu_degree': $('#educ_degree').val(),
+                'edu_field_of_study': $('#educ_field_of_study').val(),
+                'edu_start_date': $('#educ_start_date').val(), // Already formatted as YYYY-MM
+                'edu_end_date': $('#educ_end_date').val(), // Already formatted as YYYY-MM
+                'edu_grade': $('#educ_grade').val(),
+                'edu_description': $('#educ_description').val(),
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val() // Include CSRF token
+            };
+    
+            // Send AJAX POST request to update education details
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    // Handle success (e.g., close modal, show success message)
+                    $('#editEducationModal').modal('hide');
+                    location.reload(); // Reload the page to see the changes
+                    window.location.href = '/profile/education/create'; 
+                },
+                error: function(xhr, errmsg, err) {
+                    // Handle error (e.g., show error message)
+                    console.log(errmsg);
+                }
+            });
+        });
+    });
+    
+    
+</script>
+    
 
-                    <!-- Start Date -->
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="startDateMonth">Start Date</label>
-                            <input type="month" id="startDate" name='edu-start_date' class="form-control" placeholder="Enter start month">
+{% endblock %}
+
+{% block content %}
+<div class="container light-style flex-grow-1 container-p-y">
+    <div class="card overflow-hidden" style="min-height: 30rem">
+        <div class="row no-gutters row-bordered row-border-light">
+            <div class="col-md-12">
+                <div class="tab-content">
+                    <div class="tab-pane fade active show" id="account-general">
+                        <hr class="border-light m-0">
+                        <div class="container-education">
+                            <div class="add_education">
+                                <h2>{{ user.fname }} {{ user.lname }}'s Education Details</h2>
+                                <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add</button>
+                            </div>
+
+                            <!-- Education Section -->
+                            <div id="education-section">
+                                <ul id="education-list">
+                                    <!-- Educational experiences will be dynamically added here -->
+                                    {% if education_list %}
+                                        <ul>
+                                            {% for education in education_list %}
+                                                <li>
+                                                    <strong>School:</strong> {{ education.school }}<br>
+                                                    <strong>Degree:</strong> {{ education.degree }}<br>
+                                                    {% if education.field_of_study %}
+                                                        <strong>Field of Study:</strong> {{ education.field_of_study }}<br>
+                                                    {% endif %}
+                                                    {% if education.start_date %}
+                                                        <strong>Start Date:</strong> {{ education.start_date }}<br>
+                                                    {% endif %}
+                                                    {% if education.end_date %}
+                                                        <strong>End Date:</strong> {{ education.end_date }}<br>
+                                                    {% endif %}
+                                                    {% if education.grade %}
+                                                        <strong>Grade:</strong> {{ education.grade }}<br>
+                                                    {% endif %}
+                                                    {% if education.description %}
+                                                        <strong>Description:</strong> {{ education.description }}<br>
+                                                    {% endif %}
+                                                    <div class="buttons">
+                                                        <button class="btn btn-warning btn-sm mr-2 edit-button" data-toggle="modal" data-target="#editEducationModal" data-pk="{{ education.id }}">Edit</button>
+
+                                                        <a href="{% url 'delete_education' education.id %}">
+                                                            <button class="btn btn-danger btn-sm delete-button" >Delete</button>
+                                                        </a>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p>No education records found.</p>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            <form id="formTask" method="POST" action="{% url 'education' %}" autocomplete="off">
+                                {% csrf_token %} 
+                            <!-- Add Education Modal -->
+                            <div class="modal fade" id="addEducationModal" tabindex="-1" role="dialog" aria-labelledby="addEducationModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="addEducationModalLabel">Add Education</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- School -->
+                                            <div class="form-group">
+                                                <label for="schoolInput">School</label>
+                                                <input type="text" id="edu_school" name='edu_school' class="form-control" placeholder="Enter the school name">
+                                            </div>
+
+                                            <!-- Degree -->
+                                            <div class="form-group">
+                                                <label for="degreeInput">Degree</label>
+                                                <input type="text" id="edu_degree" name='edu_degree' class="form-control" placeholder="Enter your degree">
+                                            </div>
+
+                                            <!-- Field of Study -->
+                                            <div class="form-group">
+                                                <label for="fieldOfStudyInput">Field of Study</label>
+                                                <input type="text" id="edu_field_of_study" name='edu_field_of_study' class="form-control" placeholder="Enter your field of study">
+                                            </div>
+
+                                            <!-- Start Date -->
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="startDateMonth">Start Date</label>
+                                                    <input type="month" id="edu_start_date" name='edu_start_date' class="form-control" placeholder="Enter start month">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="startDateYear">End Date/Expected</label>
+                                                    <input type="month" id="edu_end_date" name='edu_end_date' class="form-control" placeholder="Enter start year">
+                                                </div>
+                                            </div>
+
+                                            <!-- Grade -->
+                                            <div class="form-group">
+                                                <label for="gradeInput">Grade</label>
+                                                <input type="text" id="edu_grade" name='edu_grade' class="form-control" placeholder="Enter your grade">
+                                            </div>
+
+                                            <!-- Description -->
+                                            <div class="form-group">
+                                                <label for="descriptionInput">Description</label>
+                                                <textarea id="edu_description" class="form-control" name='edu_description' rows="5" placeholder="Enter a description of your education"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary btnSave" id="saveEducationBtn">Save Education</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+
+                        <form id="editEducationForm" method="POST" autocomplete="off">
+                            {% csrf_token %}
+                            <!-- Form fields -->
+                            <div class="modal fade" id="editEducationModal" tabindex="-1" role="dialog" aria-labelledby="editEducationModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <!-- Modal content, including form fields like below -->
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editEducationModalLabel">Edit Education</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="educ_school">School</label>
+                                                <input type="text" id="educ_school" name="edu_school" class="form-control" placeholder="Enter the school name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="educ_degree">Degree</label>
+                                                <input type="text" id="educ_degree" name="edu_degree" class="form-control" placeholder="Enter your degree">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="educ_field_of_study">Field of Study</label>
+                                                <input type="text" id="educ_field_of_study" name="edu_field_of_study" class="form-control" placeholder="Enter your field of study">
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="educ_start_date">Start Date</label>
+                                                    <input type="month" id="educ_start_date" name="edu_start_date" class="form-control">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="educ_end_date">End Date/Expected</label>
+                                                    <input type="month" id="educ_end_date" name="edu_end_date" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="educ_grade">Grade</label>
+                                                <input type="text" id="educ_grade" name="edu_grade" class="form-control" placeholder="Enter your grade">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="educ_description">Description</label>
+                                                <textarea id="educ_description" name="edu_description" class="form-control" rows="5" placeholder="Enter a description of your education"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        
+                                            <button type="submit" class="btn btn-primary btnSave" id="saveEducationBtn">Save Education</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label for="startDateYear">End Date/Expected</label>
-                            <input type="month" id="endDate" name='edu-end_date' class="form-control" placeholder="Enter start year">
-                        </div>
                     </div>
-
-                    <!-- Grade -->
-                    <div class="form-group">
-                        <label for="gradeInput">Grade</label>
-                        <input type="text" id="gradeInput" name='edu-grade' class="form-control" placeholder="Enter your grade">
-                    </div>
-
-                    <!-- Description -->
-                    <div class="form-group">
-                        <label for="descriptionInput">Description</label>
-                        <textarea id="descriptionInput" class="form-control" name='edu-description' rows="5" placeholder="Enter a description of your education"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveEducationBtn">Save Education</button>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+</div>
+
+
+
+{% endblock %}
 

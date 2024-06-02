@@ -186,12 +186,27 @@
                                     <label for="longdescriptionInput">Description</label>
                                     <textarea id="longdescriptionInput" name="description" class="form-control" rows="5" placeholder="Describe yourself in up to 500 words">{{ user.description }}</textarea>
                                 </div>
+                            <div class="text-right mt-3">
+                                <button type="button" class="btn btn-default">Back</button>
+                                <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
                             </div>
+                        </div>
                             <hr>
                             <div class="tab-pane" id="account-education">
                                 <div class="card-body pb-2">
                                     <div class="form-group">
-                                        {% include "education.html" %}
+                                        <div class="add_education">
+                                            <h2>Education Details</h2>
+                                            <a href="{% url 'education' %}" >
+                                            <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add</button>
+                                            </a>
+                                        </div>              
+                                        <!-- Education Section -->
+                                        <div id="education-section">
+                                            <ul id="education-list">
+                                                <!-- Educational experiences will be dynamically added here -->
+                                            </ul>
+                                        </div>                                    
                                     </div>
                                 </div>
                             </div>
@@ -220,10 +235,6 @@
                                 </div>
                             </div>
                             <hr>
-                            <div class="text-right mt-3">
-                                <button type="button" class="btn btn-default">Back</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
-                            </div>
                         </form>
                         </div>
                         
