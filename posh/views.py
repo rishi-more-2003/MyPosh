@@ -1,25 +1,43 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views import View
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from .models import IndividualUser, Education
+from .models import IndividualUser, Education, NGOUser, PoshUser, ConsultancyUser
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 import random
 from django.conf import settings
-from .utils import generate_unique_id
+from .utils import generate_unique_id, generate_unique_consultancy, generate_unique_establishment, generate_unique_ngo
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import datetime
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from .decorators import unauthenticated_user, allowed_users
 
+
+# @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
+    if request.method == "POST":
+        contact_email = request.POST['contact-email']
+        contact_subject = request.POST['contact-subject']
+        contact_message = request.POST['contact-message']
+
+        #send email
+        send_mail(
+            contact_subject,
+            contact_message,
+            contact_email,
+            ["myposh.help@gmail.com"],
+        )
+
+        return render(request, 'home.html', {})
+    
     return render(request, 'home.html', {})
 
 def otp(request):
@@ -125,7 +143,7 @@ def education(request):
 
 @login_required
 def profile(request):
-    user = request.user
+    user = request.user.individualuser
     if request.method == 'POST':
         # Handle form submission for updating profile data
         user.email = request.POST.get('email')
@@ -175,6 +193,7 @@ def profile(request):
     description = user.description
     marital = user.marital
     aadhar = user.aadhar
+    education_list = user.education.all()  
 
     context = {
         'email': email,
@@ -193,6 +212,7 @@ def profile(request):
         'aadhar': aadhar,
         'description': description,
         'profile_pic': user.profile_pic.url if user.profile_pic else None,
+        'education_list': education_list,
     }
     return render(request, 'profile.html', context)
 
@@ -211,15 +231,159 @@ def send_verification_email(email, otp):
     email.content_subtype = "html"  # Set the content type to HTML
     email.send()  # Optionally, set fail_silently to False to raise exceptions on errors
 
+@unauthenticated_user
 def register_ngo(request):
-    return render(request, 'register_ngo.html', {})
+    if request.method == 'POST':
 
+        if request.POST.get('email'):  # Check if it's the initial form submission
+            if 'otp' not in request.session: # If OTP is not in session, generate a new OTP and send it to user's email
+                otp = generate_otp()
+                ngo_email = request.POST.get('email')
+                send_verification_email(ngo_email, otp)
+                
+                # Save user data in session
+                request.session['otp'] = otp
+
+        elif all(request.POST.get(field) for field in ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']):  # OTP verification
+            user_otp = ''.join(request.POST.get(field) for field in ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6'])
+            if user_otp == request.session.get('otp'):
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({'status': 'error'})
+            
+
+        if all(request.POST.get(field) for field in ['ngo-name', 'ngo-date', 'state', 'city', 'pincode', 'ngo-address', 'email', 'phone']):
+            ngo_email = request.POST.get('email')
+            ngo_name = request.POST.get('ngo-name')
+            ngo_dob = request.POST.get('ngo-date')
+            ngo_state = request.POST.get('state')
+            ngo_city = request.POST.get('city')
+            ngo_pincode = request.POST.get('pincode')
+            ngo_address = request.POST.get('ngo-address')
+
+            ngo_phone = request.POST.get('phone')
+            ngo_username = generate_unique_ngo(ngo_phone, ngo_email)   
+        
+            ngo_user = NGOUser.objects.create_user(
+            username=ngo_username,
+            email=ngo_email,
+            phone=ngo_phone,
+            password=ngo_phone,
+            ngo_name = ngo_name ,
+            ngo_dob=ngo_dob,
+            ngo_state=ngo_state,
+            ngo_city=ngo_city,
+            ngo_pincode=ngo_pincode,
+            ngo_address = ngo_address,
+            type='NGO')
+
+            ngo_user.is_active = True
+            group, created = Group.objects.get_or_create(name="NGO")
+            ngo_user.groups.add(group)
+            ngo_user.save()
+
+            ngo_user = authenticate(request, username=ngo_username, password= ngo_phone)
+
+
+            if ngo_user is not None:
+                subject = 'Welcome to MyPosh'
+                message = 'Your username is ' + ngo_username + ' and password is  YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
+                email_from = settings.EMAIL_HOST
+                send_mail(
+                    subject,
+                    message,
+                    email_from,
+                    [ngo_email],
+                    fail_silently=False,
+                )
+    
+                login(request, ngo_user)
+                response_data = {'status': 'success', 'redirect_url': reverse('home')}
+                return JsonResponse(response_data)
+            else:
+                return JsonResponse({'status': 'error'})
+
+    return render(request, 'register_ngo.html')
+
+@unauthenticated_user
 def register_consultancy(request):
-    return render(request, 'register_consultancy.html', {})
+    if request.method == 'POST':
 
+        if request.POST.get('email'):  # Check if it's the initial form submission
+
+            if 'otp' not in request.session: # If OTP is not in session, generate a new OTP and send it to user's email
+                otp = generate_otp()
+                consultancy_email = request.POST.get('email')
+                send_verification_email(consultancy_email, otp)
+                
+                # Save user data in session
+                request.session['otp'] = otp
+
+        elif all(request.POST.get(field) for field in ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']):  # OTP verification
+            user_otp = ''.join(request.POST.get(field) for field in ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6'])
+            if user_otp == request.session.get('otp'):
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({'status': 'error'})
+            
+
+        if all(request.POST.get(field) for field in ['consultancy-name', 'consultancy-date', 'state', 'city', 'pincode', 'consultancy-address', 'email', 'phone']):
+            consultancy_email = request.POST.get('email')
+            consultancy_name = request.POST.get('consultancy-name')
+            consultancy_dob = request.POST.get('consultancy-date')
+            consultancy_state = request.POST.get('state')
+            consultancy_city = request.POST.get('city')
+            consultancy_pincode = request.POST.get('pincode')
+            consultancy_address = request.POST.get('consultancy-address')
+
+            consultancy_phone = request.POST.get('phone')
+            consultancy_username = generate_unique_consultancy(consultancy_phone, consultancy_email) 
+        
+            consultancy_user = ConsultancyUser.objects.create_user(
+            username=consultancy_username,
+            email=consultancy_email,
+            phone=consultancy_phone,
+            password=consultancy_phone,
+            consultancy_name = consultancy_name ,
+            consultancy_dob=consultancy_dob,
+            consultancy_state=consultancy_state,
+            consultancy_city=consultancy_city,
+            consultancy_pincode=consultancy_pincode,
+            consultancy_address = consultancy_address,
+            type='Consultancy')
+
+            consultancy_user.is_active = True
+            group, created = Group.objects.get_or_create(name="CON")
+            consultancy_user.groups.add(group)
+            consultancy_user.save()
+
+            consultancy_user = authenticate(request, username=consultancy_username, password= consultancy_phone)
+
+            if consultancy_user is not None:
+                subject = 'Welcome to MyPosh'
+                message = 'Your username is ' + consultancy_username + ' and password is  YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
+                email_from = settings.EMAIL_HOST
+                send_mail(
+                    subject,
+                    message,
+                    email_from,
+                    [consultancy_email],
+                    fail_silently=False,
+                )
+    
+                login(request, consultancy_user)
+                response_data = {'status': 'success', 'redirect_url': reverse('home')}
+                return JsonResponse(response_data)
+            else:
+                return JsonResponse({'status': 'error'})
+
+    return render(request, 'register_consultancy.html')
+
+@unauthenticated_user
 def register_establishment(request):
     return render(request, 'register_establishment.html', {})
 
+@unauthenticated_user
 def register(request):
     if request.method == 'POST':
         
@@ -271,9 +435,12 @@ def register(request):
             occupation=occupation,
             state=state,
             city=city,
-            pincode=pincode,)
+            pincode=pincode,
+            type='Individual')
 
             user.is_active = True
+            group, created = Group.objects.get_or_create(name="IND")
+            user.groups.add(group)
             user.save()
 
             user = authenticate(request, username=username, password=phone)
@@ -299,6 +466,7 @@ def register(request):
             
     return render(request, 'register.html')
 
+@unauthenticated_user
 def signin(request):
     if request.method == 'POST':
         username = request.POST.get('uid')

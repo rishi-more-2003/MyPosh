@@ -80,9 +80,9 @@
                                     <div class="col-md-2 form-group">
                                         <label class="form-label">Prefix</label>
                                         <select name="prefix" class="form-control" required>
-                                            <option value="Mr." {% if user.prefix == "Mr." %} selected {% endif %}>Mr.</option>
-                                            <option value="Mrs." {% if user.prefix == "Mrs." %} selected {% endif %}>Mrs.</option>
-                                            <option value="Miss" {% if user.prefix == "Miss" %} selected {% endif %}>Miss</option>
+                                            <option value="Mr." {% if user.individualuser.prefix == "Mr." %} selected {% endif %}>Mr.</option>
+                                            <option value="Mrs." {% if user.individualuser.prefix == "Mrs." %} selected {% endif %}>Mrs.</option>
+                                            <option value="Miss" {% if user.individualuser.prefix == "Miss" %} selected {% endif %}>Miss</option>
                                         </select>
                                     </div>
                                     
@@ -90,19 +90,19 @@
                                     <!-- First Name Column -->
                                     <div class="col-md-3 form-group">
                                         <label class="form-label">First Name</label>
-                                        <input type="text" name="fname" class="form-control" value="{{ user.fname }}" required>
+                                        <input type="text" name="fname" class="form-control" value="{{ user.individualuser.fname }}" required>
                                     </div>
 
                                     <!-- Middle Name Column -->
                                     <div class="col-md-3 form-group">
                                         <label class="form-label">Middle Name</label>
-                                        <input type="text" name="mname" class="form-control" value="{{ user.mname }}" required>
+                                        <input type="text" name="mname" class="form-control" value="{{ user.individualuser.mname }}" required>
                                     </div>
 
                                     <!-- Last Name Column -->
                                     <div class="col-md-4 form-group">
                                         <label class="form-label">Last Name</label>
-                                        <input type="text" name="lname" class="form-control" value="{{ user.lname }}" required>
+                                        <input type="text" name="lname" class="form-control" value="{{ user.individualuser.lname }}" required>
                                     </div>
 
                                 </div>
@@ -110,32 +110,32 @@
                                     <!-- Date of Birth Column -->
                                     <div class="col-md-3 form-group">
                                         <label class="form-label">Date of Birth</label>
-                                        <input type="date" class="form-control" name="dob" id="date-input" value="{{ user.dob|date:'Y-m-d' }}" required>
+                                        <input type="date" class="form-control" name="dob" id="date-input" value="{{ user.individualuser.dob|date:'Y-m-d' }}" required>
                                     </div>
                             
                                     <!-- Gender Column -->
                                     <div class="col-md-3 form-group">
                                         <label class="form-label">Gender</label>
                                         <select class="form-control" name='gender' required>
-                                            <option value="male" {% if user.gender == "male" %} selected {% endif %}>Male</option>
-                                            <option value="female" {% if user.gender == "female" %} selected {% endif %}>Female</option>
-                                            <option value="other" {% if user.gender == "other" %} selected {% endif %}>Other</option>
+                                            <option value="male" {% if user.individualuser.gender == "male" %} selected {% endif %}>Male</option>
+                                            <option value="female" {% if user.individualuser.gender == "female" %} selected {% endif %}>Female</option>
+                                            <option value="other" {% if user.individualuser.gender == "other" %} selected {% endif %}>Other</option>
                                         </select>
                                     </div>
                             
                                     <!-- Occupation Column -->
                                     <div class="col-md-3 form-group">
                                         <label class="form-label">Occupation</label>
-                                        <input type="text" name='occupation' class="form-control" value="{{ user.occupation }}" required>
+                                        <input type="text" name='occupation' class="form-control" value="{{ user.individualuser.occupation }}" required>
                                     </div>
 
                                     <div class="col-md-3 form-group">
                                         <label class="form-label">Marital Status</label>
                                         <select class="form-control" name='marital'>
-                                            <option value="not selected" {% if user.marital == "not selected" %} selected {% endif %}>Not selected</option>
-                                            <option value="married" {% if user.marital == "married" %} selected {% endif %}>Married</option>
-                                            <option value="unmarried" {% if user.marital == "unmarried" %} selected {% endif %}>Unmarried</option>
-                                            <option value="others" {% if user.marital == "others" %} selected {% endif %}>Others</option>
+                                            <option value="not selected" {% if user.individualuser.marital == "not selected" %} selected {% endif %}>Not selected</option>
+                                            <option value="married" {% if user.individualuser.marital == "married" %} selected {% endif %}>Married</option>
+                                            <option value="unmarried" {% if user.individualuser.marital == "unmarried" %} selected {% endif %}>Unmarried</option>
+                                            <option value="others" {% if user.individualuser.marital == "others" %} selected {% endif %}>Others</option>
                                         </select>
                                     </div>
 
@@ -144,7 +144,7 @@
                                     <!-- State Column -->
                                     <div class="col-md-4 form-group">
                                         <label class="form-label">State</label>
-                                        <select name='state' onchange="print_selected_city('city', this.selectedIndex, '{{ user.city }}');" id="states" class="form-control">
+                                        <select name='state' onchange="print_selected_city('city', this.selectedIndex, '{{ user.individualuser.city }}');" id="states" class="form-control">
                                         </select>
                                     </div>
                                     
@@ -152,39 +152,39 @@
                                     <div class="col-md-4 form-group">
                                         <label class="form-label">City</label>
                                         <select name='city' id ="city" class="form-control" disabled>
-                                            <option value="state" {% if user.city == "{{ user.city }}" %} selected {% endif %}>{{ user.city }}</option>
+                                            <option value="state" {% if user.individualuser.city == "{{ user.individualuser.city }}" %} selected {% endif %}>{{ user.individualuser.city }}</option>
                                         </select>
-                                        <script language="javascript">print_selected_state("states", '{{ user.state }}');</script>
+                                        <script language="javascript">print_selected_state("states", '{{ user.individualuser.state }}');</script>
                                     </div>
                                     
                             
                                     <!-- Pincode Column -->
                                     <div class="col-md-4 form-group">
                                         <label class="form-label">Pincode</label>
-                                        <input type="number" name='pincode' class="form-control" value="{{ user.pincode }}">
+                                        <input type="number" name='pincode' class="form-control" value="{{ user.individualuser.pincode }}">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <!-- Email Column -->
                                     <div class="col-md-6 form-group">
                                         <label class="form-label">Email</label>
-                                        <input type="email" name='email' class="form-control non-editable" value="{{ user.email }}" readonly >
+                                        <input type="email" name='email' class="form-control non-editable" value="{{ user.individualuser.email }}" readonly >
                                     </div>
                             
                                     <!-- Phone Column -->
                                     <div class="col-md-6 form-group">
                                         <label class="form-label">Phone</label>
-                                        <input type="tel" name='phone' class="form-control non-editable" value="{{ user.phone }}" readonly>
+                                        <input type="tel" name='phone' class="form-control non-editable" value="{{ user.individualuser.phone }}" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Aadhar Card</label>
-                                    <input type="number" name='aadhar' class="form-control mb-1" value="{{ user.aadhar }}" >
+                                    <input type="number" name='aadhar' class="form-control mb-1" value="{{ user.individualuser.aadhar }}" >
                                 </div>
                                 <!-- Full Description -->
                                 <div class="form-group">
                                     <label for="longdescriptionInput">Description</label>
-                                    <textarea id="longdescriptionInput" name="description" class="form-control" rows="5" placeholder="Describe yourself in up to 500 words">{{ user.description }}</textarea>
+                                    <textarea id="longdescriptionInput" name="description" class="form-control" rows="5" placeholder="Describe yourself in up to 500 words">{{ user.individualuser.description }}</textarea>
                                 </div>
                             <div class="text-right mt-3">
                                 <button type="button" class="btn btn-default">Back</button>
@@ -201,12 +201,39 @@
                                             <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add</button>
                                             </a>
                                         </div>              
-                                        <!-- Education Section -->
-                                        <div id="education-section">
-                                            <ul id="education-list">
-                                                <!-- Educational experiences will be dynamically added here -->
-                                            </ul>
-                                        </div>                                    
+                            <!-- Education Section -->
+                            <div id="education-section">
+                                <ul id="education-list">
+                                    <!-- Educational experiences will be dynamically added here -->
+                                    {% if education_list %}
+                                        <ul>
+                                            {% for education in education_list %}
+                                                <li>
+                                                    <strong>School:</strong> {{ education.school }}<br>
+                                                    <strong>Degree:</strong> {{ education.degree }}<br>
+                                                    {% if education.field_of_study %}
+                                                        <strong>Field of Study:</strong> {{ education.field_of_study }}<br>
+                                                    {% endif %}
+                                                    {% if education.start_date %}
+                                                        <strong>Start Date:</strong> {{ education.start_date }}<br>
+                                                    {% endif %}
+                                                    {% if education.end_date %}
+                                                        <strong>End Date:</strong> {{ education.end_date }}<br>
+                                                    {% endif %}
+                                                    {% if education.grade %}
+                                                        <strong>Grade:</strong> {{ education.grade }}<br>
+                                                    {% endif %}
+                                                    {% if education.description %}
+                                                        <strong>Description:</strong> {{ education.description }}<br>
+                                                    {% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p>No education records found.</p>
+                                    {% endif %}
+                                </ul>
+                            </div>                                  
                                     </div>
                                 </div>
                             </div>

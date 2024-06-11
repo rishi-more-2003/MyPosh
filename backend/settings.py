@@ -139,7 +139,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     'django.contrib.auth.backends.ModelBackend' # fallback to default authentication backend if first fails 
 #     )
 
-AUTH_USER_MODEL = 'posh.IndividualUser'
+AUTH_USER_MODEL = 'posh.PoshUser'
  
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

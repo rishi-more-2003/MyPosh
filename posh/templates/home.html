@@ -226,24 +226,25 @@
                     </div>
                 </div>
 
-                <form action="" class="contact__form">
+                <form action="{% url 'home' %}" class="contact__form">
+                    {% csrf_token %}
                     <div class="contact__inputs">
                         <div class="contact__content">
-                            <input type="email" placeholder=" " class="contact__input">
+                            <input type="email" name="contact-email" placeholder=" " class="contact__input">
                             <label for="" class="contact__label">Email</label>
                         </div>
 
                         <div class="contact__content">
-                            <input type="text" placeholder=" " class="contact__input">
+                            <input type="text" name="contact-subject" placeholder=" " class="contact__input">
                             <label for="" class="contact__label">Subject</label>
                         </div>
 
                         <div class="contact__content">
-                            <textarea name="message" rows="5" cols="3" placeholder=" " class="contact__input"></textarea>
+                            <textarea name="contact-message" rows="5" cols="3" placeholder=" " class="contact__input"></textarea>
                             <label for="" class="contact__label">Message</label>
                         </div>
                     </div>
-                    <button class="button button--flex">
+                    <button type='submit' class="button button--flex">
                         Send Message
                         <i class="ri-arrow-right-up-line button__icon"></i>
                     </button>

@@ -287,12 +287,13 @@ form .buttons button, .backBtn{
     margin-right: 14px;
 }
 
-.align-columns-two{
+.align-columns-two {
     display: flex;
+    flex-direction: row-reverse;
+    column-gap: 8rem;
+    align-items: center;
     justify-content: flex-end;
-    flex-direction: row-reverse;   
 }
-
 .flexble{
     display: flex;
     align-items: center;
@@ -322,10 +323,11 @@ form .buttons button, .backBtn{
         display: none;
     }
 
-    .align-columns-two{
+    .align-columns-two {
+        width: 100%;
         display: flex;
-        justify-content: flex-end;
-        flex-direction: row-reverse;
+        flex-direction: column-reverse;
+        align-items: flex-start;
     }
 
     .input-field.new {
@@ -344,7 +346,7 @@ form .buttons button, .backBtn{
         justify-content: space-between;
         flex-direction: column-reverse;
     }
-
+    
     .input-field.new {
         margin-left: 0px;
     }

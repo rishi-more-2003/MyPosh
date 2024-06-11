@@ -8,12 +8,13 @@
 
         <!-- FAVICON  {% static 'assets/img/MyPosh.svg' %}--> 
         <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
-
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         
         <!-- ICONS -->
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
         <!-- CSS {% static 'assets/css/main.css' %}-->
         <link rel="stylesheet" href="{% static 'assets/css/register_ngo.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/css/otp.css' %}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
         <script src="{% static 'assets/js/cities.js' %}"></script>
         <link
@@ -25,10 +26,20 @@
 </head>
 <body>
     <div class="container">
+        <div id="message-section"></div>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li id="error_text" {% if message.tags %} class="bg-{{ message.tags }}" {% endif %}> {{ message }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         <header>
             Registration
         </header>
-        <form method="POST" action="{% url 'register_ngo' %}">
+        {% include "otp.html" %}
+        <form id='form-main-ngo'> 
             {% csrf_token %}
             <div class="form-first">
                 <div class="details personal">
@@ -39,12 +50,12 @@
                     <div class="fields">
                         <div class="input-field">
                             <label>Name</label>
-                            <input type="text" name="ngo-name" placeholder="Enter NGO Name" required>
+                            <input type="text" name="ngo-name" id="ngo-name" placeholder="Enter NGO Name" required>
                         </div>
 
                         <div class="input-field">
                             <label for="date-input">Date of Set-up</label>
-                            <input type="date" name='date' id="date-input" placeholder="Enter birth date" required>
+                            <input type="date" name='ngo-date' id="ngo-date" placeholder="Enter birth date" required>
                         </div>
                     </div>
                 </div>  
@@ -67,14 +78,14 @@
 
                             <div class="input-field">
                                 <label>Pincode</label>
-                                <input type="number" name='pincode' placeholder="Enter Pincode" required>
+                                <input type="number" name='pincode' id='pincode'  placeholder="Enter Pincode" required>
                             </div>
                         </div>
 
                     <div class="details address">
                         <div class="input-field address-field">
                             <label>Address</label>
-                            <textarea type="text" name="address" cols="40" rows="5" placeholder="Enter your NGO Address" required></textarea>
+                            <textarea type="text" name="ngo-address" id="ngo-address" cols="40" rows="5" placeholder="Enter your NGO Address" required></textarea>
                         </div>
                     </div>
                 </div>
@@ -85,6 +96,30 @@
                         </span>
 
                         <div class="align-columns-two">
+                            <div class="input-field phone-field">
+                                <label class="required-field">Mobile Number</label>
+                                <p id="errormsg">Please Enter A Valid Phone Number</p>
+                                <div class="inp combine">
+                                    <input type="tel" name='phone' id="phone" placeholder="Enter mobile number" minlength="10" maxlength="10" oninput="checkerphone()" required>
+                                    <button class="ValBtn two" disabled>Get OTP</button>
+                                </div>
+                            </div>
+
+ 
+                            <div class="input-field email-field">
+                                <label class="required-field">Email</label>
+                                <p id="error-msg">Please Enter A Valid Email Id</p>
+                                <div class="combine" id='combine-email'>
+                                    <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
+                                    <button type="button" name='verifotp' class="ValBtn one" id="sendOTP" onclick="openPopup()" disabled>Get OTP</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                        {% comment %} <div class="align-columns-two">
                             <div class="input-field new"> 
                                 <div class="inp">
                                     <label class="required-field">Password</label>
@@ -101,9 +136,9 @@
                                     <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
                                     </div>
                                 </div>
-                            </div>
+                            </div> {% endcomment %}
 
-                    <div class="fields">
+                    {% comment %} <div class="fields">
                     <div class="details ID">   
                         <div class="input-field email-field">
                             <label class="required-field">Email</label>
@@ -118,7 +153,7 @@
                                     <label class="required-field">OTP</label>
                                     <input type="text" name='otp' id="otp" placeholder="Enter OTP" required>
                                 </div>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
 
                             <!-- <div class="combine">
                                 <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
@@ -126,7 +161,7 @@
                             </div>
                         </div> -->
 
-                        <div class="input-field phone-field">
+                        {% comment %} <div class="input-field phone-field">
                             <label class="required-field">Mobile Number</label>
                             <p id="errormsg">Please Enter A Valid Phone Number</p>
                             <div class="combine">
@@ -136,8 +171,8 @@
                         </div>
                     </div>
                 </div>
-                </div>
-                </div> 
+                </div> {% endcomment %}
+                {% comment %} </div>  {% endcomment %}
 
                     <div class="buttons">
                         <div class="backBtn">
@@ -159,6 +194,139 @@
             </div>
         </form>
     </div>
+    <div class="overlay" id="overlay"></div>
+    <script>
+        $(document).on('click', "#sendOTP", function(e){
+            e.preventDefault();
+        
+            // Disable the button to prevent multiple clicks
+            $(this).prop('disabled', true);
+        
+            // Make the AJAX call
+            $.ajax({
+                type: 'POST',
+                url: '',
+                data: {
+                    email: $('#email-id').val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(response) {
+                    // Handle success response here
+                    // For example, you can show a message to the user or perform further actions
+                    console.log('AJAX request succeeded');
+                    openPopup(); // Call the function to open the popup
+                },
+                error: function(xhr, status, error) {
+                    // Handle error response here
+                    // For example, you can show an error message to the user
+                    console.error('AJAX request failed:', status, error);
+                },
+                complete: function() {
+                    // Re-enable the button after the AJAX request is complete
+                    $("#sendOTP").prop('disabled', false);
+                }
+            });
+        });
+        
+        
+        
+        $(document).on('click', "#verify-otp", function(e){
+            e.preventDefault();
+        
+            // Disable the button to prevent multiple clicks
+            $(this).prop('disabled', true);
+        
+            // Make the AJAX call
+            $.ajax({
+                type: 'POST',
+                url: '',
+                data: {
+                    otp1: $('#otp1').val(),
+                    otp2: $('#otp2').val(),
+                    otp3: $('#otp3').val(),
+                    otp4: $('#otp4').val(),
+                    otp5: $('#otp5').val(),
+                    otp6: $('#otp6').val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(response) {
+                    console.log(response.status)
+                if (response.status === 'success') {
+                    // OTP verified successfully
+                    console.log('OTP verified successfully');
+                    $('#sendOTP').replaceWith('<i class="ri-check-fill" style="color:green;"></i>');
+                    $('#email-id').prop('readonly', true); 
+                    $('#combine-email').css('margin-top', '0px');
+                    $('#message-section').html(`
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            OTP Verified!
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    `)
+                } else if (response.status === 'error') {
+                    // OTP mismatch
+                    console.log('OTP mismatch');
+                    $('#message-section').html(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            OTP Mismatch!
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    `);
+                } else {
+                    // Handle other possible response statuses
+                    console.log('Unexpected response status:', response.status);
+        
+                    // closePopup(); // Call the function to open the popup
+                }
+                },
+                error: function(xhr, status, error) {
+                    // Handle error response here
+                    // For example, you can show an error message to the user
+                    console.error('AJAX request failed:', status, error);
+                    // closePopup()
+                },
+                complete: function() {
+                    // Re-enable the button after the AJAX request is complete
+                    $("#verify-otp").prop('disabled', false);
+                }
+            });
+        });
+        
+        $(document).ready(function() {
+            $('#submitButton').click(function(e) {
+                e.preventDefault();
+                
+                // Serialize form data
+                var formData = $('#form-main-ngo').serialize();
+        
+                // Make AJAX request
+                $.ajax({
+                    type: 'POST',
+                    url: '',
+                    data: formData,  // Send serialized form data
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            console.log('User created successfully');
+                            window.location = response.redirect_url;
+                        } else {
+                            // Handle other response statuses or errors
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error response
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
+        
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
 <script src="{% static 'assets/js/register.js' %}"></script>
+<script src="{% static 'assets/js/otp.js' %}"></script>
 </body>
 </html>

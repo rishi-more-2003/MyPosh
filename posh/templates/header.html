@@ -49,24 +49,78 @@
                         <a href="{% url 'home' %}#contact" class="nav__link">Contact Us</a>
                     </li>
                     {% if request.user.is_authenticated %}
-
-                    <li class="nav__item dropdown__item">
-                        <div class="nav__link">            
-                            {{request.user.fname}} 
-                            <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
-                        </div>
-                        <ul class="dropdown__menu profile">
-                            <li>
-                                <a href="{% url 'profile' %}" class="dropdown__link">
-                                     Profile
-                                </a> 
-                             </li>
-                            <li>
-                               <a href="{% url 'logout'%}" class="dropdown__link">
-                                    Logout
-                               </a> 
-                            </li>
+                        {% load get_group %}
+                        {% if request.user|has_group:"IND" %} 
+                            <li class="nav__item dropdown__item">
+                                <div class="nav__link">            
+                                    {{request.user.individualuser.fname}} 
+                                    <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                                </div>
+                                <ul class="dropdown__menu profile">
+                                    <li>
+                                        <a href="{% url 'profile' %}" class="dropdown__link">
+                                            Profile
+                                        </a> 
+                                    </li>
+                                    <li>
+                                    <a href="{% url 'logout'%}" class="dropdown__link">
+                                            Logout
+                                    </a> 
+                                    </li>
                         
+                        {% elif request.user|has_group:"EST" %}
+                            <li class="nav__item dropdown__item">
+                                <div class="nav__link">   
+                                    {{request.user.individualuser.fname}}          
+                                    Establishment
+                                    <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                                </div>
+                                <ul class="dropdown__menu profile">
+                                    <li>
+                                        <a href="{% url 'profile' %}" class="dropdown__link">
+                                            Profile
+                                        </a> 
+                                    </li>
+                                    <li>
+                                    <a href="{% url 'logout'%}" class="dropdown__link">
+                                            Logout
+                                    </a> 
+                                    </li>
+                        {% elif request.user|has_group:"NGO" %}
+                            <li class="nav__item dropdown__item">
+                                <div class="nav__link">            
+                                    {{ request.user.ngouser.ngo_name }}
+                                    <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                                </div>
+                                <ul class="dropdown__menu profile">
+                                    <li>
+                                        <a href="{% url 'profile' %}" class="dropdown__link">
+                                            Profile
+                                        </a> 
+                                    </li>
+                                    <li>
+                                    <a href="{% url 'logout'%}" class="dropdown__link">
+                                            Logout
+                                    </a> 
+                                    </li>                        
+                        {% elif request.user|has_group:"CON" %}
+                            <li class="nav__item dropdown__item">
+                                <div class="nav__link">            
+                                    {{request.user.consultancyuser.consultancy_name}}  
+                                    <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                                </div>
+                                <ul class="dropdown__menu profile">
+                                    <li>
+                                        <a href="{% url 'profile' %}" class="dropdown__link">
+                                            Profile
+                                        </a> 
+                                    </li>
+                                    <li>
+                                    <a href="{% url 'logout'%}" class="dropdown__link">
+                                            Logout
+                                    </a> 
+                                    </li>
+                                {% endif %}
                     {% else %}
                     <!-- DROPDOWN Register-->
 
