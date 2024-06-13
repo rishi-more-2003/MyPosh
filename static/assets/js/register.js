@@ -1,6 +1,10 @@
 // Date-picker
 var today = new Date().toISOString().split('T')[0];
-document.getElementById('date-input').setAttribute('max', today)
+document.getElementById('date-input');
+if (document.getElementById('date-input') != null) {
+    document.getElementById('date-input').setAttribute('max', today);
+}
+// document.getElementById('date-input').setAttribute('max', today)
 
 // Email-Validator
 const emailId = document.getElementById("email-id");

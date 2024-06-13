@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views import View
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from .models import IndividualUser, Education, NGOUser, PoshUser, ConsultancyUser
+from .models import IndividualUser, Education, NGOUser, PoshUser, ConsultancyUser, EstablishmentUser, EstablishmentLocation, PrincipalEmployer, Vendor, PEDetails, VendorDetails
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -19,7 +19,8 @@ import datetime
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from .decorators import unauthenticated_user, allowed_users
-
+from .forms import EstablishmentLocationForm, PEDetailsForm, VendorDetailsForm
+from django.forms import formset_factory
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
@@ -381,7 +382,224 @@ def register_consultancy(request):
 
 @unauthenticated_user
 def register_establishment(request):
-    return render(request, 'register_establishment.html', {})
+    if request.method == 'POST':
+        establishment_email = request.POST.get('email')
+        establishment_phone = request.POST.get('phone')
+        establishment_username = generate_unique_establishment(establishment_phone, establishment_email) 
+
+        establishment_name = request.POST.get('name')
+        establishment_setdate = request.POST.get('setdate')
+        establishment_nature = request.POST.get('nature')
+        establishment_state = request.POST.get('state')
+        establishment_city = request.POST.get('city')
+        establishment_pincode = request.POST.get('pincode')
+        establishment_address = request.POST.get('address')
+        establishment_locationCount = request.POST.get('locationCount')
+    
+        establishment_user = EstablishmentUser.objects.create_user(
+        username=establishment_username,
+        email=establishment_email,
+        phone=establishment_phone,
+        password=establishment_phone,
+        name = establishment_name ,
+        setdate=establishment_setdate,
+        nature= establishment_nature,
+        state= establishment_state,
+        city= establishment_city,
+        pincode= establishment_pincode,
+        address = establishment_address,
+        locationCount= establishment_locationCount,
+        type='Establishment')
+
+        establishment_user.is_active = True
+        group, created = Group.objects.get_or_create(name="EST")
+        establishment_user.groups.add(group)
+        establishment_user.save()
+
+        # Handle the location forms
+        EstablishmentLocationFormSet = formset_factory(EstablishmentLocationForm, extra=int(establishment_locationCount))
+        location_formset = EstablishmentLocationFormSet(request.POST)
+
+        if location_formset.is_valid():
+            for form in location_formset:
+                if form.cleaned_data:  # Ensure the form is not empty
+                    EstablishmentLocation.objects.create(
+                        username=establishment_user,
+                        locstate=form.cleaned_data.get('locstate'),
+                        loccity=form.cleaned_data.get('loccity'),
+                        locpincode=form.cleaned_data.get('locpincode')
+                    )
+
+        if establishment_nature == 'principal':
+            username = establishment_user
+            directEmpmale = request.POST.get('directEmpmale')
+            directEmpfemale = request.POST.get('directEmpfemale')
+            directEmpothers = request.POST.get('directEmpothers')
+            indirectEmpmale = request.POST.get('indirectEmpmale')
+            indirectEmpfemale = request.POST.get('indirectEmpfemale')
+            indirectEmpothers = request.POST.get('indirectEmpothers')
+            vendorCount = request.POST.get('vendorCount')
+
+            principal = PrincipalEmployer(
+                username = username ,
+                directEmpmale = directEmpmale ,
+                directEmpfemale = directEmpfemale,
+                directEmpothers = directEmpothers,
+                indirectEmpmale =  indirectEmpmale,
+                indirectEmpfemale = indirectEmpfemale,
+                indirectEmpothers = indirectEmpothers,
+                vendorCount =  vendorCount,
+            )
+
+            principal.save()
+
+            # Handle the Vendor Location forms
+            VendorDetailsFormLocationFormSet = formset_factory(VendorDetailsForm, extra=int(vendorCount))
+            VendorDetailsForm_formset = VendorDetailsFormLocationFormSet(request.POST)
+
+            if VendorDetailsForm_formset.is_valid():
+                for form in VendorDetailsForm_formset:
+                    if form.cleaned_data:  # Ensure the form is not empty
+                        VendorDetails.objects.create(
+                            username=establishment_user,
+                            vendor_name = form.cleaned_data.get('vendor_name'),
+                            vendor_base_location = form.cleaned_data.get('vendor_base_location'),
+                            vendor_employees = form.cleaned_data.get('vendor_employees'),
+                            vendor_male_employees = form.cleaned_data.get('vendor_male_employees'),
+                            vendor_female_employees = form.cleaned_data.get('vendor_female_employees'),
+                            vendor_others = form.cleaned_data.get('vendor_others'),
+                            vendor_address = form.cleaned_data.get('vendor_address'),
+                        )
+
+        elif establishment_nature == 'vendor':
+
+            username = establishment_user
+            noHOEmpmale = request.POST.get('noHOEmpmale')
+            noHOEmpfemale = request.POST.get('noHOEmpfemale')
+            noHOEmpothers = request.POST.get('noHOEmpothers')
+            noDEPEmpmale = request.POST.get('noDEPEmpmale')
+            noDEPEmpfemale = request.POST.get('noDEPEmpmale')
+            noDEPEmpothers = request.POST.get('noDEPEmpothers')
+            siteCount = request.POST.get('siteCount')
+
+            vendor = Vendor(
+                username = username,
+                noHOEmpmale = noHOEmpmale,
+                noHOEmpfemale = noHOEmpfemale,
+                noHOEmpothers = noHOEmpothers,
+                noDEPEmpmale = noDEPEmpmale,
+                noDEPEmpfemale = noDEPEmpfemale,
+                noDEPEmpothers = noDEPEmpothers,
+                siteCount = siteCount ,
+            )
+
+            vendor.save()
+
+            # Handle the Establishment Location forms
+            PEDetailsFormLocationFormSet = formset_factory(PEDetailsForm, extra=int(siteCount))
+            PEDetailsForm_formset = PEDetailsFormLocationFormSet(request.POST)
+
+            if PEDetailsForm_formset.is_valid():
+                for form in PEDetailsForm_formset:
+                    if form.cleaned_data:  # Ensure the form is not empty
+                        PEDetails.objects.create(
+                            username=establishment_user,
+                            site_name=form.cleaned_data.get('site_name'),
+                            site_location=form.cleaned_data.get('site_location'),
+                            deployed_employees=form.cleaned_data.get('deployed_employees'),
+                            deployed_male_employees=form.cleaned_data.get('deployed_male_employees'),
+                            deployed_female_employees=form.cleaned_data.get('deployed_female_employees'),
+                            deployed_others=form.cleaned_data.get('deployed_others'),
+                            site_address=form.cleaned_data.get('site_address'),
+                        )
+
+
+        else:
+
+            username = establishment_user
+
+            directEmpmale = request.POST.get('directEmpmale')
+            directEmpfemale = request.POST.get('directEmpfemale')
+            directEmpothers = request.POST.get('directEmpothers')
+            indirectEmpmale = request.POST.get('indirectEmpmale')
+            indirectEmpfemale = request.POST.get('indirectEmpfemale')
+            indirectEmpothers = request.POST.get('indirectEmpothers')
+            vendorCount = request.POST.get('vendorCount')
+
+            noHOEmpmale = request.POST.get('noHOEmpmale')
+            noHOEmpfemale = request.POST.get('noHOEmpfemale')
+            noHOEmpothers = request.POST.get('noHOEmpothers')
+            noDEPEmpmale = request.POST.get('noDEPEmpmale')
+            noDEPEmpfemale = request.POST.get('noDEPEmpmale')
+            noDEPEmpothers = request.POST.get('noDEPEmpothers')
+            siteCount = request.POST.get('siteCount')
+            
+            principal = PrincipalEmployer(
+                username = username ,
+                directEmpmale = directEmpmale ,
+                directEmpfemale = directEmpfemale,
+                directEmpothers = directEmpothers,
+                indirectEmpmale =  indirectEmpmale,
+                indirectEmpfemale = indirectEmpfemale,
+                indirectEmpothers = indirectEmpothers,
+                vendorCount =  vendorCount,
+            )
+            
+            vendor = Vendor(
+                username = username,
+                noHOEmpmale = noHOEmpmale,
+                noHOEmpfemale = noHOEmpfemale,
+                noHOEmpothers = noHOEmpothers,
+                noDEPEmpmale = noDEPEmpmale,
+                noDEPEmpfemale = noDEPEmpfemale,
+                noDEPEmpothers = noDEPEmpothers,
+                siteCount = siteCount ,
+            )
+
+            principal.save()
+            vendor.save()
+
+            # Handle the Establishment Location forms
+            PEDetailsFormLocationFormSet = formset_factory(PEDetailsForm, extra=int(siteCount))
+            PEDetailsForm_formset = PEDetailsFormLocationFormSet(request.POST)
+
+            if PEDetailsForm_formset.is_valid():
+                for form in PEDetailsForm_formset:
+                    if form.cleaned_data:  # Ensure the form is not empty
+                        PEDetails.objects.create(
+                            username=establishment_user,
+                            site_name=form.cleaned_data.get('site_name'),
+                            site_location=form.cleaned_data.get('site_location'),
+                            deployed_employees=form.cleaned_data.get('deployed_employees'),
+                            deployed_male_employees=form.cleaned_data.get('deployed_male_employees'),
+                            deployed_female_employees=form.cleaned_data.get('deployed_female_employees'),
+                            deployed_others=form.cleaned_data.get('deployed_others'),
+                            site_address=form.cleaned_data.get('site_address'),
+                        )
+                        
+            # Handle the Vendor Location forms
+            VendorDetailsFormLocationFormSet = formset_factory(VendorDetailsForm, extra=int(vendorCount))
+            VendorDetailsForm_formset = VendorDetailsFormLocationFormSet(request.POST)
+
+            if VendorDetailsForm_formset.is_valid():
+                for form in VendorDetailsForm_formset:
+                    if form.cleaned_data:  # Ensure the form is not empty
+                        VendorDetails.objects.create(
+                            username=establishment_user,
+                            vendor_name = form.cleaned_data.get('vendor_name'),
+                            vendor_base_location = form.cleaned_data.get('vendor_base_location'),
+                            vendor_employees = form.cleaned_data.get('vendor_employees'),
+                            vendor_male_employees = form.cleaned_data.get('vendor_male_employees'),
+                            vendor_female_employees = form.cleaned_data.get('vendor_female_employees'),
+                            vendor_others = form.cleaned_data.get('vendor_others'),
+                            vendor_address = form.cleaned_data.get('vendor_address'),
+                        )
+
+            user = authenticate(request, username=username, password=establishment_phone)
+            login(request, user)
+
+        return redirect('/') 
+    return render(request, 'register_establishment.html')
 
 @unauthenticated_user
 def register(request):

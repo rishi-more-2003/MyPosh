@@ -95,3 +95,71 @@ class Education(models.Model):
     end_date = models.DateField(null=True, blank=True)
     grade = models.CharField(max_length=10, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+
+
+#Establishment FORM
+class EstablishmentUser(PoshUser):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    setdate = models.DateField(null=True, blank=True)
+    nature = models.CharField(max_length=255, null=True, blank=True)
+    state = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    pincode = models.CharField(max_length=16, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+    locationCount = models.PositiveIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.username
+
+
+class EstablishmentLocation(models.Model):
+    username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    locstate = models.CharField(max_length=255, null=True, blank=True)
+    loccity = models.CharField(max_length=255, null=True, blank=True)
+    locpincode = models.CharField(max_length=16, null=True, blank=True)
+
+
+
+class PrincipalEmployer(models.Model):
+    username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    directEmpmale = models.PositiveIntegerField(null=True, blank=True)
+    directEmpfemale = models.PositiveIntegerField(null=True, blank=True)
+    directEmpothers = models.PositiveIntegerField(null=True, blank=True)
+    indirectEmpmale = models.PositiveIntegerField(null=True, blank=True)
+    indirectEmpfemale = models.PositiveIntegerField(null=True, blank=True)
+    indirectEmpothers = models.PositiveIntegerField(null=True, blank=True)
+    vendorCount = models.PositiveIntegerField(null=True, blank=True)
+
+class Vendor(models.Model):
+    username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    noHOEmpmale = models.PositiveIntegerField(null=True, blank=True)
+    noHOEmpfemale = models.PositiveIntegerField(null=True, blank=True)
+    noHOEmpothers = models.PositiveIntegerField(null=True, blank=True)
+    noDEPEmpmale = models.PositiveIntegerField(null=True, blank=True)
+    noDEPEmpfemale = models.PositiveIntegerField(null=True, blank=True)
+    noDEPEmpothers = models.PositiveIntegerField(null=True, blank=True)
+    siteCount = models.PositiveIntegerField(null=True, blank=True)
+    
+
+
+class PEDetails(models.Model):
+    username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    site_name = models.CharField(max_length=255, null=True, blank=True)
+    site_location = models.CharField(max_length=255, null=True, blank=True)
+    deployed_employees = models.PositiveIntegerField(null=True, blank=True)
+    deployed_male_employees = models.PositiveIntegerField(null=True, blank=True)
+    deployed_female_employees = models.PositiveIntegerField(null=True, blank=True)
+    deployed_others = models.PositiveIntegerField(null=True, blank=True)
+    site_address = models.TextField(null=True, blank=True)
+
+
+class VendorDetails(models.Model):
+    username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    vendor_name = models.CharField(max_length=255, null=True, blank=True)
+    vendor_base_location = models.CharField(max_length=255, null=True, blank=True)
+    vendor_employees = models.PositiveIntegerField(null=True, blank=True)
+    vendor_male_employees = models.PositiveIntegerField(null=True, blank=True)
+    vendor_female_employees = models.PositiveIntegerField(null=True, blank=True)
+    vendor_others = models.PositiveIntegerField(null=True, blank=True)
+    vendor_address = models.TextField(null=True, blank=True)
+

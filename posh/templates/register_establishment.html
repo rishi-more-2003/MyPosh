@@ -30,7 +30,7 @@
         <header>
             Registration
         </header>
-        <form method="POST" action="{% url 'register' %}">
+        <form method="POST" >
             {% csrf_token %}
             <div class="form-first">
                 <div class="details personal">
@@ -41,17 +41,17 @@
                     <div class="fields">
                         <div class="input-field">
                             <label>Name</label>
-                            <input type="text" name="name" placeholder="Enter Establishment Name" required>
+                            <input type="text" name="name" id="name" placeholder="Enter Establishment Name" required>
                         </div>
 
                         <div class="input-field">
                             <label for="date-input">Date of Setup</label>
-                            <input type="date" name='setdate' id="date-input" placeholder="Enter date of setup" required>
+                            <input type="date" name='setdate' id="setdate" placeholder="Enter date of setup" required>
                         </div>
 
                         <div class="input-field">
                             <label>Nature of Establishment</label>
-                            <select id="natureOfEstablishment" name="gen" class="form-control" required>
+                            <select id="natureOfEstablishment" name="nature" id="nature" class="form-control" required>
                                 <option value="" disabled selected>Select</option>
                                 <option value="principal">Principal Employer</option>
                                 <option value="vendor">Vendor</option>
@@ -71,15 +71,15 @@
                     <div class="fields">
                         <div class="input-field">
                             <label>Male</label>
-                            <input type="number" name="male" placeholder="Total male employees" required>
+                            <input type="number" name="directEmpmale" id="directEmpmale" placeholder="Total male employees" >
                         </div>   
                         <div class="input-field"> 
                             <label>Female</label>
-                            <input type="number" name="female" placeholder="Total female employees" required>
+                            <input type="number" name="directEmpfemale" id="directEmpfemale" placeholder="Total female employees">
                         </div>  
                         <div class="input-field">
                             <label>Others</label>
-                            <input type="number" name="others" placeholder="" >
+                            <input type="number" name="directEmpothers" id="directEmpothers" placeholder="" >
                         </div>
                     </div>
                     <span class="title">
@@ -88,21 +88,21 @@
                     <div class="fields">
                         <div class="input-field">
                             <label>Male</label>
-                            <input type="number" name="male" placeholder="Total male employees" required>
+                            <input type="number" name="indirectEmpmale" id="indirectEmpmale" placeholder="Total male employees" >
                         </div>   
                         <div class="input-field"> 
                             <label>Female</label>
-                            <input type="number" name="female" placeholder="Total female employees" required>
+                            <input type="number"  name="indirectEmpfemale" id="indirectEmpfemale" placeholder="Total female employees" >
                         </div>  
                         <div class="input-field">
                             <label>Others</label>
-                            <input type="number" name="others" placeholder="">
+                            <input type="number" name="indirectEmpothers" id="indirectEmpothers" placeholder="">
                         </div>
                     </div>
                         <!-- Number of Vendors/Contractors -->
                         <div class="input-field">
                             <label>No. of Vendors/Contractors</label>
-                            <input type="number" id="vendorCount" name="vendor_count" oninput="generateVendorDetails()" placeholder="Enter count" required>
+                            <input type="number" id="vendorCount" name="vendorCount" oninput="generateVendorDetails()" placeholder="Enter count" >
                         </div>
 
                         <!-- Generated Vendor/Contractor Details -->
@@ -122,15 +122,15 @@
                         <div class="fields">
                             <div class="input-field">
                                 <label>Male</label>
-                                <input type="number" name="male" placeholder="Total male employees" required>
+                                <input type="number" name="noHOEmpmale" id="noHOEmpmale" placeholder="Total male employees" >
                             </div>   
                             <div class="input-field"> 
                                 <label>Female</label>
-                                <input type="number" name="female" placeholder="Total female employees" required>
+                                <input type="number" name="noHOEmpfemale" id="noHOEmpfemale" placeholder="Total female employees" >
                             </div>  
                             <div class="input-field">
                                 <label>Others</label>
-                                <input type="number" name="others" placeholder="">
+                                <input type="number" name="noHOEmpothers" id="noHOEmpothers" placeholder="">
                             </div>
                         </div>
                         <span class="title">
@@ -139,21 +139,21 @@
                         <div class="fields">
                             <div class="input-field">
                                 <label>Male</label>
-                                <input type="number" name="male" placeholder="Total male employees" required>
+                                <input type="number" name="noDEPEmpmale" id="noDEPEmpmale" placeholder="Total male employees" >
                             </div>   
                             <div class="input-field"> 
                                 <label>Female</label>
-                                <input type="number" name="female" placeholder="Total female employees" required>
+                                <input type="number" name="noDEPEmpfemale" id="noDEPEmpfemale" placeholder="Total female employees" >
                             </div>  
                             <div class="input-field">
                                 <label>Others</label>
-                                <input type="number" name="others" placeholder="" >
+                                <input type="number" name="noDEPEmpothers" id="noDEPEmpothers" placeholder="" >
                             </div>
                         </div>
                             <!-- Number of Vendors/Contractors -->
                         <div class="input-field">
                             <label>No. of Sites/Principal Employer</label>
-                            <input type="number" id="siteCount" name="site_count" oninput="generateSiteDetails()" placeholder="Enter count" required>
+                            <input type="number" id="siteCount" name="siteCount" oninput="generateSiteDetails()" placeholder="Enter count" >
                         </div>
     
                         <!-- Generated Vendor/Contractor Details -->
@@ -188,14 +188,14 @@
                     <div class="details address">
                         <div class="input-field address-field">
                             <label>Official Address</label>
-                            <textarea type="text" name="address" cols="40" rows="5" placeholder="Enter Address" required></textarea>
+                            <textarea type="text" name="address" id="address" cols="40" rows="5" placeholder="Enter Address" required></textarea>
                         </div>
                     </div>
 
                     <!-- Number of Locations -->
                     <div class="input-field">
                         <label>No. of Locations</label>
-                        <input type="number" id="locationCount" name="location_count" oninput="generateLocationDetails()" placeholder="Enter count" required>
+                        <input type="number" id="locationCount" name="locationCount" oninput="generateLocationDetails()" placeholder="Enter count" required>
                     </div>
 
                     <!-- Generated Vendor/Contractor Details -->

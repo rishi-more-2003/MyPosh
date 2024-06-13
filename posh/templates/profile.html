@@ -47,9 +47,9 @@
 
 {% block content %}
     <div class="container light-style flex-grow-1 container-p-y">
-        <h4 class="font-weight-bold py-3 mb-4">
+        {% comment %} <h4 class="font-weight-bold py-3 mb-4">
             Profile
-        </h4>
+        </h4> {% endcomment %}
         <div class="card overflow-hidden">
             <div class="row no-gutters row-bordered row-border-light">
                 <div class="col-md-12">
@@ -186,6 +186,67 @@
                                     <label for="longdescriptionInput">Description</label>
                                     <textarea id="longdescriptionInput" name="description" class="form-control" rows="5" placeholder="Describe yourself in up to 500 words">{{ user.individualuser.description }}</textarea>
                                 </div>
+
+                                {% comment %} <hr> {% endcomment %}
+
+                                <div class="form-group">
+                                    <label for="committeesInput" class="mr-2">Currently Member in How Many Committees</label>
+                                    <!-- Currently Member in How Many Committees -->
+                                    <div class="input-field d-flex align-items-center">
+                                        <input type="number" id="comitteeCount" name="comitteeCount" class="form-control mr-2" placeholder="Enter count">
+                                        <button type="button" class="btn btn-primary" onclick="addCommitteeField()">Add UID</button>
+                                    </div>
+
+                                    <!-- Generated Vendor/Contractor Details -->
+                                    <div id="committeesDetailsSection" class="details comittee-details">
+                                        <!-- The dynamically generated vendor details will be appended here -->
+                                    </div>
+                                </div>
+                                <hr>
+                                    
+                                    <!-- Currently Member in How Many Committees -->
+                                    <div class="form-group">
+                                        <div class="input-field d-flex justify-content-between align-items-center mb-2">
+                                            <label for="clientCount" class="mr-2">CURRENT TOP FIVE CLIENTS</label>
+                                            <div class="d-flex align-items-center">
+                                                <button type="button" class="btn btn-primary" onclick="addClientsField()">Add+</button>
+                                            </div>
+                                        </div>
+
+                                    <!-- Generated Vendor/Contractor Details -->
+                                    <div id="clientDetailsSection" class="details client-details">
+                                        <!-- The dynamically generated vendor details will be appended here -->
+                                    </div>
+                                </div>
+                                
+                                <hr>
+                                
+                                <div class="form-group">
+
+                                <div class="input-field d-flex justify-content-between align-items-center mb-2">
+                                    <label>Associated with NGO/Consultancy Firm</label>
+                                    <select id="association" name="association" class="form-control">
+                                        <option value="" disabled selected>Select</option>
+                                        <option value="yes">Yes</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Section for Association Employer -->
+                                <div id="associationSection" class="details association-section" style="display: none;">
+                                    <span>
+                                        NGO/Consultancy Details
+                                    </span> 
+                                    <div class="input-field d-flex justify-content-between align-items-center mb-2"> 
+                                        <input type="text" name="firmname" id="firmname" placeholder="Name of the Firm" class="form-control mr-2" >
+                                        <input type="text" name="firmuid" id="firmuid" placeholder="Enter Firm UID" class="form-control mr-2">
+                                    </div>  
+                                </div>
+                                </div>
+
+
+                                {% comment %} <hr> {% endcomment %}
+                                
                             <div class="text-right mt-3">
                                 <button type="button" class="btn btn-default">Back</button>
                                 <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
@@ -196,9 +257,56 @@
                                 <div class="card-body pb-2">
                                     <div class="form-group">
                                         <div class="add_education">
+                                            <h4>Service Charges</h4>
+                                            <a href="{% url 'education' %}" >
+                                            <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add/Edit</button>
+                                            </a>
+                                        </div>              
+                            <!-- Education Section -->
+                            <div id="education-section">
+                                <ul id="education-list">
+                                    <!-- Educational experiences will be dynamically added here -->
+                                    {% if education_list %}
+                                        <ul>
+                                            {% for education in education_list %}
+                                                <li>
+                                                    <strong>School:</strong> {{ education.school }}<br>
+                                                    <strong>Degree:</strong> {{ education.degree }}<br>
+                                                    {% if education.field_of_study %}
+                                                        <strong>Field of Study:</strong> {{ education.field_of_study }}<br>
+                                                    {% endif %}
+                                                    {% if education.start_date %}
+                                                        <strong>Start Date:</strong> {{ education.start_date }}<br>
+                                                    {% endif %}
+                                                    {% if education.end_date %}
+                                                        <strong>End Date:</strong> {{ education.end_date }}<br>
+                                                    {% endif %}
+                                                    {% if education.grade %}
+                                                        <strong>Grade:</strong> {{ education.grade }}<br>
+                                                    {% endif %}
+                                                    {% if education.description %}
+                                                        <strong>Description:</strong> {{ education.description }}<br>
+                                                    {% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p>No education records found.</p>
+                                    {% endif %}
+                                </ul>
+                            </div>                                  
+                                    </div>
+                                </div>
+                            </div>    
+                            <hr>
+
+                            <div class="tab-pane" id="account-education">
+                                <div class="card-body pb-2">
+                                    <div class="form-group">
+                                        <div class="add_education">
                                             <h2>Education Details</h2>
                                             <a href="{% url 'education' %}" >
-                                            <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add</button>
+                                            <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add/Edit</button>
                                             </a>
                                         </div>              
                             <!-- Education Section -->
