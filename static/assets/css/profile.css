@@ -208,6 +208,63 @@ label.btn {
     margin-bottom: -50px;
 }
 
+.service-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+.buttons {
+    text-align: right;
+    margin-left: 20px;
+}
+.buttons form,
+.buttons a {
+    display: inline-block;
+    margin-left: 5px;
+}
+.buttons button {
+    margin-left: 5px;
+}
+#service-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    width:100%; 
+    table-layout: fixed;
+}
+#service-table, #service-table th, #service-table td {
+    border: 1px solid #ddd;
+}
+#service-table th, #service-table td {
+    padding: 8px;
+    text-align: left;
+    word-wrap: break-word; 
+    white-space: normal;
+}
+#service-table th {
+    text-align: center;
+    background-color: #f2f2f2;
+}
+#service-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+#service-table tr:hover {
+    background-color: #f1f1f1;
+}
+#service-table th:nth-child(3), #service-table td:nth-child(3) {
+    width: 50%; /* Description column */
+}
+#service-table th:nth-child(4), #service-table td:nth-child(4),
+#service-table th:nth-child(5), #service-table td:nth-child(5) {
+    width: 10%; /* Edit and Delete columns */
+}
+#deletebtn, #editbtn {
+    width: 90%; /* Ensure buttons take full width of their cell */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
 
 /* .btn-facebook {
     border-color: rgba(0, 0, 0, 0);

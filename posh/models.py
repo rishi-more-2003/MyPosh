@@ -81,10 +81,22 @@ class IndividualUser(PoshUser):
     aadhar = models.CharField(max_length=20, blank=True)
     marital = models.CharField(max_length=10, blank=True)
     description = models.TextField(max_length=500, blank=True)
+    current_member = models.CharField(max_length=10, blank=True)
+    association = models.CharField(max_length=10, blank=True)
+    firm_name = models.CharField(max_length=150, blank=True)
+    firm_uid = models.CharField(max_length=15, blank=True)
 
     class Meta:
         verbose_name = 'Individual User'
         verbose_name_plural = 'Individual Users'
+    
+class ComitteeCount(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comitteecount')
+    comittee_uid = models.CharField(max_length=15, blank=True)
+
+class CurrentClient(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='client')
+    client_name = models.CharField(max_length=150, blank=True)
 
 class Education(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='education')
@@ -96,6 +108,35 @@ class Education(models.Model):
     grade = models.CharField(max_length=10, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
+class Experience(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='experience')
+    titleInput = models.CharField(max_length=100)
+    companyNameInput = models.CharField(max_length=100)
+    currentlyWorkingInput = models.BooleanField(default=False, null=True, blank=True )
+    startDateexp = models.DateField(null=True, blank=True)
+    endDateexp = models.DateField(null=True, blank=True)
+    industryInput = models.CharField(max_length=20, null=True, blank=True)
+    locationInput = models.CharField(max_length=20, null=True, blank=True)
+    descriptionInputexp = models.TextField(null=True, blank=True)
+
+class Certification(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='certification')
+    certificationNameInput = models.CharField(max_length=100)
+    issuingOrganizationInput = models.CharField(max_length=100)
+    issueDate = models.DateField(null=True, blank=True)
+    expirationDate = models.DateField(null=True, blank=True)
+    credentialIdInput = models.CharField(max_length=20, null=True, blank=True)
+    credentialUrlInput = models.CharField(max_length=20, null=True, blank=True)
+
+class Skill(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='skill')
+    skillsInput = models.CharField(max_length=100)
+
+class Service(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='service')
+    service_name = models.CharField(max_length=100, null=False, blank=False)
+    service_charge = models.CharField(max_length=100, null=False, blank=False)
+    service_description = models.CharField(max_length=255, null=True, blank=True)
 
 #Establishment FORM
 class EstablishmentUser(PoshUser):

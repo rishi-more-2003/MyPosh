@@ -193,9 +193,27 @@
                                     <label for="committeesInput" class="mr-2">Currently Member in How Many Committees</label>
                                     <!-- Currently Member in How Many Committees -->
                                     <div class="input-field d-flex align-items-center">
-                                        <input type="number" id="comitteeCount" name="comitteeCount" class="form-control mr-2" placeholder="Enter count">
+                                        <input type="number" id="comitteeCount" name="comitteeCount" class="form-control mr-2" placeholder="Enter count" value="{{ user.individualuser.current_member }}">
                                         <button type="button" class="btn btn-primary" onclick="addCommitteeField()">Add UID</button>
                                     </div>
+
+                                    <div id="education-section">
+                                        <ul id="education-list">
+                                            {% if comittee_uid_list %}
+                                            <ul>
+                                                {% for comittee in comittee_uid_list %}
+                                                <li class="d-flex justify-content-between align-items-center">
+                                                    {{ forloop.counter }}. Committee UID: {{ comittee.comittee_uid }}
+                                                    <a href="{% url 'comittee_uid' comittee.id %}" class="btn btn-danger btn-sm delete-button">
+                                                        Delete
+                                                    </a>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                    
 
                                     <!-- Generated Vendor/Contractor Details -->
                                     <div id="committeesDetailsSection" class="details comittee-details">
@@ -219,6 +237,23 @@
                                     </div>
                                 </div>
                                 
+                                <div id="education-section">
+                                    <ul id="education-list">
+                                        {% if current_client_list %}
+                                        <ul>
+                                            {% for client in current_client_list %}
+                                            <li class="d-flex justify-content-between align-items-center">
+                                                {{ forloop.counter }}. Committee UID: {{ client.client_name }}
+                                                <a href="{% url 'client_name' client.id %}" class="btn btn-danger btn-sm delete-button">
+                                                    Delete
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+
                                 <hr>
                                 
                                 <div class="form-group">
@@ -226,24 +261,23 @@
                                 <div class="input-field d-flex justify-content-between align-items-center mb-2">
                                     <label>Associated with NGO/Consultancy Firm</label>
                                     <select id="association" name="association" class="form-control">
-                                        <option value="" disabled selected>Select</option>
-                                        <option value="yes">Yes</option>
-                                        <option value="no">No</option>
+                                        <option value="" disabled {% if association != "yes" and association != "no" %}selected{% endif %}>Select</option>
+                                        <option value="yes" {% if association == "yes" %}selected{% endif %}>Yes</option>
+                                        <option value="no" {% if association == "no" %}selected{% endif %}>No</option>
                                     </select>
                                 </div>
                                 
-                                <!-- Section for Association Employer -->
-                                <div id="associationSection" class="details association-section" style="display: none;">
-                                    <span>
-                                        NGO/Consultancy Details
-                                    </span> 
-                                    <div class="input-field d-flex justify-content-between align-items-center mb-2"> 
-                                        <input type="text" name="firmname" id="firmname" placeholder="Name of the Firm" class="form-control mr-2" >
-                                        <input type="text" name="firmuid" id="firmuid" placeholder="Enter Firm UID" class="form-control mr-2">
-                                    </div>  
+                                    <!-- Section for Association Employer -->
+                                    <div id="associationSection" class="details association-section" style="display: {% if association == 'yes' %}block{% else %}none{% endif %};">
+                                        <span>
+                                            NGO/Consultancy Details
+                                        </span>
+                                        <div class="input-field d-flex justify-content-between align-items-center mb-2">
+                                            <input type="text" name="firmname" id="firmname" placeholder="Name of the Firm" class="form-control mr-2" value="{{ firm_name }}">
+                                            <input type="text" name="firmuid" id="firmuid" placeholder="Enter Firm UID" class="form-control mr-2" value="{{ firm_uid }}">
+                                        </div>
+                                    </div>
                                 </div>
-                                </div>
-
 
                                 {% comment %} <hr> {% endcomment %}
                                 
@@ -252,126 +286,246 @@
                                 <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
                             </div>
                         </div>
-                            <hr>
-                            <div class="tab-pane" id="account-education">
-                                <div class="card-body pb-2">
-                                    <div class="form-group">
-                                        <div class="add_education">
-                                            <h4>Service Charges</h4>
-                                            <a href="{% url 'education' %}" >
-                                            <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add/Edit</button>
-                                            </a>
-                                        </div>              
-                            <!-- Education Section -->
-                            <div id="education-section">
-                                <ul id="education-list">
-                                    <!-- Educational experiences will be dynamically added here -->
-                                    {% if education_list %}
-                                        <ul>
-                                            {% for education in education_list %}
-                                                <li>
-                                                    <strong>School:</strong> {{ education.school }}<br>
-                                                    <strong>Degree:</strong> {{ education.degree }}<br>
-                                                    {% if education.field_of_study %}
-                                                        <strong>Field of Study:</strong> {{ education.field_of_study }}<br>
-                                                    {% endif %}
-                                                    {% if education.start_date %}
-                                                        <strong>Start Date:</strong> {{ education.start_date }}<br>
-                                                    {% endif %}
-                                                    {% if education.end_date %}
-                                                        <strong>End Date:</strong> {{ education.end_date }}<br>
-                                                    {% endif %}
-                                                    {% if education.grade %}
-                                                        <strong>Grade:</strong> {{ education.grade }}<br>
-                                                    {% endif %}
-                                                    {% if education.description %}
-                                                        <strong>Description:</strong> {{ education.description }}<br>
-                                                    {% endif %}
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% else %}
-                                        <p>No education records found.</p>
-                                    {% endif %}
-                                </ul>
-                            </div>                                  
-                                    </div>
-                                </div>
-                            </div>    
-                            <hr>
 
-                            <div class="tab-pane" id="account-education">
-                                <div class="card-body pb-2">
-                                    <div class="form-group">
-                                        <div class="add_education">
-                                            <h2>Education Details</h2>
-                                            <a href="{% url 'education' %}" >
-                                            <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add/Edit</button>
-                                            </a>
-                                        </div>              
-                            <!-- Education Section -->
-                            <div id="education-section">
-                                <ul id="education-list">
-                                    <!-- Educational experiences will be dynamically added here -->
-                                    {% if education_list %}
-                                        <ul>
-                                            {% for education in education_list %}
-                                                <li>
-                                                    <strong>School:</strong> {{ education.school }}<br>
-                                                    <strong>Degree:</strong> {{ education.degree }}<br>
-                                                    {% if education.field_of_study %}
-                                                        <strong>Field of Study:</strong> {{ education.field_of_study }}<br>
-                                                    {% endif %}
-                                                    {% if education.start_date %}
-                                                        <strong>Start Date:</strong> {{ education.start_date }}<br>
-                                                    {% endif %}
-                                                    {% if education.end_date %}
-                                                        <strong>End Date:</strong> {{ education.end_date }}<br>
-                                                    {% endif %}
-                                                    {% if education.grade %}
-                                                        <strong>Grade:</strong> {{ education.grade }}<br>
-                                                    {% endif %}
-                                                    {% if education.description %}
-                                                        <strong>Description:</strong> {{ education.description }}<br>
-                                                    {% endif %}
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% else %}
-                                        <p>No education records found.</p>
-                                    {% endif %}
-                                </ul>
-                            </div>                                  
+                        <hr>
+                        
+                        <div class="tab-pane" id="account-service">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    <div class="add_service">
+                                        <h4>Service Charges</h4>
+                                        <a href="{% url 'service' %}" >
+                                        <button type='button' id="add-service-btn" data-toggle="modal" data-target="#addServiceModal">+ Add/Edit</button>
+                                        </a>
+                                    </div>     
+
+                                    <!-- Service Section -->
+                                    <div id="service-section">
+                                        <table id="service-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Service</th>
+                                                    <th>Charges</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- service will be dynamically added here -->
+                                                {% if service_list %}
+                                                    {% for service in service_list %}
+                                                        <tr>
+                                                            <td>{{ service.service_name }}</td>
+                                                            <td>{{ service.service_charge }}</td>
+                                                            <td>
+                                                            {{ service.service_description }}<br>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="5">No service records found.</td>
+                                                    </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
-                            <hr>
-                            <div class="tab-pane" id="account-experience">
-                                <div class="card-body pb-2">
-                                    <div class="form-group">
-                                        {% include "experience.html" %}
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="tab-pane" id="account-skill">
-                                <div class="card-body pb-2">
-                                    <div class="form-group">
-                                        {% include "skills.html" %}
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="tab-pane" id="account-certification">
-                                <div class="card-body pb-2">
-                                    <div class="form-group">
-                                        {% include "certifications.html" %}
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                        </form>
                         </div>
+
+
+                        <hr>
+
+                        <div class="tab-pane" id="account-education">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    <div class="add_education">
+                                        <h4>Education Details</h4>
+                                        <a href="{% url 'education' %}" >
+                                        <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add/Edit</button>
+                                        </a>
+                                    </div>              
+                                    <!-- Education Section -->
+                                    <div id="education-section">
+                                        <ul id="education-list">
+                                            <!-- Educational experiences will be dynamically added here -->
+                                            {% if education_list %}
+                                                <ul>
+                                                    {% for education in education_list %}
+                                                        <li>
+                                                            <strong>School:</strong> {{ education.school }}<br>
+                                                            <strong>Degree:</strong> {{ education.degree }}<br>
+                                                            {% if education.field_of_study %}
+                                                                <strong>Field of Study:</strong> {{ education.field_of_study }}<br>
+                                                            {% endif %}
+                                                            {% if education.start_date %}
+                                                                <strong>Start Date:</strong> {{ education.start_date }}<br>
+                                                            {% endif %}
+                                                            {% if education.end_date %}
+                                                                <strong>End Date:</strong> {{ education.end_date }}<br>
+                                                            {% endif %}
+                                                            {% if education.grade %}
+                                                                <strong>Grade:</strong> {{ education.grade }}<br>
+                                                            {% endif %}
+                                                            {% if education.description %}
+                                                                <strong>Description:</strong> {{ education.description }}<br>
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <p>No education records found.</p>
+                                            {% endif %}
+                                        </ul>
+                                    </div>                                  
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="tab-pane" id="account-experience">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    <div class="add_experience">
+                                        <h4>Experience Details</h4>
+                                        <a href="{% url 'experience' %}" >
+                                            <button type='button' id="add-experience-btn" data-toggle="modal" data-target="#addExperienceModal">+ Add/Edit</button>
+                                        </a>
+                                    </div>     
+
+                                    <!-- Experience Section -->
+                                    <div id="experience-section">
+                                        <ul id="experience-list">
+                                            <!-- Experience will be dynamically added here -->
+                                            {% if experience_list %}
+                                                <ul>
+                                                    {% for experience in experience_list %}
+                                                        <li>
+                                                            <strong>Title:</strong> {{ experience.titleInput }}<br>
+                                                            <strong>Company Name:</strong> {{ experience.companyNameInput }}<br>
+                                                
+                                                            {% if experience.currentlyWorkingInput is not None %}
+                                                                <strong>Currently Working:</strong> {{ experience.currentlyWorkingInput|yesno:"Yes,No" }}<br>
+                                                            {% endif %}
+                                                
+                                                            {% if experience.startDateexp %}
+                                                                <strong>Start Date:</strong> {{ experience.startDateexp }}<br>
+                                                            {% endif %}
+                                                
+                                                            {% if experience.endDateexp or experience.currentlyWorkingInput %}
+                                                                <strong>End Date:</strong> {% if experience.currentlyWorkingInput %}Present{% else %}{{ experience.endDateexp }}{% endif %}<br>
+                                                            {% endif %}
+                                                
+                                                            {% if experience.industryInput %}
+                                                                <strong>Industry:</strong> {{ experience.industryInput }}<br>
+                                                            {% endif %}
+                                                
+                                                            {% if experience.locationInput %}
+                                                                <strong>Location:</strong> {{ experience.locationInput }}<br>
+                                                            {% endif %}
+                                                
+                                                            {% if experience.descriptionInputexp %}
+                                                                <strong>Description:</strong> {{ experience.descriptionInputexp }}<br>
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <p>No experience records found.</p>
+                                            {% endif %}
+                                        </ul>
+                                    </div>                                 
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="tab-pane" id="account-skills">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    <div class="add_skills">
+                                        <h4>Skill Details</h4>
+                                        <a href="{% url 'skill' %}" >
+                                            <button type='button' id="add-skills-btn" data-toggle="modal" data-target="#addSkillsModal">+ Add/Edit</button>
+                                        </a>
+                                    </div>     
+
+                                    <!-- Skill Section -->
+                                    <div id="skill-section">
+                                        <ul id="skills-list">
+                                            <!-- skills will be dynamically added here -->
+                                            {% if skill_list %}
+                                                <ul>
+                                                    {% for skill in skill_list %}
+                                                        <li>
+                                                            {{ skill.skillsInput }}<br>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <p>No skill records found.</p>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="tab-pane" id="account-certification">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    <div class="add_certification">
+                                        <h4>Certification Details</h4>
+                                        <a href="{% url 'certification' %}" >
+                                            <button type='button' id="add-certification-btn" data-toggle="modal" data-target="#addCertificationModal">+ Add/Edit</button>
+                                        </a>
+                                    </div>     
+
+                                    <!-- certification Section -->
+                                    <div id="certification-section">
+                                        <ul id="certification-list">
+                                            <!-- certificational experiences will be dynamically added here -->
+                                            {% if cert_list %}
+                                                <ul>
+                                                    {% for certification in cert_list %}
+                                                        <li>
+                                                            <strong>Name:</strong> {{ certification.certificationNameInput }}<br>
+                                                            <strong>Organization:</strong> {{ certification.issuingOrganizationInput }}<br>
+
+                                                            {% if certification.issueDate %}
+                                                                <strong>Issue Date:</strong> {{ certification.issueDate }}<br>
+                                                            {% endif %}
+                                                            {% if certification.expirationDate %}
+                                                                <strong>Expiration Date:</strong> {{ certification.expirationDate }}<br>
+                                                            {% endif %}
+
+                                                            {% if certification.credentialIdInput %}
+                                                                <strong>Credential Id:</strong> {{ certification.credentialIdInput }}<br>
+                                                            {% endif %}
+                                                            {% if certification.credentialUrlInput %}
+                                                                <strong>Credential URL:</strong> {{ certification.credentialUrlInput }}<br>
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <p>No certification records found.</p>
+                                            {% endif %}
+                                        </ul>
+                                    </div>                              
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        </form>
+
+                    </div>
                         
 
 
@@ -391,12 +545,12 @@
                                 </div>
                             </div>
                         </div> {% endcomment %}
-                    </div>
+
                 </div>
             </div>
         </div>
-
     </div>
+</div>
 
 
 {% endblock %}

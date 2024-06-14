@@ -3,7 +3,10 @@ from django.urls import reverse
 from django.views import View
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from .models import IndividualUser, Education, NGOUser, PoshUser, ConsultancyUser, EstablishmentUser, EstablishmentLocation, PrincipalEmployer, Vendor, PEDetails, VendorDetails
+from .models import (IndividualUser, Education, NGOUser, PoshUser, ConsultancyUser, EstablishmentUser, 
+                     EstablishmentLocation, PrincipalEmployer, Vendor, PEDetails, VendorDetails,
+                     ComitteeCount, CurrentClient, Service, Skill, Certification, Experience)
+
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -19,7 +22,7 @@ import datetime
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from .decorators import unauthenticated_user, allowed_users
-from .forms import EstablishmentLocationForm, PEDetailsForm, VendorDetailsForm
+from .forms import EstablishmentLocationForm, PEDetailsForm, VendorDetailsForm, CurrentClientForm, ComitteeCountForm
 from django.forms import formset_factory
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
@@ -95,6 +98,19 @@ def delete_education(request, pk):
     # education_list = Education.objects.all()
     return HttpResponseRedirect(reverse('education'))
 
+def delete_comitteeuid(request, pk):
+    instance = get_object_or_404(ComitteeCount, pk=pk)
+    instance.delete()
+    # education_list = Education.objects.all()
+    return HttpResponseRedirect(reverse('profile'))
+
+def delete_clientname(request, pk):
+    instance = get_object_or_404(CurrentClient, pk=pk)
+    instance.delete()
+    # education_list = Education.objects.all()
+    return HttpResponseRedirect(reverse('profile'))
+
+
 @login_required
 def education(request):
     user = request.user
@@ -143,6 +159,343 @@ def education(request):
     return render(request, 'education.html', context)
 
 @login_required
+def service(request):
+    user = request.user
+    if request.method == 'POST':
+        service_name = request.POST.get('service_name')
+        service_charge = request.POST.get('service_charge')
+        service_description = request.POST.get('service_description')
+
+        service = Service(
+            user=user,
+            service_name = service_name,
+            service_charge = service_charge,
+            service_description = service_description,
+        )
+        service.save()
+        
+        return redirect('service')  # Redirect to a success page or the same page
+
+    user = get_object_or_404(IndividualUser, username = request.user)
+    service_list = user.service.all()  # Fetch all related education instances
+    context = {
+        'user': user,
+        'service_list': service_list,
+    }
+
+    return render(request, 'service.html', context)
+
+def delete_service(request, pk):
+    instance = Service.objects.get(pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('service'))
+
+@csrf_exempt
+def edit_service(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    if request.method == 'POST':
+        try:
+            service.service_name = request.POST.get('service_name')
+            service.service_charge = request.POST.get('service_charge')
+            service.service_description = request.POST.get('service_description')
+
+            service.save()
+
+            response_data = {
+                'success': True,
+                'message': 'Service details updated successfully.'
+            }
+
+        except ValueError as e:
+            response_data = {
+                'success': False,
+                'message': str(e)
+            }
+        return JsonResponse(response_data)
+
+    data = {
+        'service_name': service.service_name,
+        'service_charge': service.service_charge,
+        "service_description": service.service_description,
+    }
+    # print(data)
+    return JsonResponse(data)
+    
+@login_required
+def experience(request):
+    user = request.user
+    if request.method == 'POST':
+        titleInput = request.POST.get('titleInput')
+        companyNameInput = request.POST.get('companyNameInput')
+
+        if request.POST.get('currentlyWorkingInput') == "on":
+            currentlyWorkingInput = True
+            endDateexp = None
+        else:
+            currentlyWorkingInput = False
+            endDateexp = request.POST.get('endDateexp')
+
+        startDateexp = request.POST.get('startDateexp')
+
+
+        industryInput = request.POST.get('industryInput')
+        locationInput = request.POST.get('locationInput')
+        descriptionInputexp = request.POST.get('descriptionInputexp')
+
+        print(currentlyWorkingInput)
+
+        # Parse dates
+        try:
+            startDateexp = datetime.datetime.strptime(startDateexp, '%Y-%m').date()
+        except (ValueError, TypeError):
+            startDateexp = None
+
+        try:
+            endDateexp = datetime.datetime.strptime(endDateexp, '%Y-%m').date()
+        except (ValueError, TypeError):
+             endDateexp = None
+
+        # Create and save the experience instance
+        experience = Experience(
+            user=user,
+            titleInput = titleInput,
+            companyNameInput = companyNameInput,
+            currentlyWorkingInput = currentlyWorkingInput,
+            startDateexp = startDateexp,
+            endDateexp = endDateexp,
+            industryInput = industryInput,
+            locationInput = locationInput,
+            descriptionInputexp = descriptionInputexp,
+        )
+        experience.save()
+        
+        return redirect('experience')  # Redirect to a success page or the same page
+    
+    user = get_object_or_404(IndividualUser, username=request.user.username)
+    experience_list = user.experience.all()  # Fetch all related experience instances
+    context = {
+        'user': user,
+        'experience_list': experience_list,
+    }
+
+    return render(request, 'experience.html', context)
+
+def delete_experience(request, pk):
+    instance = Experience.objects.get(pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('experience'))
+
+@csrf_exempt
+def edit_experience(request, pk):
+    experience = get_object_or_404(Experience, pk=pk)
+
+    if request.method == 'POST':
+        try:
+            experience.titleInput = request.POST.get('titleInput')
+            experience.companyNameInput = request.POST.get('companyNameInput')
+            experience.industryInput = request.POST.get('industryInput')
+            experience.locationInput = request.POST.get('locationInput')
+            experience.descriptionInputexp = request.POST.get('descriptionInputexp')
+
+            cert_start_date = request.POST.get('startDateexp')
+            if cert_start_date:
+                experience.startDateexp = datetime.datetime.strptime(cert_start_date, '%Y-%m').date().replace(day=1)
+
+            currently_working = request.POST.get('currentlyWorkingInput')
+
+            if currently_working == "true":
+                experience.currentlyWorkingInput = True
+                experience.endDateexp = None  # Set endDateexp to None if currently working
+            else:
+                experience.currentlyWorkingInput = False
+                cert_end_date = request.POST.get('endDateexp')
+                if cert_end_date:
+                    experience.endDateexp = datetime.datetime.strptime(cert_end_date, '%Y-%m').date().replace(day=1)
+
+            experience.save()
+            # print(experience.currentlyWorkingInput)  # Ensure this prints the correct value
+
+            response_data = {
+                'success': True,
+                'message': 'Experience details updated successfully.'
+            }
+
+        except ValueError as e:
+            response_data = {
+                'success': False,
+                'message': str(e)
+            }
+
+        return JsonResponse(response_data)
+
+    # Prepare data for initial form population
+    data = {
+        'titleInput': experience.titleInput,
+        'companyNameInput': experience.companyNameInput,
+        'currentlyWorkingInput': experience.currentlyWorkingInput,
+        'startDateexp': experience.startDateexp.strftime('%Y-%m') if experience.startDateexp else '',
+        'endDateexp': experience.endDateexp.strftime('%Y-%m') if experience.endDateexp else '',
+        'industryInput': experience.industryInput,
+        'locationInput': experience.locationInput,
+        'descriptionInputexp': experience.descriptionInputexp,
+    }
+
+    return JsonResponse(data)
+
+@login_required
+def certification(request):
+    user = request.user
+    if request.method == 'POST':
+        certificationNameInput = request.POST.get('certificationNameInput')
+        issuingOrganizationInput = request.POST.get('issuingOrganizationInput')
+        issueDate = request.POST.get('issueDate')
+        expirationDate = request.POST.get('expirationDate')
+        credentialIdInput = request.POST.get('credentialIdInput')
+        credentialUrlInput = request.POST.get('credentialUrlInput')
+
+        # Parse dates
+        try:
+            issueDate = datetime.datetime.strptime(issueDate, '%Y-%m').date()
+        except (ValueError, TypeError):
+            issueDate = None
+
+        try:
+            expirationDate = datetime.datetime.strptime(expirationDate, '%Y-%m').date()
+        except (ValueError, TypeError):
+            expirationDate = None
+
+
+        # Create and save the education instance
+        cert = Certification(
+            user=user,
+            certificationNameInput = certificationNameInput,
+            issuingOrganizationInput = issuingOrganizationInput ,
+            issueDate = issueDate,
+            expirationDate = expirationDate,
+            credentialIdInput = credentialIdInput,
+            credentialUrlInput = credentialUrlInput,
+        )
+        
+        cert.save()
+        
+        return redirect('certification')  # Redirect to a success page or the same page
+    
+    user = get_object_or_404(IndividualUser, username = request.user)
+    cert_list = user.certification.all()  # Fetch all related education instances
+    context = {
+        'user': user,
+        'cert_list':  cert_list,
+    }
+
+    return render(request, 'certifications.html', context)
+
+def delete_certification(request, pk):
+    instance = Certification.objects.get(pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('certification'))
+
+@csrf_exempt
+def edit_certification(request, pk):
+    cert = get_object_or_404(Certification, pk=pk)
+    if request.method == 'POST':
+        try:
+            cert.certificationNameInput = request.POST.get('certificationNameInput')
+            cert.issuingOrganizationInput = request.POST.get('issuingOrganizationInput') 
+            
+            cert_start_date = request.POST.get('issueDate')
+            cert_end_date = request.POST.get('expirationDate')
+
+            if cert_start_date:
+                cert.issueDate = datetime.datetime.strptime(cert_start_date, '%Y-%m').date().replace(day=1)
+            if cert_end_date :
+                cert.expirationDate  = datetime.datetime.strptime(cert_end_date, '%Y-%m').date().replace(day=1)
+
+            cert.credentialIdInput = request.POST.get('credentialIdInput')
+            cert.credentialUrlInput = request.POST.get('credentialUrlInput')
+            
+            cert.save()
+
+            response_data = {
+                'success': True,
+                'message': 'Service details updated successfully.'
+            }
+
+        except ValueError as e:
+            response_data = {
+                'success': False,
+                'message': str(e)
+            }
+        return JsonResponse(response_data)
+
+    data = {
+        'certificationNameInput': cert.certificationNameInput,
+        'issuingOrganizationInput': cert.issuingOrganizationInput,
+        'issueDate': cert.issueDate,
+        'expirationDate': cert.expirationDate,
+        'credentialIdInput': cert.credentialIdInput,
+        'credentialUrlInput': cert.credentialUrlInput,
+    }
+    # print(data)
+    return JsonResponse(data)
+
+@login_required
+def skill(request):
+    user = request.user
+    if request.method == 'POST':
+        skillsInput = request.POST.get('skillsInput')
+
+        # Create and save the education instance
+        skill = Skill(
+            user=user,
+            skillsInput= skillsInput,
+        )
+        skill.save()
+        
+        return redirect('skill')  # Redirect to a success page or the same page
+    
+    user = get_object_or_404(IndividualUser, username = request.user)
+    skill_list = user.skill.all()  # Fetch all related education instances
+    context = {
+        'user': user,
+        'skill_list': skill_list,
+    }
+
+    return render(request, 'skills.html', context)
+
+def delete_skill(request, pk):
+    instance = Skill.objects.get(pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('skill'))
+
+@csrf_exempt
+def edit_skill(request, pk):
+    skill = get_object_or_404(Skill, pk=pk)
+    if request.method == 'POST':
+        try:
+            skill.skillsInput = request.POST.get('skillsInput')
+
+            skill.save()
+
+            response_data = {
+                'success': True,
+                'message': 'Service details updated successfully.'
+            }
+
+        except ValueError as e:
+            response_data = {
+                'success': False,
+                'message': str(e)
+            }
+        return JsonResponse(response_data)
+
+    data = {
+        'skillsInput': skill.skillsInput,
+    }
+    # print(data)
+    return JsonResponse(data)
+
+
+@login_required
 def profile(request):
     user = request.user.individualuser
     if request.method == 'POST':
@@ -163,6 +516,12 @@ def profile(request):
         user.aadhar = request.POST.get('aadhar', '')
         user.marital = request.POST.get('marital', '')
         user.description = request.POST.get('description', '')
+        user.current_member = request.POST.get('comitteeCount', '')
+        user.association = request.POST.get('association', '')
+
+        user.firm_name = request.POST.get('firmname', '')
+        user.firm_uid = request.POST.get('firmuid', '')
+
 
         # Handle profile picture reset
         if request.POST.get('reset_profile_pic') == '1':
@@ -174,6 +533,32 @@ def profile(request):
             user.profile_pic = request.FILES['profile_pic']
 
         user.save()
+
+        # Handle the Committee Count forms
+        CommitteeCountFormSet = formset_factory(ComitteeCountForm, extra=int(user.current_member))
+        committee_count_formset = CommitteeCountFormSet(request.POST)
+
+        if committee_count_formset.is_valid():
+            for form in committee_count_formset:
+                if form.cleaned_data:  # Ensure the form is not empty
+                    ComitteeCount.objects.create(
+                        user=user,
+                        comittee_uid=form.cleaned_data.get('comittee_uid'),
+                    )
+
+        
+        # Handle the Current Client forms
+        CurrentClientFormSet = formset_factory(CurrentClientForm, extra=5)
+        current_client_formset = CurrentClientFormSet(request.POST)
+
+        if current_client_formset.is_valid():
+            for form in current_client_formset:
+                if form.cleaned_data:  # Ensure the form is not empty
+                    CurrentClient.objects.create(
+                        user=user,
+                        client_name=form.cleaned_data.get('client_name'),
+                    )
+
         messages.success(request, 'Profile updated successfully.')
 
         return redirect('profile')  # Redirect to the profile page to display updated data
@@ -194,7 +579,24 @@ def profile(request):
     description = user.description
     marital = user.marital
     aadhar = user.aadhar
+    current_member = user.current_member
+    association = user.association
+
+    if association == 'yes':
+        firm_name = user.firm_name
+        firm_uid = user.firm_uid
+    else:
+        firm_name = ''
+        firm_uid = ''
+
+    comittee_uid_list = user.comitteecount.all()
+    current_client_list = user.client.all()
+    
     education_list = user.education.all()  
+    service_list = user.service.all()
+    skill_list = user.skill.all()
+    cert_list = user.certification.all()
+    experience_list = user.experience.all()
 
     context = {
         'email': email,
@@ -214,6 +616,16 @@ def profile(request):
         'description': description,
         'profile_pic': user.profile_pic.url if user.profile_pic else None,
         'education_list': education_list,
+        'current_member': current_member,
+        'comittee_uid_list': comittee_uid_list,
+        'current_client_list': current_client_list,
+        'association': association,
+        'firm_name': firm_name,
+        'firm_uid': firm_uid,
+        'service_list': service_list,
+        'skill_list': skill_list,
+        'cert_list': cert_list,
+        'experience_list': experience_list,
     }
     return render(request, 'profile.html', context)
 

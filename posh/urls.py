@@ -12,9 +12,29 @@ urlpatterns = [
     path('login/', views.signin, name="login"),
     path('profile/', views.profile, name="profile"),
     path('logout/', views.signout, name="logout"),
+
     path('profile/education/create', views.education, name="education"),
     path('profile/education/delete/<int:pk>', views.delete_education, name="delete_education"),
     path('profile/education/edit/<int:pk>/', views.edit_education, name="edit_education"),
+
+    path('profile/service/create', views.service, name="service"),
+    path('profile/service/delete/<int:pk>', views.delete_service, name="delete_service"),
+    path('profile/service/edit/<int:pk>/', views.edit_service, name="edit_service"),
+
+    path('profile/experience/create', views.experience, name="experience"),
+    path('profile/experience/delete/<int:pk>', views.delete_experience, name="delete_experience"),
+    path('profile/experience/edit/<int:pk>/', views.edit_experience, name="edit_experience"),
+
+    path('profile/certification/create', views.certification, name="certification"),
+    path('profile/certification/delete/<int:pk>', views.delete_certification, name="delete_certification"),
+    path('profile/certification/edit/<int:pk>/', views.edit_certification, name="edit_certification"),
+
+    path('profile/skill/create', views.skill, name="skill"),
+    path('profile/skill/delete/<int:pk>', views.delete_skill, name="delete_skill"),
+    path('profile/skill/edit/<int:pk>/', views.edit_skill, name="edit_skill"),
+
+    path('profile/comittee/<int:pk>', views.delete_comitteeuid, name="comittee_uid"),
+    path('profile/client/<int:pk>', views.delete_clientname, name="client_name"),
 ]
 
 if settings.DEBUG:

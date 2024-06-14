@@ -40,14 +40,14 @@ function addCommitteeField() {
 
         // Add the required fields for each committee
         comitteeDiv.innerHTML = `
-            <div class="fields" style="margin-top: 20px">
-            <label>Committee ${currentCount + 1} UID</label>
-                <div class="input-field d-flex align-items-center"">
-                    <input name='form-${currentCount}-uid' id="comittee-${currentCount}-uid" class="form-control" placeholder="Enter UID if Committee is registered on MyPosh"></input>
+        <div class="fields" style="margin-top: 20px">
+            <label>Committee UID</label>
+            <div class="input-field d-flex align-items-center">
+                <input name='form-${currentCount}-comittee_uid' id="committee-${currentCount}-comittee_uid" class="form-control mr-2" placeholder="Enter UID if Committee is registered on MyPosh"></input>
                 <button type="button" class="btn btn-danger" onclick="removeCommitteeField(${currentCount})">Remove</button>
-                </div>
             </div>
-        `;
+        </div>
+    `;
 
         comitteeDetailsSection.appendChild(comitteeDiv);
 
@@ -120,9 +120,9 @@ function addClientsField() {
         // Add the required fields for each client
         clientDiv.innerHTML = `
             <div class="fields" style="margin-top: 20px">
-                <label>Client ${currentCount + 1} Name</label>
+                <label>Client Name</label>
                 <div class="input-field d-flex align-items-center">
-                    <input name='form-${currentCount}-name' id="client-${currentCount}-name" class="form-control" placeholder="Enter name of the client"></input>
+                    <input name='form-${currentCount}-client_name' id="client-${currentCount}-client_name" class="form-control mr-2" placeholder="Enter name of the client"></input>
                     <button type="button" class="btn btn-danger" onclick="removeClientField(${currentCount})">Remove</button>
                 </div>
             </div>
@@ -185,11 +185,14 @@ function removeClientField(index) {
 
 document.getElementById('association').addEventListener('change', function () {
     var associationSection = document.getElementById('associationSection');
+    var firmnameInput = document.getElementById('firmname');
+    var firmuidInput = document.getElementById('firmuid');
 
-    var selectedOption = this.value;
-    if (selectedOption === 'yes') {
+    if (this.value === 'yes') {
         associationSection.style.display = 'block';
     } else {
         associationSection.style.display = 'none';
+        firmnameInput.value = '';
+        firmuidInput.value = '';
     }
 });

@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block stylescss %}
+{{ block.super }}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'assets/css/list_item.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
+<script src="{% static 'assets/js/cities.js' %}"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<style>
+    .service-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+        padding: 10px 0;
+    }
+    .buttons {
+        text-align: right;
+        margin-left: 20px;
+    }
+    .buttons form,
+    .buttons a {
+        display: inline-block;
+        margin-left: 5px;
+    }
+    .buttons button {
+        margin-left: 5px;
+    }
+    #service-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        width:100%; 
+        table-layout: fixed;
+    }
+    #service-table, #service-table th, #service-table td {
+        border: 1px solid #ddd;
+    }
+    #service-table th, #service-table td {
+        padding: 8px;
+        text-align: left;
+        word-wrap: break-word; 
+        white-space: normal;
+    }
+    #service-table th {
+        text-align: center;
+        background-color: #f2f2f2;
+    }
+    #service-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    #service-table tr:hover {
+        background-color: #f1f1f1;
+    }
+    #service-table th:nth-child(3), #service-table td:nth-child(3) {
+        width: 50%; /* Description column */
+    }
+    #service-table th:nth-child(4), #service-table td:nth-child(4),
+    #service-table th:nth-child(5), #service-table td:nth-child(5) {
+        width: 10%; /* Edit and Delete columns */
+    }
+    #deletebtn, #editbtn {
+        width: 90%; /* Ensure buttons take full width of their cell */
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'assets/js/profile.js' %}"></script>
+<script src="{% static 'assets/js/list_item.js' %}"></script>
+<script>
+    $(document).ready(function() {
+
+        // Helper function to format date to "Month, Year"
+        function formatDateToMonthYear(dateStr) {
+            const options = { year: 'numeric', month: 'long' };
+            return new Date(dateStr).toLocaleDateString('en-US', options);
+        }
+
+        // Helper function to format date to "YYYY-MM"
+        function formatDateToYYYYMM(dateStr) {
+            const date = new Date(dateStr);
+            const month = date.getMonth() + 1;
+            return `${date.getFullYear()}-${month < 10 ? '0' + month : month}`;
+        }
+
+        // When the edit modal is shown
+        $('#editServiceModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var pk = button.data('pk'); // Extract info from data-* attributes
+    
+            if (!pk) {
+                console.error('Primary key (pk) is null.');
+                return;
+            }
+    
+            // Change the URL without reloading the page
+            history.pushState(null, '', '/profile/service/edit/' + pk + '/');
+    
+            // Set the form's action attribute to the update URL
+            $('#editServiceForm').attr('action', '/profile/service/edit/' + pk + '/');
+    
+            // Make an AJAX call to fetch the education details
+            $.ajax({
+                url: '/profile/service/edit/' + pk + '/',
+                type: 'GET',
+                success: function(data) {
+                    // Populate the form fields with the data received
+                    $('#service_name').val(data.service_name);
+                    $('#service_charge').val(data.service_charge);
+                    $('#service_description').val(data.service_description);
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(errmsg);
+                }
+            });
+        });
+    
+        // Form submission handler
+        $('#editServiceForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+    
+            // Gather form data
+            var formData = {
+                'service_name': $('#service_name').val(),
+                'service_charge': $('#service_charge').val(),
+                'service_description': $('#service_description').val(),
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val() // Include CSRF token
+            };
+    
+            // Send AJAX POST request to update education details
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    // Handle success (e.g., close modal, show success message)
+                    $('#editServiceModal').modal('hide');
+                    location.reload(); // Reload the page to see the changes
+                    window.location.href = '/profile/service/create'; 
+                },
+                error: function(xhr, errmsg, err) {
+                    // Handle error (e.g., show error message)
+                    console.log(errmsg);
+                }
+            });
+        });
+    });
+    
+    
+</script>
+    
+
+{% endblock %}
+
+{% block content %}
+<div class="container light-style flex-grow-1 container-p-y">
+    <div class="card overflow-hidden" style="min-height: 30rem">
+        <div class="row no-gutters row-bordered row-border-light">
+            <div class="col-md-12">
+                <div class="tab-content">
+                    <div class="tab-pane fade active show" id="account-general">
+                        <hr class="border-light m-0">
+                        <div class="container-service">
+                            <div class="add_service">
+                                <h2>{{ user.fname }} {{ user.lname }}'s Service Details</h2>
+                                <button type='button' id="add-service-btn" data-toggle="modal" data-target="#addServiceModal">+ Add</button>
+                            </div>
+
+                        <!-- Service Section -->
+                        <div id="service-section">
+                            <table id="service-table">
+                                <thead>
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Charges</th>
+                                        <th>Description</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- service will be dynamically added here -->
+                                    {% if service_list %}
+                                        {% for service in service_list %}
+                                            <tr>
+                                                <td>{{ service.service_name }}</td>
+                                                <td>{{ service.service_charge }}</td>
+                                                <td>
+                                                {{ service.service_description }}<br>
+                                                </td>
+                                                <td>
+                                                    <button id="editbtn" class="btn btn-warning btn-sm edit-button" data-toggle="modal" data-target="#editServiceModal" data-pk="{{ service.id }}">Edit</button>
+                                                </td>
+                                                <td>
+                                                    <a href="{% url 'delete_service' service.id %}">
+                                                        <button id="deletebtn" class="btn btn-danger btn-sm delete-button">Delete</button>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5">No service records found.</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                            <form id="formTask" method="POST" action="{% url 'service' %}" autocomplete="off">
+                                {% csrf_token %} 
+                            <!-- Add Education Modal -->
+                            <div class="modal fade" id="addServiceModal" tabindex="-1" role="dialog" aria-labelledby="addServiceModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="addServiceModalLabel">Add Service</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Service Name -->
+                                            <div class="form-group">
+                                                <label for="serviceInput">Name</label>
+                                                <input type="text" id="services_name" name='service_name' class="form-control" placeholder="Enter the service name">
+                                            </div>
+
+                                            <!-- Service Charge -->
+                                            <div class="form-group">
+                                                <label for="chargeInput">Charge</label>
+                                                <input type="text" id="services_charge" name='service_charge' class="form-control" placeholder="Enter your service charge">
+                                            </div>
+
+                                            <!-- Description -->
+                                            <div class="form-group">
+                                                <label for="descriptionInput">Description</label>
+                                                <textarea id="services_description" class="form-control" name='service_description' rows="5" placeholder="Enter a description of your service"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary btnSave" id="saveServiceBtn">Save Service</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+
+                        <form id="editServiceForm" method="POST" autocomplete="off">
+                            {% csrf_token %}
+                            <!-- Form fields -->
+                            <div class="modal fade" id="editServiceModal" tabindex="-1" role="dialog" aria-labelledby="editServiceModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <!-- Modal content, including form fields like below -->
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editServiceModalLabel">Edit Service</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Service Name -->
+                                            <div class="form-group">
+                                                <label for="serviceInput">Name</label>
+                                                <input type="text" id="service_name" name='service_name' class="form-control" placeholder="Enter the service name">
+                                            </div>
+
+                                            <!-- Service Charge -->
+                                            <div class="form-group">
+                                                <label for="chargeInput">Charge</label>
+                                                <input type="text" id="service_charge" name='service_charge' class="form-control" placeholder="Enter your service charge">
+                                            </div>
+
+                                            <!-- Description -->
+                                            <div class="form-group">
+                                                <label for="descriptionInput">Description</label>
+                                                <textarea id="service_description" class="form-control" name='service_description' rows="5" placeholder="Enter a description of your service"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary btnSave" id="saveServiceBtn">Save Service</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+

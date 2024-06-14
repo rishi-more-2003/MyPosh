@@ -21,6 +21,7 @@ button#saveEducationBtn:hover{
 /* Add this to your existing CSS or create a new CSS file */
 
 .add_education,
+.add_service,
 .add_certification,
 .add_experience{
     display: flex;
