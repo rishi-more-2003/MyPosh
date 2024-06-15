@@ -10,15 +10,18 @@
     <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
 
     <!-- ICONS -->
-    <link
-    href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
-    rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
     {% block stylescss %}{% endblock %}
     <!-- CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>MYPOSH</title>
 </head>
 <body>
+    {% include 'visibilty.html' %}
     <!-- LOADER -->
     <div class="load" id="load">
         <img src="{% static 'assets/img/ZNeT.gif' %}" alt="loader" class="load__gif" >
@@ -61,6 +64,16 @@
                                         <a href="{% url 'profile' %}" class="dropdown__link">
                                             Profile
                                         </a> 
+                                        
+                                    </li>
+                                    <li>
+                                        {% if visible == False %}
+                                        <a data-target="#myModal" data-toggle="modal" class="dropdown__link MainNavText" id="MainNavHelp" 
+                                            href="#myModal">Visibility: <span style="color: red">Off</span> </a>
+                                        {% else %}
+                                        <a data-target="#myModal" data-toggle="modal" class="dropdown__link MainNavText" id="MainNavHelp" 
+                                        href="#myModal">Visibility: <span style="color: green">On</span> </a>
+                                        {% endif %}
                                     </li>
                                     <li>
                                     <a href="{% url 'logout'%}" class="dropdown__link">

@@ -51,6 +51,7 @@ class NGOUser(PoshUser):
     ngo_description = models.TextField(max_length=500, blank=True)
     ngo_current_member = models.CharField(max_length=10, blank=True)
     ngo_employee_count = models.CharField(max_length=10, blank=True)
+    is_visible = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'NGO User'
@@ -75,6 +76,7 @@ class ConsultancyUser(PoshUser):
     consultancy_description = models.TextField(max_length=500, blank=True)
     consultancy_current_member = models.CharField(max_length=10, blank=True)
     consultancy_employee_count = models.CharField(max_length=10, blank=True)
+    is_visible = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Consultancy User'
@@ -100,6 +102,7 @@ class IndividualUser(PoshUser):
     association = models.CharField(max_length=10, blank=True)
     firm_name = models.CharField(max_length=150, blank=True)
     firm_uid = models.CharField(max_length=15, blank=True)
+    is_visible = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Individual User'

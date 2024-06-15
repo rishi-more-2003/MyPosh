@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkedIn Profile Page</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .profile-header {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .profile-img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 15px;
+    }
+    .profile-section {
+      margin: 20px 0;
+    }
+    .profile-section h3 {
+      border-bottom: 2px solid #0073b1;
+      padding-bottom: 5px;
+      margin-bottom: 15px;
+    }
+    .card-container {
+      margin-top: 30px;
+      padding: 20px;
+    }
+    .fa{
+        cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Card Container -->
+  <div class="card card-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <img src="profile-photo.jpg" alt="Profile Photo" class="profile-img">
+      <h1>John Doe<i style="font-size:20px; margin-left: 10px;" class="fa">&#xf040;</i></h1>
+      <p>Software Engineer at Tech Company</p>
+    </div>
+
+    <!-- About Section -->
+    <div class="profile-section">
+      <h3>About<i style="font-size:20px; margin-left: 10px;" class="fa">&#xf040;</i></h3>
+      <p>
+        Experienced Software Engineer with a demonstrated history of working in the tech industry. Skilled in various programming languages and frameworks.
+      </p>
+    </div>
+
+    <!-- Experience Section -->
+    <div class="profile-section">
+      <h3>Experience<i style="font-size:20px; margin-left: 10px;" class="fa">&#xf040;</i></h3>
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Senior Software Engineer</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Tech Company</h6>
+          <p class="card-text">January 2020 - Present</p>
+          <p>Leading a team of developers in building scalable web applications.</p>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Software Engineer</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Another Tech Company</h6>
+          <p class="card-text">June 2016 - December 2019</p>
+          <p>Worked on various frontend and backend projects.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Education Section -->
+    <div class="profile-section">
+      <h3>Education<i style="font-size:20px; margin-left: 10px;" class="fa">&#xf040;</i></h3>
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Bachelor of Science in Computer Science</h5>
+          <h6 class="card-subtitle mb-2 text-muted">University Name</h6>
+          <p class="card-text">September 2012 - June 2016</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills Section -->
+    <div class="profile-section">
+      <h3>Skills<i style="font-size:20px; margin-left: 10px;" class="fa">&#xf040;</i></h3>
+      <ul class="list-inline">
+        <li class="list-inline-item badge badge-primary">JavaScript</li>
+        <li class="list-inline-item badge badge-primary">Python</li>
+        <li class="list-inline-item badge badge-primary">React</li>
+        <li class="list-inline-item badge badge-primary">Node.js</li>
+        <li class="list-inline-item badge badge-primary">SQL</li>
+      </ul>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="profile-section">
+      <h3>Contact Information</h3>
+      <p>Email: john.doe@example.com</p>
+      <p>Phone: (123) 456-7890</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

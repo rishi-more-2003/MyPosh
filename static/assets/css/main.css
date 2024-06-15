@@ -955,9 +955,9 @@ body.dark-theme{
         font-size: var(--h1-font-size);
     }
 
-    .home{
+    /* .home{
         padding: 13rem 0 5rem;
-    }
+    } */
 
     .home__img{
         width: 350px;

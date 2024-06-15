@@ -148,3 +148,29 @@ onload = () => {
         load.style.display = 'none'
     }, 500)
 }
+
+
+
+$('#ajaxSubmitButton').on('click', function(event) {
+    event.preventDefault(); // Prevent default button action
+
+    // Gather form data
+    var formData = $('#verifyForm').serialize(); // Serialize form data including CSRF token
+
+    // Send AJAX POST request to update skill details
+    $.ajax({
+        url: $('#verifyForm').attr('action'), // Get the action URL from the form
+        type: 'POST',
+        data: formData,
+        success: function(response) {
+            // Handle success (e.g., close modal, show success message)
+            $('#myModal').modal('hide');
+            location.reload(); // Reload the page to see the changes
+        },
+        error: function(xhr, errmsg, err) {
+            // Handle error (e.g., show error message)
+            console.log(errmsg);
+        }
+    });
+});
+

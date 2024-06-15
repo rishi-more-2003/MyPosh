@@ -28,6 +28,7 @@ from .models import Document
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
+    user = request.user.individualuser
     if request.method == "POST":
         contact_email = request.POST['contact-email']
         contact_subject = request.POST['contact-subject']
@@ -41,9 +42,12 @@ def home(request):
             ["myposh.help@gmail.com"],
         )
 
-        return render(request, 'home.html', {})
+        return render(request, 'home.html')
     
-    return render(request, 'home.html', {})
+    context ={
+        'visible': user.is_visible,
+    }
+    return render(request, 'home.html', context)
 
 def otp(request):
     return render(request, 'otp.html', {})
@@ -1788,3 +1792,18 @@ def signin(request):
 def signout(request):
     logout(request)
     return redirect('/')
+
+def page(request):
+    return render(request, 'page.html', {})
+
+def visibility(request):
+    if request.method == 'POST':
+        user = request.user.individualuser
+        if user.is_visible:
+            user.is_visible = False
+        else:
+            user.is_visible = True
+        user.save()
+        return JsonResponse({'status': 'success', 'is_visible': user.is_visible})
+    else:
+        return JsonResponse({'status': 'failed', 'error': 'Invalid request method'}, status=400)

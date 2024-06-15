@@ -1,0 +1,44 @@
+<form id="verifyForm" method="POST" action="{% url 'visibility' %}">
+    {% csrf_token %}
+    {% if visible == False %}
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Visibility Option</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec blandit libero, id tincidunt odio. Quisque vulputate vehicula magna, ac consectetur mi gravida quis.</p>
+                        <p>Nullam quis tortor non dui hendrerit ullamcorper vel non nisi. In sed quam sit amet orci ultricies placerat. Vestibulum et varius ex.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{% url 'page' %}">
+                            <button type="button" class="btn btn-primary">Verify Profile</button>
+                        </a> 
+                        <button type="button" class="btn btn-secondary" id="ajaxSubmitButton">Turn On</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Visibility Option</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec blandit libero, id tincidunt odio. Quisque vulputate vehicula magna, ac consectetur mi gravida quis.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="ajaxSubmitButton">Turn Off</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</form>
