@@ -67,6 +67,12 @@
                                         
                                     </li>
                                     <li>
+                                        <a href="{% url 'page' %}" class="dropdown__link">
+                                            Preview
+                                        </a> 
+                                        
+                                    </li>
+                                    <li>
                                         {% if visible == False %}
                                         <a data-target="#myModal" data-toggle="modal" class="dropdown__link MainNavText" id="MainNavHelp" 
                                             href="#myModal">Visibility: <span style="color: red">Off</span> </a>

@@ -28,7 +28,7 @@ from .models import Document
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
-    user = request.user.individualuser
+    # user = request.user.individualuser
     if request.method == "POST":
         contact_email = request.POST['contact-email']
         contact_subject = request.POST['contact-subject']
@@ -44,10 +44,10 @@ def home(request):
 
         return render(request, 'home.html')
     
-    context ={
-        'visible': user.is_visible,
-    }
-    return render(request, 'home.html', context)
+    # context ={
+    #     'visible': user.is_visible,
+    # }
+    return render(request, 'home.html')
 
 def otp(request):
     return render(request, 'otp.html', {})
@@ -942,19 +942,19 @@ def profile(request):
 
         user.save()
 
-        # Handle the Committee Count forms
-        CommitteeCountFormSet = formset_factory(ComitteeCountForm, extra=int(user.current_member))
-        committee_count_formset = CommitteeCountFormSet(request.POST)
+        if user.current_member:
+            # Handle the Committee Count forms
+            CommitteeCountFormSet = formset_factory(ComitteeCountForm, extra=int(user.current_member))
+            committee_count_formset = CommitteeCountFormSet(request.POST)
 
-        if committee_count_formset.is_valid():
-            for form in committee_count_formset:
-                if form.cleaned_data:  # Ensure the form is not empty
-                    ComitteeCount.objects.create(
-                        user=user,
-                        comittee_uid=form.cleaned_data.get('comittee_uid'),
-                    )
+            if committee_count_formset.is_valid():
+                for form in committee_count_formset:
+                    if form.cleaned_data:  # Ensure the form is not empty
+                        ComitteeCount.objects.create(
+                            user=user,
+                            comittee_uid=form.cleaned_data.get('comittee_uid'),
+                        )
 
-        
         # Handle the Current Client forms
         CurrentClientFormSet = formset_factory(CurrentClientForm, extra=5)
         current_client_formset = CurrentClientFormSet(request.POST)
@@ -1034,6 +1034,7 @@ def profile(request):
         'skill_list': skill_list,
         'cert_list': cert_list,
         'experience_list': experience_list,
+        'visible': user.is_visible,
     }
     return render(request, 'profile.html', context)
 
@@ -1474,6 +1475,7 @@ def register_consultancy(request):
 @unauthenticated_user
 def register_establishment(request):
     if request.method == 'POST':
+        print("YOO")
         establishment_email = request.POST.get('email')
         establishment_phone = request.POST.get('phone')
         establishment_username = generate_unique_establishment(establishment_phone, establishment_email) 
@@ -1562,6 +1564,9 @@ def register_establishment(request):
                             vendor_address = form.cleaned_data.get('vendor_address'),
                         )
 
+            # user = authenticate(request, username=username, password=establishment_phone)
+            # login(request, user)
+
         elif establishment_nature == 'vendor':
 
             username = establishment_user
@@ -1604,6 +1609,8 @@ def register_establishment(request):
                             site_address=form.cleaned_data.get('site_address'),
                         )
 
+            # user = authenticate(request, username=username, password=establishment_phone)
+            # login(request, user)
 
         else:
 
@@ -1686,8 +1693,8 @@ def register_establishment(request):
                             vendor_address = form.cleaned_data.get('vendor_address'),
                         )
 
-            user = authenticate(request, username=username, password=establishment_phone)
-            login(request, user)
+        user = authenticate(request, username=username, password=establishment_phone)
+        login(request, user)
 
         return redirect('/') 
     return render(request, 'register_establishment.html')
@@ -1794,7 +1801,45 @@ def signout(request):
     return redirect('/')
 
 def page(request):
-    return render(request, 'page.html', {})
+    user = request.user.individualuser
+
+    email = user.email
+    phone = user.phone
+    prefix = user.prefix
+    first_name = user.fname
+    mid_name = user.mname
+    last_name = user.lname
+    state = user.state
+    city = user.city
+
+    description = user.description
+    
+    
+    education_list = user.education.all()  
+    service_list = user.service.all()
+    skill_list = user.skill.all()
+    cert_list = user.certification.all()
+    experience_list = user.experience.all()
+
+    context = {
+        'email': email,
+        'phone': phone,
+        'fname': first_name,
+        'lname': last_name,
+        'mname': mid_name,
+        'prefix': prefix,
+        'state': state,
+        'city': city,
+        'description': description,
+        'profile_pic': user.profile_pic.url if user.profile_pic else None,
+        'education_list': education_list,
+        'service_list': service_list,
+        'skill_list': skill_list,
+        'cert_list': cert_list,
+        'experience_list': experience_list,
+        'visible': user.is_visible,
+    }
+    return render(request, 'page.html', context)
 
 def visibility(request):
     if request.method == 'POST':
