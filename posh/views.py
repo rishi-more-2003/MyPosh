@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from .models import (IndividualUser, Education, NGOUser, PoshUser, ConsultancyUser, EstablishmentUser, 
                      EstablishmentLocation, PrincipalEmployer, Vendor, PEDetails, VendorDetails,
-                     ComitteeCount, CurrentClient, Service, Skill, Certification, Experience)
+                     ComitteeCount, CurrentClient, Service, Skill, Certification, Document, Experience, EmployeeCount)
 
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
@@ -22,8 +22,9 @@ import datetime
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from .decorators import unauthenticated_user, allowed_users
-from .forms import EstablishmentLocationForm, PEDetailsForm, VendorDetailsForm, CurrentClientForm, ComitteeCountForm
+from .forms import EstablishmentLocationForm, PEDetailsForm, VendorDetailsForm, CurrentClientForm, ComitteeCountForm, MemberCountForm
 from django.forms import formset_factory
+from .models import Document
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
@@ -104,12 +105,29 @@ def delete_comitteeuid(request, pk):
     # education_list = Education.objects.all()
     return HttpResponseRedirect(reverse('profile'))
 
+def delete_ngocomitteeuid(request, pk):
+    instance = get_object_or_404(ComitteeCount, pk=pk)
+    instance.delete()
+    # education_list = Education.objects.all()
+    return HttpResponseRedirect(reverse('ngo-profile'))
+
 def delete_clientname(request, pk):
     instance = get_object_or_404(CurrentClient, pk=pk)
     instance.delete()
     # education_list = Education.objects.all()
     return HttpResponseRedirect(reverse('profile'))
 
+def delete_ngoclientname(request, pk):
+    instance = get_object_or_404(CurrentClient, pk=pk)
+    instance.delete()
+    # education_list = Education.objects.all()
+    return HttpResponseRedirect(reverse('ngo-profile'))
+
+def delete_ngomember(request, pk):
+    instance = get_object_or_404(EmployeeCount, pk=pk)
+    instance.delete()
+    # education_list = Education.objects.all()
+    return HttpResponseRedirect(reverse('ngo-profile'))
 
 @login_required
 def education(request):
@@ -185,6 +203,38 @@ def service(request):
 
     return render(request, 'service.html', context)
 
+@login_required
+def ngo_service(request):
+    user = request.user
+    if request.method == 'POST':
+        service_name = request.POST.get('service_name')
+        service_charge = request.POST.get('service_charge')
+        service_description = request.POST.get('service_description')
+
+        service = Service(
+            user=user,
+            service_name = service_name,
+            service_charge = service_charge,
+            service_description = service_description,
+        )
+        service.save()
+        
+        return redirect('ngo_service')  # Redirect to a success page or the same page
+
+    user = get_object_or_404(NGOUser, username = request.user)
+    service_list = user.service.all()  # Fetch all related education instances
+    context = {
+        'user': user,
+        'service_list': service_list,
+    }
+
+    return render(request, 'ngo-service.html', context)
+
+def ngo_delete_service(request, pk):
+    instance = Service.objects.get(pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('ngo_service'))
+
 def delete_service(request, pk):
     instance = Service.objects.get(pk=pk)
     instance.delete()
@@ -221,6 +271,37 @@ def edit_service(request, pk):
     # print(data)
     return JsonResponse(data)
     
+@csrf_exempt
+def ngo_edit_service(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    if request.method == 'POST':
+        try:
+            service.service_name = request.POST.get('service_name')
+            service.service_charge = request.POST.get('service_charge')
+            service.service_description = request.POST.get('service_description')
+
+            service.save()
+
+            response_data = {
+                'success': True,
+                'message': 'Service details updated successfully.'
+            }
+
+        except ValueError as e:
+            response_data = {
+                'success': False,
+                'message': str(e)
+            }
+        return JsonResponse(response_data)
+
+    data = {
+        'service_name': service.service_name,
+        'service_charge': service.service_charge,
+        "service_description": service.service_description,
+    }
+    # print(data)
+    return JsonResponse(data)
+
 @login_required
 def experience(request):
     user = request.user
@@ -280,10 +361,132 @@ def experience(request):
 
     return render(request, 'experience.html', context)
 
+@login_required
+def ngo_experience(request):
+    user = request.user
+    if request.method == 'POST':
+        titleInput = request.POST.get('titleInput')
+        companyNameInput = request.POST.get('companyNameInput')
+
+        if request.POST.get('currentlyWorkingInput') == "on":
+            currentlyWorkingInput = True
+            endDateexp = None
+        else:
+            currentlyWorkingInput = False
+            endDateexp = request.POST.get('endDateexp')
+
+        startDateexp = request.POST.get('startDateexp')
+
+
+        industryInput = request.POST.get('industryInput')
+        locationInput = request.POST.get('locationInput')
+        descriptionInputexp = request.POST.get('descriptionInputexp')
+
+        print(currentlyWorkingInput)
+
+        # Parse dates
+        try:
+            startDateexp = datetime.datetime.strptime(startDateexp, '%Y-%m').date()
+        except (ValueError, TypeError):
+            startDateexp = None
+
+        try:
+            endDateexp = datetime.datetime.strptime(endDateexp, '%Y-%m').date()
+        except (ValueError, TypeError):
+             endDateexp = None
+
+        # Create and save the experience instance
+        experience = Experience(
+            user=user,
+            titleInput = titleInput,
+            companyNameInput = companyNameInput,
+            currentlyWorkingInput = currentlyWorkingInput,
+            startDateexp = startDateexp,
+            endDateexp = endDateexp,
+            industryInput = industryInput,
+            locationInput = locationInput,
+            descriptionInputexp = descriptionInputexp,
+        )
+        experience.save()
+        
+        return redirect('ngo_experience')  # Redirect to a success page or the same page
+    
+    user = get_object_or_404(NGOUser, username=request.user)
+    experience_list = user.experience.all()  # Fetch all related experience instances
+    context = {
+        'user': user,
+        'experience_list': experience_list,
+    }
+
+    return render(request, 'ngo-experience.html', context)
+
 def delete_experience(request, pk):
     instance = Experience.objects.get(pk=pk)
     instance.delete()
     return HttpResponseRedirect(reverse('experience'))
+
+def ngo_delete_experience(request, pk):
+    instance = Experience.objects.get(pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('ngo_experience'))
+
+@csrf_exempt
+def ngo_edit_experience(request, pk):
+    experience = get_object_or_404(Experience, pk=pk)
+
+    if request.method == 'POST':
+        try:
+            experience.titleInput = request.POST.get('titleInput')
+            experience.companyNameInput = request.POST.get('companyNameInput')
+            experience.industryInput = request.POST.get('industryInput')
+            experience.locationInput = request.POST.get('locationInput')
+            experience.descriptionInputexp = request.POST.get('descriptionInputexp')
+
+            cert_start_date = request.POST.get('startDateexp')
+            if cert_start_date:
+                experience.startDateexp = datetime.datetime.strptime(cert_start_date, '%Y-%m').date().replace(day=1)
+
+            currently_working = request.POST.get('currentlyWorkingInput')
+
+            if currently_working == "true":
+                experience.currentlyWorkingInput = True
+                experience.endDateexp = None  # Set endDateexp to None if currently working
+            else:
+                experience.currentlyWorkingInput = False
+                cert_end_date = request.POST.get('endDateexp')
+                if cert_end_date:
+                    experience.endDateexp = datetime.datetime.strptime(cert_end_date, '%Y-%m').date().replace(day=1)
+
+            experience.save()
+            # print(experience.currentlyWorkingInput)  # Ensure this prints the correct value
+
+            response_data = {
+                'success': True,
+                'message': 'Experience details updated successfully.'
+            }
+
+        except ValueError as e:
+            response_data = {
+                'success': False,
+                'message': str(e)
+            }
+
+        return JsonResponse(response_data)
+
+    # Prepare data for initial form population
+    data = {
+        'titleInput': experience.titleInput,
+        'companyNameInput': experience.companyNameInput,
+        'currentlyWorkingInput': experience.currentlyWorkingInput,
+        'startDateexp': experience.startDateexp.strftime('%Y-%m') if experience.startDateexp else '',
+        'endDateexp': experience.endDateexp.strftime('%Y-%m') if experience.endDateexp else '',
+        'industryInput': experience.industryInput,
+        'locationInput': experience.locationInput,
+        'descriptionInputexp': experience.descriptionInputexp,
+    }
+
+    return JsonResponse(data)
+
 
 @csrf_exempt
 def edit_experience(request, pk):
@@ -628,6 +831,140 @@ def profile(request):
         'experience_list': experience_list,
     }
     return render(request, 'profile.html', context)
+
+def delete_document(request, pk):
+    instance = get_object_or_404(Document, pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('ngo-profile'))
+
+@login_required
+def ngo_profile(request):
+    user = request.user.ngouser
+    if request.method == 'POST':
+        # Handle form submission for updating profile data
+        user.email = request.POST.get('email')
+        user.phone = request.POST.get('phone')
+        user.ngo_name = request.POST.get('ngo_name')
+        user.ngo_dob = request.POST.get('doset')
+
+        user.ngo_state = request.POST.get('state', user.ngo_state)
+        user.ngo_city = request.POST.get('city', user.ngo_city)
+        user.ngo_pincode = request.POST.get('pincode')
+        
+        user.ngo_address= request.POST.get('address')
+        user.ngo_description = request.POST.get('description', '')
+
+        user.ngo_current_member = request.POST.get('comitteeCount', '')
+        user.ngo_employee_count = request.POST.get('memberCount', '')
+
+        ngo_documents = request.FILES.getlist('ngo_documents')
+        
+        for document in ngo_documents:
+            new_document = Document(user= user, file=document)
+            new_document.save()
+
+        # Handle profile picture reset
+        if request.POST.get('reset_profile_pic') == '1':
+            user.ngo_profile_pic.delete(save=False)  # This deletes the old image file
+            user.ngo_profile_pic = None  # Set to None to use the default image
+
+        # Handle profile picture upload
+        elif 'profile_pic' in request.FILES:
+            user.ngo_profile_pic = request.FILES['profile_pic']
+
+        user.save()
+
+        if user.ngo_current_member:
+            # Handle the Committee Count forms
+            CommitteeCountFormSet = formset_factory(ComitteeCountForm, extra=int(user.ngo_current_member))
+            committee_count_formset = CommitteeCountFormSet(request.POST)
+
+            if committee_count_formset.is_valid():
+                for form in committee_count_formset:
+                    if form.cleaned_data:  # Ensure the form is not empty
+                        ComitteeCount.objects.create(
+                            user=user,
+                            comittee_uid=form.cleaned_data.get('comittee_uid'),
+                        )
+
+        # Handle the Current Client forms
+        CurrentClientFormSet = formset_factory(CurrentClientForm, extra=5)
+        current_client_formset = CurrentClientFormSet(request.POST)
+
+        if current_client_formset.is_valid():
+            for form in current_client_formset:
+                if form.cleaned_data:  # Ensure the form is not empty
+                    CurrentClient.objects.create(
+                        user=user,
+                        client_name=form.cleaned_data.get('client_name'),
+                    )
+
+        if user.ngo_employee_count:
+            # Handle the Current Client forms
+            MemberClientFormSet = formset_factory(MemberCountForm, extra=int(user.ngo_employee_count))
+            member_formset = MemberClientFormSet(request.POST)
+
+            if member_formset.is_valid():
+                
+                for form in member_formset:
+                    if form.cleaned_data:  # Ensure the form is not empty
+                        print(member_formset)
+                        EmployeeCount.objects.create(
+                            user=user,
+                            member_uid = form.cleaned_data.get('member_uid'),
+                        )
+
+        messages.success(request, 'Profile updated successfully.')
+
+        return redirect('ngo-profile')  # Redirect to the profile page to display updated data
+
+    # If the request method is GET, display the profile form with current user data
+    name = user.ngo_name
+    email = user.email
+    phone = user.phone
+    doset = user.ngo_dob
+
+    state = user.ngo_state
+    city = user.ngo_city
+    pincode = user.ngo_pincode
+    address = user.ngo_address
+
+    description = user.ngo_description
+    profile_pic = user.ngo_profile_pic
+
+    current_member = user.ngo_current_member
+    employee_count  = user.ngo_employee_count 
+
+    comittee_uid_list = user.comitteecount.all()
+    current_client_list = user.client.all()
+    member_uid_list = user.employeecount.all()
+
+    documents = Document.objects.filter(user=user) 
+    
+    service_list = user.service.all()
+
+    # experience_list = user.experience.all()
+
+    context = {
+        'email': email,
+        'phone': phone,
+        'name': name,
+        'state': state,
+        'city': city,
+        'pincode': pincode,
+        'doset': doset,
+        'address': address,
+        'description': description,
+        'profile_pic': profile_pic.url if profile_pic else None,
+        'current_member': current_member,
+        'employee_count': employee_count,
+        'comittee_uid_list': comittee_uid_list,
+        'current_client_list': current_client_list,
+        'member_uid_list': member_uid_list,
+        'service_list': service_list,
+        'documents': documents,
+    }
+    return render(request, 'ngo-profile.html', context)
 
 def generate_otp():
     return str(random.randint(100000, 999999))

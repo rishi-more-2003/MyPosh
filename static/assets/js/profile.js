@@ -183,16 +183,116 @@ function removeClientField(index) {
 }
 
 
-document.getElementById('association').addEventListener('change', function () {
-    var associationSection = document.getElementById('associationSection');
-    var firmnameInput = document.getElementById('firmname');
-    var firmuidInput = document.getElementById('firmuid');
+// document.getElementById('association').addEventListener('change', function () {
+//     var associationSection = document.getElementById('associationSection');
+//     var firmnameInput = document.getElementById('firmname');
+//     var firmuidInput = document.getElementById('firmuid');
 
-    if (this.value === 'yes') {
-        associationSection.style.display = 'block';
-    } else {
-        associationSection.style.display = 'none';
-        firmnameInput.value = '';
-        firmuidInput.value = '';
-    }
+//     if (this.value === 'yes') {
+//         associationSection.style.display = 'block';
+//     } else {
+//         associationSection.style.display = 'none';
+//         firmnameInput.value = '';
+//         firmuidInput.value = '';
+//     }
+// });
+
+document.addEventListener('DOMContentLoaded', function() {
+    var associationElement = document.getElementById('association');
+    if (associationElement) {
+        associationElement.addEventListener('change', function() {
+            var associationSection = document.getElementById('associationSection');
+            var firmnameInput = document.getElementById('firmname');
+            var firmuidInput = document.getElementById('firmuid');
+
+            if (this.value === 'yes') {
+                associationSection.style.display = 'block';
+            } else {
+                associationSection.style.display = 'none';
+                firmnameInput.value = '';
+                firmuidInput.value = '';
+            }
+        });
+    } 
 });
+
+
+
+function addMemberField() {
+    var comitteeCount = document.getElementById('memberCount').value;
+    var comitteeDetailsSection = document.getElementById('membersDetailsSection');
+
+    // Count existing committee fields
+    var currentCount = comitteeDetailsSection.getElementsByClassName('details member').length;
+
+    // If the current count is less than the total count, add a new field
+    if (currentCount < comitteeCount) {
+        var comitteeDiv = document.createElement('div');
+        comitteeDiv.className = 'details member';
+        comitteeDiv.id = `member-${currentCount}`;
+
+        // Add the required fields for each committee
+        comitteeDiv.innerHTML = `
+        <div class="fields" style="margin-top: 20px">
+            <label>Member UID</label>
+            <div class="input-field d-flex align-items-center">
+                <input name='form-${currentCount}-member_uid' id="committee-${currentCount}-member_uid" class="form-control mr-2" placeholder="Enter UID if Member is registered on MyPosh"></input>
+                <button type="button" class="btn btn-danger" onclick="removeMemberField(${currentCount})">Remove</button>
+            </div>
+        </div>
+    `;
+
+        comitteeDetailsSection.appendChild(comitteeDiv);
+
+        // Update form management fields
+        updateFormManageFields(comitteeCount);
+    }
+}
+
+function updateFormManageFields(totalCount) {
+    var comitteeDetailsSection = document.getElementById('membersDetailsSection');
+
+    // Clear previous form management fields
+    var oldManagementFields = comitteeDetailsSection.querySelectorAll('input[type="hidden"]');
+    oldManagementFields.forEach(function(field) {
+        field.remove();
+    });
+
+    // Append the form management fields
+    var totalForms = document.createElement('input');
+    totalForms.type = 'hidden';
+    totalForms.name = 'form-TOTAL_FORMS';
+    totalForms.value = totalCount;
+
+    var initialForms = document.createElement('input');
+    initialForms.type = 'hidden';
+    initialForms.name = 'form-INITIAL_FORMS';
+    initialForms.value = 0;
+
+    var minNumForms = document.createElement('input');
+    minNumForms.type = 'hidden';
+    minNumForms.name = 'form-MIN_NUM_FORMS';
+    minNumForms.value = 0;
+
+    var maxNumForms = document.createElement('input');
+    maxNumForms.type = 'hidden';
+    maxNumForms.name = 'form-MAX_NUM_FORMS';
+    maxNumForms.value = 1000;
+
+    comitteeDetailsSection.appendChild(totalForms);
+    comitteeDetailsSection.appendChild(initialForms);
+    comitteeDetailsSection.appendChild(minNumForms);
+    comitteeDetailsSection.appendChild(maxNumForms);
+}
+
+function removeMemberField(index) {
+    var committeeDiv = document.getElementById(`member-${index}`);
+    if (committeeDiv) {
+        committeeDiv.remove();
+        
+        // Update form management fields to reflect the change
+        var comitteeCount = document.getElementById('memberCount').value;
+        updateFormManageFields(comitteeCount);
+    }
+}
+

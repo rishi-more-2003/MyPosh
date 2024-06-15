@@ -1,5 +1,5 @@
 from django import forms
-from .models import Education, EstablishmentLocation, PEDetails, VendorDetails, ComitteeCount, CurrentClient
+from .models import Education, EstablishmentLocation, PEDetails, VendorDetails, ComitteeCount, CurrentClient, EmployeeCount
 
 class EducationForm(forms.ModelForm):
     class Meta:
@@ -24,6 +24,11 @@ class VendorDetailsForm(forms.ModelForm):
 class ComitteeCountForm(forms.ModelForm):
     class Meta:
         model = ComitteeCount
+        exclude = ['user']
+
+class MemberCountForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeCount
         exclude = ['user']
 
 class CurrentClientForm(forms.ModelForm):

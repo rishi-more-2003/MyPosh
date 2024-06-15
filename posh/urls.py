@@ -10,6 +10,7 @@ urlpatterns = [
     path('register/consultancy/', views.register_consultancy, name="register_consultancy"),
     path('register/establishment/', views.register_establishment, name="register_establishment"),
     path('login/', views.signin, name="login"),
+
     path('profile/', views.profile, name="profile"),
     path('logout/', views.signout, name="logout"),
 
@@ -21,9 +22,17 @@ urlpatterns = [
     path('profile/service/delete/<int:pk>', views.delete_service, name="delete_service"),
     path('profile/service/edit/<int:pk>/', views.edit_service, name="edit_service"),
 
+    path('ngo-profile/service/create', views.ngo_service, name="ngo_service"),
+    path('ngo-profile/service/delete/<int:pk>', views.ngo_delete_service, name="ngo_delete_service"),
+    path('ngo-profile/service/edit/<int:pk>/', views.ngo_edit_service, name="ngo_edit_service"),
+
     path('profile/experience/create', views.experience, name="experience"),
     path('profile/experience/delete/<int:pk>', views.delete_experience, name="delete_experience"),
     path('profile/experience/edit/<int:pk>/', views.edit_experience, name="edit_experience"),
+
+    path('ngo-profile/experience/create', views.ngo_experience, name="ngo_experience"),
+    path('ngo-profile/experience/delete/<int:pk>', views.ngo_delete_experience, name="ngo_delete_experience"),
+    path('ngo-profile/experience/edit/<int:pk>/', views.ngo_edit_experience, name="ngo_edit_experience"),
 
     path('profile/certification/create', views.certification, name="certification"),
     path('profile/certification/delete/<int:pk>', views.delete_certification, name="delete_certification"),
@@ -34,7 +43,13 @@ urlpatterns = [
     path('profile/skill/edit/<int:pk>/', views.edit_skill, name="edit_skill"),
 
     path('profile/comittee/<int:pk>', views.delete_comitteeuid, name="comittee_uid"),
+    path('ngo-profile/comittee/<int:pk>', views.delete_ngocomitteeuid, name="comittee_ngo_uid"),
     path('profile/client/<int:pk>', views.delete_clientname, name="client_name"),
+    path('ngo-profile/client/<int:pk>', views.delete_ngoclientname, name="client_ngo_name"),
+    path('ngo-profile/member/<int:pk>', views.delete_ngomember, name="ngo_member"),
+
+    path('ngo-profile/', views.ngo_profile, name="ngo-profile"),
+    path('ngo-profile/document/<int:pk>', views.delete_document, name="delete_document"),
 ]
 
 if settings.DEBUG:

@@ -47,11 +47,22 @@ class NGOUser(PoshUser):
     ngo_state = models.CharField(max_length=100, blank=False)
     ngo_city = models.CharField(max_length=100, blank=False)
     ngo_pincode = models.CharField(max_length=10, blank=False)
+    ngo_profile_pic = models.ImageField(blank=True, upload_to='users/')
+    ngo_description = models.TextField(max_length=500, blank=True)
+    ngo_current_member = models.CharField(max_length=10, blank=True)
+    ngo_employee_count = models.CharField(max_length=10, blank=True)
 
     class Meta:
         verbose_name = 'NGO User'
         verbose_name_plural = 'NGO Users'
 
+class Document(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='document')
+    file = models.FileField(upload_to='ngo_documents/', blank=True)
+
+class EmployeeCount(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='employeecount')
+    member_uid = models.CharField(max_length=15, blank=True)
 
 class ConsultancyUser(PoshUser):
     consultancy_name = models.CharField(max_length=150, blank=False)
