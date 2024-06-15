@@ -1,0 +1,414 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block stylescss %}
+{{ block.super }}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'assets/css/list_item.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
+<script src="{% static 'assets/js/cities.js' %}"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<style>
+    .experience-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+        padding: 10px 0;
+    }
+    .buttons {
+        text-align: right;
+        margin-left: 20px;
+    }
+    .buttons form,
+    .buttons a {
+        display: inline-block;
+        margin-left: 5px;
+    }
+    .buttons button {
+        margin-left: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'assets/js/profile.js' %}"></script>
+<script src="{% static 'assets/js/list_item.js' %}"></script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentlyWorkingInput = document.getElementById('currentlyWorkingInput1');
+        const endDateExp = document.getElementById('end-date1');
+
+        currentlyWorkingInput.addEventListener('change', function () {
+            if (currentlyWorkingInput.checked) {
+                endDateExp.style.display = 'none';
+                endDateExp.value = ''; // Clear the value
+            } else {
+                endDateExp.style.display = 'block'; // Or 'flex' based on your layout
+                endDateExp.value = ''; // Clear the value
+            }
+        });
+    
+        // Trigger change event on page load to set initial state
+        currentlyWorkingInput.dispatchEvent(new Event('change'));
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentlyWorkingInput = document.getElementById('currentlyWorkingInput');
+        const endDateExp = document.getElementById('end-date');
+
+        currentlyWorkingInput.addEventListener('change', function () {
+            if (currentlyWorkingInput.checked) {
+                endDateExp.value = ''; // Clear the value
+                endDateExp.style.display = 'none';
+            } else {
+                endDateExp.value = ''; // Clear the value
+                endDateExp.style.display = 'block'; // Or 'flex' based on your layout
+            }
+        });
+    
+        // Trigger change event on page load to set initial state
+        currentlyWorkingInput.dispatchEvent(new Event('change'));
+    });
+
+    // Event listener for currentlyWorkingInput checkbox change
+    $('#currentlyWorkingInput').on('change', function() {
+        if (this.checked) {
+            $('#end-date1').css('display', 'none'); // Hide endDateexp when checked
+            $('#endDateexp').val(''); // Clear endDateexp value
+        } else {
+            $('#end-date1').css('display', 'block'); // Show endDateexp when unchecked
+        }
+    });
+        
+    $(document).ready(function() {
+
+        // Helper function to format date to "Month, Year"
+        function formatDateToMonthYear(dateStr) {
+            const options = { year: 'numeric', month: 'long' };
+            return new Date(dateStr).toLocaleDateString('en-US', options);
+        }
+
+        // Helper function to format date to "YYYY-MM"
+        function formatDateToYYYYMM(dateStr) {
+            const date = new Date(dateStr);
+            const month = date.getMonth() + 1;
+            return `${date.getFullYear()}-${month < 10 ? '0' + month : month}`;
+        }
+
+        // When the edit modal is shown
+        $('#editExperienceModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var pk = button.data('pk'); // Extract info from data-* attributes
+    
+            if (!pk) {
+                console.error('Primary key (pk) is null.');
+                return;
+            }
+    
+            // Change the URL without reloading the page
+            history.pushState(null, '', '/consult-profile/experience/edit/' + pk + '/');
+    
+            // Set the form's action attribute to the update URL
+            $('#editExperienceForm').attr('action', '/consult-profile/experience/edit/' + pk + '/');
+    
+            // Make an AJAX call to fetch the experience details
+            $.ajax({
+                url: '/consult-profile/experience/edit/' + pk + '/',
+                type: 'GET',
+                success: function(data) {
+                    // Populate the form fields with the data received
+                    $('#titleInput').val(data.titleInput);
+                    $('#companyNameInput').val(data.companyNameInput);
+                    $('#currentlyWorkingInput').prop('checked', data.currentlyWorkingInput);
+                    $('#startDateexp').val(formatDateToYYYYMM(data.startDateexp));
+                    $('#endDateexp').val(formatDateToYYYYMM(data.endDateexp));
+                    $('#industryInput').val(data.industryInput);
+                    $('#locationInput').val(data.locationInput);
+                    $('#descriptionInputexp').val(data.descriptionInputexp);
+
+                    // Adjust endDateexp field visibility based on currentlyWorkingInput
+                    if (data.currentlyWorkingInput) {
+                        $('#end-date1').css('display', 'none');
+                    } else {
+                        $('#end-date1').css('display', 'block');
+                    }
+            
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(errmsg);
+                }
+            });
+        });
+    
+        // Form submission handler
+        $('#editExperienceForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Gather form data
+            var formData = {
+                'titleInput': $('#titleInput').val(),
+                'companyNameInput': $('#companyNameInput').val(),
+                'currentlyWorkingInput': $('#currentlyWorkingInput').prop('checked'), // Use .prop('checked') for checkboxes
+                'startDateexp': $('#startDateexp').val(), // Already formatted as YYYY-MM
+                'endDateexp': $('#endDateexp').val(), // Already formatted as YYYY-MM
+                'industryInput': $('#industryInput').val(),
+                'locationInput': $('#locationInput').val(),
+                'descriptionInputexp': $('#descriptionInputexp').val(),
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val() // Include CSRF token
+            };
+    
+            // Send AJAX POST request to update Experience details
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    // Handle success (e.g., close modal, show success message)
+                    $('#editExperienceModal').modal('hide');
+                    location.reload(); // Reload the page to see the changes
+                    window.location.href = '/consult-profile/experience/create'; 
+                },
+                error: function(xhr, errmsg, err) {
+                    // Handle error (e.g., show error message)
+                    console.log(errmsg);
+                }
+            });
+        });
+    });
+    
+    
+</script>
+    
+
+{% endblock %}
+
+{% block content %}
+<div class="container light-style flex-grow-1 container-p-y">
+    <div class="card overflow-hidden" style="min-height: 30rem">
+        <div class="row no-gutters row-bordered row-border-light">
+            <div class="col-md-12">
+                <div class="tab-content">
+                    <div class="tab-pane fade active show" id="account-general">
+                        <hr class="border-light m-0">
+                        <div class="container-experience">
+                            <div class="add_experience">
+                                <h2>{{ user.consultancy_name }}'s Experience Details</h2>
+                                <button type='button' id="add-experience-btn" data-toggle="modal" data-target="#addExperienceModal">+ Add</button>
+                            </div>
+
+                            <!-- Experience Section -->
+                            <div id="experience-section">
+                                <ul id="experience-list">
+                                    <!-- Experience will be dynamically added here -->
+                                    {% if experience_list %}
+                                        <ul>
+                                            {% for experience in experience_list %}
+                                                <li>
+                                                    <strong>Title:</strong> {{ experience.titleInput }}<br>
+                                                    <strong>Company Name:</strong> {{ experience.companyNameInput }}<br>
+                                        
+                                                    {% if experience.currentlyWorkingInput is not None %}
+                                                        <strong>Currently Working:</strong> {{ experience.currentlyWorkingInput|yesno:"Yes,No" }}<br>
+                                                    {% endif %}
+                                        
+                                                    {% if experience.startDateexp %}
+                                                        <strong>Start Date:</strong> {{ experience.startDateexp }}<br>
+                                                    {% endif %}
+                                        
+                                                    {% if experience.endDateexp or experience.currentlyWorkingInput %}
+                                                        <strong>End Date:</strong> {% if experience.currentlyWorkingInput %}Present{% else %}{{ experience.endDateexp }}{% endif %}<br>
+                                                    {% endif %}
+                                        
+                                                    {% if experience.industryInput %}
+                                                        <strong>Industry:</strong> {{ experience.industryInput }}<br>
+                                                    {% endif %}
+                                        
+                                                    {% if experience.locationInput %}
+                                                        <strong>Location:</strong> {{ experience.locationInput }}<br>
+                                                    {% endif %}
+                                        
+                                                    {% if experience.descriptionInputexp %}
+                                                        <strong>Description:</strong> {{ experience.descriptionInputexp }}<br>
+                                                    {% endif %}
+                                                    <div class="buttons">
+                                                        <button class="btn btn-warning btn-sm mr-2 edit-button" data-toggle="modal" data-target="#editExperienceModal" data-pk="{{ experience.id }}">Edit</button>
+
+                                                        <a href="{% url 'consult_delete_experience' experience.id %}">
+                                                            <button class="btn btn-danger btn-sm delete-button" >Delete</button>
+                                                        </a>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p>No experience records found.</p>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            <form id="formTask" method="POST" action="{% url 'consult_experience' %}" autocomplete="off">
+                                {% csrf_token %} 
+                                <!-- Add Experience Modal -->
+                                <div class="modal fade" id="addExperienceModal" tabindex="-1" role="dialog" aria-labelledby="addExperienceModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addExperienceModalLabel">Add Experience</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Title -->
+                                                <div class="form-group">
+                                                    <label for="titleInput">Title</label>
+                                                    <input type="text" id="titleInput1" name="titleInput" class="form-control">
+                                                </div>
+
+                                                <!-- Company Name -->
+                                                <div class="form-group">
+                                                    <label for="companyNameInput">Company Name</label>
+                                                    <input type="text" id="companyNameInput1" name="companyNameInput" class="form-control">
+                                                </div>
+
+                                                <!-- Currently Working Checkbox -->
+                                                <div class="form-check">
+                                                    <input type="checkbox" id="currentlyWorkingInput1" name="currentlyWorkingInput" class="form-check-input">
+                                                    <label for="currentlyWorkingInput" class="form-check-label">I am currently working in this role</label>
+                                                </div>
+
+                                                <!-- Start Date -->
+                                                <div class="form-row">
+                                                    <div class="form-group col-md-6">
+                                                        <label for="startDateexp">Start Date</label>
+                                                        <input type="month" id="startDateexp1" name="startDateexp" class="form-control">
+                                                    </div>
+                                                    <div class="form-group col-md-6" id='end-date1'>
+                                                        <label for="endDateexp">End Date</label>
+                                                        <input type="month" id="endDateexp1" name="endDateexp" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Industry -->
+                                                <div class="form-group">
+                                                    <label for="industryInput">Industry</label>
+                                                    <input type="text" id="industryInput1" name="industryInput" class="form-control">
+                                                </div>
+
+                                                <!-- Location -->
+                                                <div class="form-group">
+                                                    <label for="locationInput">Location</label>
+                                                    <input type="text" id="locationInput1" name="locationInput" class="form-control">
+                                                </div>
+
+                                                <!-- Description -->
+                                                <div class="form-group">
+                                                    <label for="descriptionInputexp">Description</label>
+                                                    <textarea id="descriptionInputexp1" name="descriptionInputexp" class="form-control" rows="3" placeholder="Give a description of your experience in 250 words"></textarea>
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary" id="saveExperienceBtn">Save Experience</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </form>
+
+
+                        <form id="editExperienceForm" method="POST" autocomplete="off">
+                            {% csrf_token %}
+                            <!-- Add Experience Modal -->
+                            <div class="modal fade" id="editExperienceModal" tabindex="-1" role="dialog" aria-labelledby="editExperienceModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editExperienceModalLabel">Add Experience</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Title -->
+                                            <div class="form-group">
+                                                <label for="titleInput">Title</label>
+                                                <input type="text" id="titleInput" name="titleInput" class="form-control">
+                                            </div>
+
+                                            <!-- Company Name -->
+                                            <div class="form-group">
+                                                <label for="companyNameInput">Company Name</label>
+                                                <input type="text" id="companyNameInput" name="companyNameInput" class="form-control">
+                                            </div>
+
+                                            <!-- Currently Working Checkbox -->
+                                            <div class="form-check">
+                                                <input type="checkbox" id="currentlyWorkingInput" name="currentlyWorkingInput" class="form-check-input">
+                                                <label for="currentlyWorkingInput" class="form-check-label">I am currently working in this role</label>
+                                            </div>
+
+                                            <!-- Start Date -->
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="startDateexp">Start Date</label>
+                                                    <input type="month" id="startDateexp" name="startDateexp" class="form-control">
+                                                </div>
+                                                <div class="form-group col-md-6" id='end-date'>
+                                                    <label for="endDateexp">End Date</label>
+                                                    <input type="month" id="endDateexp" name="endDateexp" class="form-control">
+                                                </div>
+                                            </div>
+
+                                            <!-- Industry -->
+                                            <div class="form-group">
+                                                <label for="industryInput">Industry</label>
+                                                <input type="text" id="industryInput" name="industryInput" class="form-control">
+                                            </div>
+
+                                            <!-- Location -->
+                                            <div class="form-group">
+                                                <label for="locationInput">Location</label>
+                                                <input type="text" id="locationInput" name="locationInput" class="form-control">
+                                            </div>
+
+                                            <!-- Description -->
+                                            <div class="form-group">
+                                                <label for="descriptionInputexp">Description</label>
+                                                <textarea id="descriptionInputexp" name="descriptionInputexp" class="form-control" rows="3" placeholder="Give a description of your experience in 250 words"></textarea>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary" id="saveExperienceBtn">Save Experience</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+

@@ -27,14 +27,14 @@
 <body>
     <div class="container">
         <div id="message-section"></div>
-        {% if messages %}
+        {% comment %} {% if messages %}
         <ul class="messages">
             {% for message in messages %}
             <li id="error_text" {% if message.tags %} class="bg-{{ message.tags }}" {% endif %}> {{ message }}
             </li>
             {% endfor %}
         </ul>
-        {% endif %}
+        {% endif %} {% endcomment %}
         <header>
             Registration
         </header>

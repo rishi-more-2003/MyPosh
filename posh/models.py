@@ -71,6 +71,10 @@ class ConsultancyUser(PoshUser):
     consultancy_state = models.CharField(max_length=100, blank=False)
     consultancy_city = models.CharField(max_length=100, blank=False)
     consultancy_pincode = models.CharField(max_length=10, blank=False)
+    consultancy_profile_pic = models.ImageField(blank=True, upload_to='users/')
+    consultancy_description = models.TextField(max_length=500, blank=True)
+    consultancy_current_member = models.CharField(max_length=10, blank=True)
+    consultancy_employee_count = models.CharField(max_length=10, blank=True)
 
     class Meta:
         verbose_name = 'Consultancy User'

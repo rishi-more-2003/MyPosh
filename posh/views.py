@@ -111,6 +111,12 @@ def delete_ngocomitteeuid(request, pk):
     # education_list = Education.objects.all()
     return HttpResponseRedirect(reverse('ngo-profile'))
 
+def delete_consultcomitteeuid(request, pk):
+    instance = get_object_or_404(ComitteeCount, pk=pk)
+    instance.delete()
+    # education_list = Education.objects.all()
+    return HttpResponseRedirect(reverse('consult-profile'))
+
 def delete_clientname(request, pk):
     instance = get_object_or_404(CurrentClient, pk=pk)
     instance.delete()
@@ -123,11 +129,23 @@ def delete_ngoclientname(request, pk):
     # education_list = Education.objects.all()
     return HttpResponseRedirect(reverse('ngo-profile'))
 
+def delete_consultclientname(request, pk):
+    instance = get_object_or_404(CurrentClient, pk=pk)
+    instance.delete()
+    # education_list = Education.objects.all()
+    return HttpResponseRedirect(reverse('consult-profile'))
+
 def delete_ngomember(request, pk):
     instance = get_object_or_404(EmployeeCount, pk=pk)
     instance.delete()
     # education_list = Education.objects.all()
     return HttpResponseRedirect(reverse('ngo-profile'))
+
+def delete_consultmember(request, pk):
+    instance = get_object_or_404(EmployeeCount, pk=pk)
+    instance.delete()
+    # education_list = Education.objects.all()
+    return HttpResponseRedirect(reverse('consult-profile'))
 
 @login_required
 def education(request):
@@ -230,10 +248,42 @@ def ngo_service(request):
 
     return render(request, 'ngo-service.html', context)
 
+@login_required
+def consult_service(request):
+    user = request.user
+    if request.method == 'POST':
+        service_name = request.POST.get('service_name')
+        service_charge = request.POST.get('service_charge')
+        service_description = request.POST.get('service_description')
+
+        service = Service(
+            user=user,
+            service_name = service_name,
+            service_charge = service_charge,
+            service_description = service_description,
+        )
+        service.save()
+        
+        return redirect('consult_service')  # Redirect to a success page or the same page
+
+    user = get_object_or_404(ConsultancyUser, username = request.user)
+    service_list = user.service.all()  # Fetch all related education instances
+    context = {
+        'user': user,
+        'service_list': service_list,
+    }
+
+    return render(request, 'consult-service.html', context)
+
 def ngo_delete_service(request, pk):
     instance = Service.objects.get(pk=pk)
     instance.delete()
     return HttpResponseRedirect(reverse('ngo_service'))
+
+def consult_delete_service(request, pk):
+    instance = Service.objects.get(pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('consult_service'))
 
 def delete_service(request, pk):
     instance = Service.objects.get(pk=pk)
@@ -273,6 +323,37 @@ def edit_service(request, pk):
     
 @csrf_exempt
 def ngo_edit_service(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    if request.method == 'POST':
+        try:
+            service.service_name = request.POST.get('service_name')
+            service.service_charge = request.POST.get('service_charge')
+            service.service_description = request.POST.get('service_description')
+
+            service.save()
+
+            response_data = {
+                'success': True,
+                'message': 'Service details updated successfully.'
+            }
+
+        except ValueError as e:
+            response_data = {
+                'success': False,
+                'message': str(e)
+            }
+        return JsonResponse(response_data)
+
+    data = {
+        'service_name': service.service_name,
+        'service_charge': service.service_charge,
+        "service_description": service.service_description,
+    }
+    # print(data)
+    return JsonResponse(data)
+
+@csrf_exempt
+def consult_edit_service(request, pk):
     service = get_object_or_404(Service, pk=pk)
     if request.method == 'POST':
         try:
@@ -420,6 +501,65 @@ def ngo_experience(request):
 
     return render(request, 'ngo-experience.html', context)
 
+@login_required
+def consult_experience(request):
+    user = request.user
+    if request.method == 'POST':
+        titleInput = request.POST.get('titleInput')
+        companyNameInput = request.POST.get('companyNameInput')
+
+        if request.POST.get('currentlyWorkingInput') == "on":
+            currentlyWorkingInput = True
+            endDateexp = None
+        else:
+            currentlyWorkingInput = False
+            endDateexp = request.POST.get('endDateexp')
+
+        startDateexp = request.POST.get('startDateexp')
+
+
+        industryInput = request.POST.get('industryInput')
+        locationInput = request.POST.get('locationInput')
+        descriptionInputexp = request.POST.get('descriptionInputexp')
+
+        print(currentlyWorkingInput)
+
+        # Parse dates
+        try:
+            startDateexp = datetime.datetime.strptime(startDateexp, '%Y-%m').date()
+        except (ValueError, TypeError):
+            startDateexp = None
+
+        try:
+            endDateexp = datetime.datetime.strptime(endDateexp, '%Y-%m').date()
+        except (ValueError, TypeError):
+             endDateexp = None
+
+        # Create and save the experience instance
+        experience = Experience(
+            user=user,
+            titleInput = titleInput,
+            companyNameInput = companyNameInput,
+            currentlyWorkingInput = currentlyWorkingInput,
+            startDateexp = startDateexp,
+            endDateexp = endDateexp,
+            industryInput = industryInput,
+            locationInput = locationInput,
+            descriptionInputexp = descriptionInputexp,
+        )
+        experience.save()
+        
+        return redirect('consult_experience')  # Redirect to a success page or the same page
+    
+    user = get_object_or_404(ConsultancyUser, username=request.user)
+    experience_list = user.experience.all()  # Fetch all related experience instances
+    context = {
+        'user': user,
+        'experience_list': experience_list,
+    }
+
+    return render(request, 'consult-experience.html', context)
+
 def delete_experience(request, pk):
     instance = Experience.objects.get(pk=pk)
     instance.delete()
@@ -429,6 +569,11 @@ def ngo_delete_experience(request, pk):
     instance = Experience.objects.get(pk=pk)
     instance.delete()
     return HttpResponseRedirect(reverse('ngo_experience'))
+
+def consult_delete_experience(request, pk):
+    instance = Experience.objects.get(pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('consult_experience'))
 
 @csrf_exempt
 def ngo_edit_experience(request, pk):
@@ -487,6 +632,62 @@ def ngo_edit_experience(request, pk):
 
     return JsonResponse(data)
 
+@csrf_exempt
+def consult_edit_experience(request, pk):
+    experience = get_object_or_404(Experience, pk=pk)
+
+    if request.method == 'POST':
+        try:
+            experience.titleInput = request.POST.get('titleInput')
+            experience.companyNameInput = request.POST.get('companyNameInput')
+            experience.industryInput = request.POST.get('industryInput')
+            experience.locationInput = request.POST.get('locationInput')
+            experience.descriptionInputexp = request.POST.get('descriptionInputexp')
+
+            cert_start_date = request.POST.get('startDateexp')
+            if cert_start_date:
+                experience.startDateexp = datetime.datetime.strptime(cert_start_date, '%Y-%m').date().replace(day=1)
+
+            currently_working = request.POST.get('currentlyWorkingInput')
+
+            if currently_working == "true":
+                experience.currentlyWorkingInput = True
+                experience.endDateexp = None  # Set endDateexp to None if currently working
+            else:
+                experience.currentlyWorkingInput = False
+                cert_end_date = request.POST.get('endDateexp')
+                if cert_end_date:
+                    experience.endDateexp = datetime.datetime.strptime(cert_end_date, '%Y-%m').date().replace(day=1)
+
+            experience.save()
+            # print(experience.currentlyWorkingInput)  # Ensure this prints the correct value
+
+            response_data = {
+                'success': True,
+                'message': 'Experience details updated successfully.'
+            }
+
+        except ValueError as e:
+            response_data = {
+                'success': False,
+                'message': str(e)
+            }
+
+        return JsonResponse(response_data)
+
+    # Prepare data for initial form population
+    data = {
+        'titleInput': experience.titleInput,
+        'companyNameInput': experience.companyNameInput,
+        'currentlyWorkingInput': experience.currentlyWorkingInput,
+        'startDateexp': experience.startDateexp.strftime('%Y-%m') if experience.startDateexp else '',
+        'endDateexp': experience.endDateexp.strftime('%Y-%m') if experience.endDateexp else '',
+        'industryInput': experience.industryInput,
+        'locationInput': experience.locationInput,
+        'descriptionInputexp': experience.descriptionInputexp,
+    }
+
+    return JsonResponse(data)
 
 @csrf_exempt
 def edit_experience(request, pk):
@@ -837,6 +1038,11 @@ def delete_document(request, pk):
     instance.delete()
     return HttpResponseRedirect(reverse('ngo-profile'))
 
+def consult_delete_document(request, pk):
+    instance = get_object_or_404(Document, pk=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('consult-profile'))
+
 @login_required
 def ngo_profile(request):
     user = request.user.ngouser
@@ -943,7 +1149,7 @@ def ngo_profile(request):
     
     service_list = user.service.all()
 
-    # experience_list = user.experience.all()
+    experience_list = user.experience.all()
 
     context = {
         'email': email,
@@ -963,8 +1169,140 @@ def ngo_profile(request):
         'member_uid_list': member_uid_list,
         'service_list': service_list,
         'documents': documents,
+        'experience_list': experience_list,
     }
     return render(request, 'ngo-profile.html', context)
+
+@login_required
+def consult_profile(request):
+    user = request.user.consultancyuser
+    if request.method == 'POST':
+        # Handle form submission for updating profile data
+        user.email = request.POST.get('email')
+        user.phone = request.POST.get('phone')
+        user.consultancy_name = request.POST.get('ngo_name')
+        user.consultancy_dob = request.POST.get('doset')
+
+        user.consultancy_state = request.POST.get('state', user.consultancy_state)
+        user.consultancy_city = request.POST.get('city', user.consultancy_city)
+        user.consultancy_pincode = request.POST.get('pincode')
+        
+        user.consultancy_address= request.POST.get('address')
+        user.consultancy_description = request.POST.get('description', '')
+
+        user.consultancy_current_member = request.POST.get('comitteeCount', '')
+        user.consultancy_employee_count = request.POST.get('memberCount', '')
+
+        consultancy_documents = request.FILES.getlist('ngo_documents')
+        
+        for document in consultancy_documents:
+            new_document = Document(user= user, file=document)
+            new_document.save()
+
+        # Handle profile picture reset
+        if request.POST.get('reset_profile_pic') == '1':
+            user.consultancy_profile_pic.delete(save=False)  # This deletes the old image file
+            user.consultancy_profile_pic = None  # Set to None to use the default image
+
+        # Handle profile picture upload
+        elif 'profile_pic' in request.FILES:
+            user.consultancy_profile_pic = request.FILES['profile_pic']
+
+        user.save()
+
+        if user.consultancy_current_member:
+            # Handle the Committee Count forms
+            CommitteeCountFormSet = formset_factory(ComitteeCountForm, extra=int(user.consultancy_current_member))
+            committee_count_formset = CommitteeCountFormSet(request.POST)
+
+            if committee_count_formset.is_valid():
+                for form in committee_count_formset:
+                    if form.cleaned_data:  # Ensure the form is not empty
+                        ComitteeCount.objects.create(
+                            user=user,
+                            comittee_uid=form.cleaned_data.get('comittee_uid'),
+                        )
+
+        # Handle the Current Client forms
+        CurrentClientFormSet = formset_factory(CurrentClientForm, extra=5)
+        current_client_formset = CurrentClientFormSet(request.POST)
+
+        if current_client_formset.is_valid():
+            for form in current_client_formset:
+                if form.cleaned_data:  # Ensure the form is not empty
+                    CurrentClient.objects.create(
+                        user=user,
+                        client_name=form.cleaned_data.get('client_name'),
+                    )
+
+        if user.consultancy_employee_count:
+            # Handle the Current Client forms
+            MemberClientFormSet = formset_factory(MemberCountForm, extra=int(user.consultancy_employee_count))
+            member_formset = MemberClientFormSet(request.POST)
+
+            if member_formset.is_valid():
+                
+                for form in member_formset:
+                    if form.cleaned_data:  # Ensure the form is not empty
+                        print(member_formset)
+                        EmployeeCount.objects.create(
+                            user=user,
+                            member_uid = form.cleaned_data.get('member_uid'),
+                        )
+
+        messages.success(request, 'Profile updated successfully.')
+
+        return redirect('consult-profile')  # Redirect to the profile page to display updated data
+
+    # If the request method is GET, display the profile form with current user data
+    name = user.consultancy_name
+    email = user.email
+    phone = user.phone
+    doset = user.consultancy_dob
+
+    state = user.consultancy_state
+    city = user.consultancy_city
+    pincode = user.consultancy_pincode
+    address = user.consultancy_address
+
+    description = user.consultancy_description
+    profile_pic = user.consultancy_profile_pic
+
+    current_member = user.consultancy_current_member
+    employee_count  = user.consultancy_employee_count 
+
+    comittee_uid_list = user.comitteecount.all()
+    current_client_list = user.client.all()
+    member_uid_list = user.employeecount.all()
+
+    documents = Document.objects.filter(user=user) 
+    
+    service_list = user.service.all()
+
+    experience_list = user.experience.all()
+
+    context = {
+        'email': email,
+        'phone': phone,
+        'name': name,
+        'state': state,
+        'city': city,
+        'pincode': pincode,
+        'doset': doset,
+        'address': address,
+        'description': description,
+        'profile_pic': profile_pic.url if profile_pic else None,
+        'current_member': current_member,
+        'employee_count': employee_count,
+        'comittee_uid_list': comittee_uid_list,
+        'current_client_list': current_client_list,
+        'member_uid_list': member_uid_list,
+        'service_list': service_list,
+        'documents': documents,
+        'experience_list': experience_list,
+    }
+    return render(request, 'consult-profile.html', context)
+
 
 def generate_otp():
     return str(random.randint(100000, 999999))

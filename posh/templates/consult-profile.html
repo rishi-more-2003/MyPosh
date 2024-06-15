@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block stylescss %}
+{{ block.super }}
+<style>
+    .card {
+        border: 1px solid #e3e6f0;
+        border-radius: 0.35rem;
+        margin: 1rem 0;
+        padding: 1rem;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .file-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 0;
+    }
+
+    .remove-file-btn {
+        background: none;
+        border: none;
+        color: red;
+        cursor: pointer;
+    }
+
+    #upload-files{
+        display: contents;
+    }
+</style>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'assets/css/list_item.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
+<script src="{% static 'assets/js/cities.js' %}"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'assets/js/profile.js' %}"></script>
+<script src="{% static 'assets/js/list_item.js' %}"></script>
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const output = document.getElementById('profile-image');
+            output.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function resetImage() {
+        const profileImage = document.getElementById('profile-image');
+        profileImage.src = "{% static 'assets/img/default_profile.svg' %}";
+
+        // Set hidden input value to signal reset
+        document.getElementById('resetProfilePic').value = '1';
+
+        // If you also want to clear the file input
+        document.getElementById('uploadPhoto').value = '';
+    }
+
+    const selectedFiles = [];
+
+    function formatFileSize(size) {
+        const units = ['B', 'KB', 'MB'];
+        let unitIndex = 0;
+        let formattedSize = size;
+        
+        while (formattedSize >= 1024 && unitIndex < units.length - 1) {
+            formattedSize /= 1024;
+            unitIndex++;
+        }
+        
+        return `${formattedSize.toFixed(2)} ${units[unitIndex]}`;
+    }
+
+    function previewFiles(event) {
+        const input = event.target;
+        const files = input.files;
+        const fileList = document.getElementById('fileList');
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size <= 800 * 1024) {
+                selectedFiles.push(file);
+            } else {
+                alert(`File ${file.name} exceeds the maximum size of 800K.`);
+            }
+        }
+
+        displayFileList();
+    }
+
+    function displayFileList() {
+        const fileList = document.getElementById('fileList');
+        fileList.innerHTML = '';
+
+        selectedFiles.forEach((file, index) => {
+            const listItem = document.createElement('div');
+            listItem.className = 'file-item';
+            listItem.innerHTML = `
+                ${file.name} [${formatFileSize(file.size)}]
+                <button type="button" class="remove-file-btn" onclick="removeFile(${index})">&times;</button>
+            `;
+            fileList.appendChild(listItem);
+        });
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        displayFileList();
+    }
+
+</script>
+{% endblock %}
+
+{% block content %}
+    <div class="container light-style flex-grow-1 container-p-y">
+        {% comment %} <h4 class="font-weight-bold py-3 mb-4">
+            Profile
+        </h4> {% endcomment %}
+        <div class="card overflow-hidden">
+            <div class="row no-gutters row-bordered row-border-light">
+                <div class="col-md-12">
+                    <div class="tab-content">
+                        <div class="tab-pane fade active show" id="account-general">
+                            <hr class="border-light m-0">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="card-body media align-items-center">
+                                {% if profile_pic %}
+                                    <img id="profile-image" src="{{ profile_pic }}" alt="Profile Picture" style="max-width: 200px; max-height: 200px;" class="d-block ui-w-80">
+                                {% else %}
+                                    <img id="profile-image" src="{% static 'assets/img/default_profile.svg' %}" alt="profile pic" class="d-block ui-w-80">
+                                {% endif %}
+                                <div class="media-body ml-4">
+                                    <label class="btn btn-outline-primary">
+                                        Upload new photo
+                                        <input type="file" name="profile_pic" id="uploadPhoto" class="account-settings-fileinput" onchange="previewImage(event)">
+                                    </label> &nbsp;
+                                    <button type="button" id="resetPhoto" class="btn btn-default md-btn-flat" onclick="resetImage()">Reset</button>
+                                    <input type="hidden" name="reset_profile_pic" id="resetProfilePic" value="0">
+                                    <div class="text-light small mt-1">Allowed JPG, GIF, or PNG. Max size of 800K</div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                
+                                    <!-- Name Column -->
+                                    <div class="col-md-6 form-group">
+                                        <label class="form-label">NGO Name</label>
+                                        <input type="text" name="ngo_name" class="form-control" value="{{ name }}" required>
+                                    </div>
+
+                                    <!-- Date of SET up Column -->
+                                    <div class="col-md-6 form-group">
+                                        <label class="form-label">Date of Set Up</label>
+                                        <input type="date" class="form-control" name="doset" id="date-input" value="{{ doset|date:'Y-m-d' }}" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+                                    <!-- State Column -->
+                                    <div class="col-md-4 form-group">
+                                        <label class="form-label">State</label>
+                                        <select name='state' onchange="print_selected_city('city', this.selectedIndex, '{{ city }}');" id="states" class="form-control">
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- City Column -->
+                                    <div class="col-md-4 form-group">
+                                        <label class="form-label">City</label>
+                                        <select name='city' id ="city" class="form-control" disabled>
+                                            <option value="state" {% if city == "{{ city }}" %} selected {% endif %}>{{ city }}</option>
+                                        </select>
+                                        <script language="javascript">print_selected_state("states", '{{ state }}');</script>
+                                    </div>
+                                    
+                            
+                                    <!-- Pincode Column -->
+                                    <div class="col-md-4 form-group">
+                                        <label class="form-label">Pincode</label>
+                                        <input type="number" name='pincode' class="form-control" value="{{ pincode }}">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <!-- Email Column -->
+                                    <div class="col-md-6 form-group">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" name='email' class="form-control non-editable" value="{{ email }}" readonly >
+                                    </div>
+                            
+                                    <!-- Phone Column -->
+                                    <div class="col-md-6 form-group">
+                                        <label class="form-label">Phone</label>
+                                        <input type="tel" name='phone' class="form-control non-editable" value="{{ phone }}" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- Full Address -->
+                                <div class="form-group">
+                                    <label for="longdescriptionInput">Address</label>
+                                    <textarea id="address" name="address" class="form-control" rows="3" placeholder="Address">{{ address }}</textarea>
+                                </div>
+
+                                <!-- Full Description -->
+                                <div class="form-group">
+                                    <label for="longdescriptionInput">Description</label>
+                                    <textarea id="description" name="description" class="form-control" rows="5" placeholder="Describe yourself in up to 500 words">{{ description }}</textarea>
+                                </div>
+
+                                {% comment %} <hr> {% endcomment %}
+
+                                <div class="form-group">
+                                    <label for="committeesInput" class="mr-2">Currently Member in How Many Committees</label>
+                                    <!-- Currently Member in How Many Committees -->
+                                    <div class="input-field d-flex align-items-center">
+                                        <input type="number" id="comitteeCount" name="comitteeCount" class="form-control mr-2" placeholder="Enter count" value="{{ current_member }}">
+                                        <button type="button" class="btn btn-primary" onclick="addCommitteeField()">Add UID</button>
+                                    </div>
+
+                                    <div id="education-section">
+                                        <ul id="education-list">
+                                            {% if comittee_uid_list %}
+                                            <ul>
+                                                {% for comittee in comittee_uid_list %}
+                                                <li class="d-flex justify-content-between align-items-center">
+                                                    {{ forloop.counter }}. Committee UID: {{ comittee.comittee_uid }}
+                                                    <a href="{% url 'comittee_consult_uid' comittee.id %}" class="btn btn-danger btn-sm delete-button">
+                                                        Delete
+                                                    </a>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                    
+
+                                    <!-- Generated Vendor/Contractor Details -->
+                                    <div id="committeesDetailsSection" class="details comittee-details">
+                                        <!-- The dynamically generated vendor details will be appended here -->
+                                    </div>
+                                </div>
+                                <hr>
+                                    
+                                    <!-- Currently Member in How Many Committees -->
+                                    <div class="form-group">
+                                        <div class="input-field d-flex justify-content-between align-items-center mb-2">
+                                            <label for="clientCount" class="mr-2">CURRENT TOP FIVE CLIENTS</label>
+                                            <div class="d-flex align-items-center">
+                                                <button type="button" class="btn btn-primary" onclick="addClientsField()">Add+</button>
+                                            </div>
+                                        </div>
+
+                                    <!-- Generated Vendor/Contractor Details -->
+                                    <div id="clientDetailsSection" class="details client-details">
+                                        <!-- The dynamically generated vendor details will be appended here -->
+                                    </div>
+                                </div>
+                                
+                                <div id="education-section">
+                                    <ul id="education-list">
+                                        {% if current_client_list %}
+                                        <ul>
+                                            {% for client in current_client_list %}
+                                            <li class="d-flex justify-content-between align-items-center">
+                                                {{ forloop.counter }}. Committee UID: {{ client.client_name }}
+                                                <a href="{% url 'client_consult_name' client.id %}" class="btn btn-danger btn-sm delete-button">
+                                                    Delete
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+
+                                <hr>
+                                
+                                <div class="form-group">
+                                    <label for="membersInput" class="mr-2">Number of Members/Employees</label>
+                                    <!-- Currently Member in How Many Committees -->
+                                    <div class="input-field d-flex align-items-center">
+                                        <input type="number" id="memberCount" name="memberCount" class="form-control mr-2" placeholder="Enter count" value="{{ employee_count }}">
+                                        <button type="button" class="btn btn-primary" onclick="addMemberField()">Add UID</button>
+                                    </div>
+                                
+                                    <div id="education-section">
+                                        <ul id="education-list">
+                                            {% if member_uid_list %}
+                                            <ul>
+                                                {% for member in member_uid_list %}
+                                                <li class="d-flex justify-content-between align-items-center">
+                                                    {{ forloop.counter }}. Member UID: {{ member.member_uid }}
+                                                    <a href="{% url 'consult_member' member.id %}" class="btn btn-danger btn-sm delete-button">
+                                                        Delete
+                                                    </a>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                
+                                    <!-- Generated Vendor/Contractor Details -->
+                                    <div id="membersDetailsSection" class="details member-details">
+                                        <!-- The dynamically generated vendor details will be appended here -->
+                                    </div>
+                                </div>
+                                
+
+                                <div class="card mt-4">
+                                    <div class="card-body" id="upload-files">
+                                        <h4 class="card-title">Document Proof</h4>
+                                        <label class="btn btn-outline-primary">
+                                            Upload new files
+                                            <input type="file" name="ngo_documents" id="uploadFiles" class="account-settings-fileinput" onchange="previewFiles(event)" accept=".pdf,.txt" multiple>
+                                        </label>
+                                        <div class="text-light small mt-1">Allowed PDF or TXT. Max size of 800K per file</div>
+                                        <div id="fileList" class="mt-2"></div>
+                                        {% if documents %}
+                                        <ul id="documentList" class="list-group">
+                                            {% for document in documents %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>{{ forloop.counter }}. {{ document.file.name }}</span>
+                                                <a href="{% url 'consult_delete_document' document.id %}" class="remove-file-btn">
+                                                    &times;
+                                                </a>
+                                            </li>
+                                            
+                                            {% endfor %}
+                                        </ul>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="text-right mt-3">
+                                    <button type="button" class="btn btn-default">Back</button>
+                                    <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
+                                </div>
+                            </div>
+
+                        <hr>
+                        
+                        <div class="tab-pane" id="account-service">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    <div class="add_service">
+                                        <h4>Service Charges</h4>
+                                        <a href="{% url 'consult_service' %}" >
+                                            <button type='button' id="add-service-btn" data-toggle="modal" data-target="#addServiceModal">+ Add/Edit</button>
+                                        </a>
+                                    </div>     
+
+                                    <!-- Service Section -->
+                                    <div id="service-section">
+                                        <table id="service-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Service</th>
+                                                    <th>Charges</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- service will be dynamically added here -->
+                                                {% if service_list %}
+                                                    {% for service in service_list %}
+                                                        <tr>
+                                                            <td>{{ service.service_name }}</td>
+                                                            <td>{{ service.service_charge }}</td>
+                                                            <td>
+                                                            {{ service.service_description }}<br>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="5">No service records found.</td>
+                                                    </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <hr>
+
+
+                        <div class="tab-pane" id="account-experience">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    <div class="add_experience">
+                                        <h4>Experience Details</h4>
+                                        <a href="{% url 'consult_experience' %}" >
+                                            <button type='button' id="add-experience-btn" data-toggle="modal" data-target="#addExperienceModal">+ Add/Edit</button>
+                                        </a>
+                                    </div>     
+
+                                    <!-- Experience Section -->
+                                    <div id="experience-section">
+                                        <ul id="experience-list">
+                                            <!-- Experience will be dynamically added here -->
+                                            {% if experience_list %}
+                                                <ul>
+                                                    {% for experience in experience_list %}
+                                                        <li>
+                                                            <strong>Title:</strong> {{ experience.titleInput }}<br>
+                                                            <strong>Company Name:</strong> {{ experience.companyNameInput }}<br>
+                                                
+                                                            {% if experience.currentlyWorkingInput is not None %}
+                                                                <strong>Currently Working:</strong> {{ experience.currentlyWorkingInput|yesno:"Yes,No" }}<br>
+                                                            {% endif %}
+                                                
+                                                            {% if experience.startDateexp %}
+                                                                <strong>Start Date:</strong> {{ experience.startDateexp }}<br>
+                                                            {% endif %}
+                                                
+                                                            {% if experience.endDateexp or experience.currentlyWorkingInput %}
+                                                                <strong>End Date:</strong> {% if experience.currentlyWorkingInput %}Present{% else %}{{ experience.endDateexp }}{% endif %}<br>
+                                                            {% endif %}
+                                                
+                                                            {% if experience.industryInput %}
+                                                                <strong>Industry:</strong> {{ experience.industryInput }}<br>
+                                                            {% endif %}
+                                                
+                                                            {% if experience.locationInput %}
+                                                                <strong>Location:</strong> {{ experience.locationInput }}<br>
+                                                            {% endif %}
+                                                
+                                                            {% if experience.descriptionInputexp %}
+                                                                <strong>Description:</strong> {{ experience.descriptionInputexp }}<br>
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <p>No experience records found.</p>
+                                            {% endif %}
+                                        </ul>
+                                    </div>                                 
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+
+                        </form>
+
+                    </div>
+                        
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
