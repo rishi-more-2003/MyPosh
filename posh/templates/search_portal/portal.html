@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block stylescss %}
+
+<style>
+
+</style>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{% endblock %}
+
+{% block js %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <section>
+        <div class="p-5 mb-4 bg-light rounded-3">
+            <div class="container-fluid py-5">
+                <h2 class="display-5 fw-bold">Available Users. Recruit Them to your Comittee!</h2> <br>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <form class="row gy-2 gx-3 align-items-center">
+                            <div class="col-sm-4">
+                                <label class="visually-hidden form-label" for="autoSizingInput">Name</label>
+                                <input type="text" class="form-control" id="autoSizingInput" placeholder="Job Keyword">
+                            </div>
+                            <div class="col-auto">
+                                <label class="visually-hidden form-label" for="autoSizingSelect">Location</label>
+                                <select class="form-select form-control" id="autoSizingSelect">
+                                    <option selected>Select Location</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <label class="visually-hidden form-label" for="autoSizingSelect">User Type</label>
+                                <select class="form-select form-control" id="autoSizingSelect">
+                                    <option selected>Choose Type</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <label class="visually-hidden form-label" for="autoSizingSelect">Industry</label>
+                                <select class="form-select form-control" id="autoSizingSelect">
+                                    <option selected>Select Industry</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                </select>
+                            </div> 
+
+                            <div class="col-auto mt-4">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <p class="col-md-12 fs-6 mt-3">
+                    Welcome to MyPosh! Search and get your user. We have many number of users for you. Don't forget to leave a like when you get the desired recruit. Goodluck with your Comittee Building!
+                </p> 
+                <button class="btn btn-outline-primary ml-3" type="button">More Users</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Card Title</h5>
+                    <p class="card-text"> This is a wider card with supporting text below as a natural lead-in to additional content. THis content is a little bit longer.</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Last updated 3 mins ago</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Card Title</h5>
+                    <p class="card-text"> This is a wider card with supporting text below as a natural lead-in to additional content. THis content is a little bit longer.</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Last updated 3 mins ago</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Card Title</h5>
+                    <p class="card-text"> This is a wider card with supporting text below as a natural lead-in to additional content. THis content is a little bit longer.</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Last updated 3 mins ago</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row align-items-center">
+        <div class="col-md-10 mx-auto col-lg-2 mt-4">
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item active" aria-current="page">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>  
+        </div>
+    </div>
+</div>
+
+{% endblock %}

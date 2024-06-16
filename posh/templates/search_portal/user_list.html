@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block stylescss %}
+
+<style>
+
+</style>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{% endblock %}
+
+{% block js %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <section>
+        <div class="p-5 mb-4 bg-light rounded-3">
+            <div class="container-fluid py-5">
+                <h2 class="display-5 fw-bold ml-3">Available Users. Recruit Them to your Comittee!</h2> <br>
+                <p class="col-md-12 fs-6 mt-3">
+                    Welcome to MyPosh! Search and get your user. We have many number of users for you. Don't forget to leave a like when you get the desired recruit. Goodluck with your Comittee Building!
+                </p> 
+            </div>
+        </div>
+    </section>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for individual in visible_all %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {% if individual.prefix == "Mr." %}Mr. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                        {% elif individual.prefix == "Mrs." %}Mrs. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                        {% elif individual.prefix == "Miss." %}Miss. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                        {% else %}
+                            {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                        {% endif %}
+                    </h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ individual.city }}, {{ individual.state }}</h6>
+                    <p class="card-text"> {{ individual.description }}</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Last updated 3 mins ago</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+  
+{% endblock %}

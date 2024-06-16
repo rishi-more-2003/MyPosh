@@ -28,13 +28,21 @@ from .models import Document
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
-    # user = request.user.individualuser
+    user_visible = False
+
+    # Check if the user is authenticated
+    if request.user.is_authenticated:
+        # Check if the user has an associated individual user profile
+        if hasattr(request.user, 'individualuser'):
+            user = request.user.individualuser
+            user_visible = user.is_visible
+
     if request.method == "POST":
         contact_email = request.POST['contact-email']
         contact_subject = request.POST['contact-subject']
         contact_message = request.POST['contact-message']
 
-        #send email
+        # Send email
         send_mail(
             contact_subject,
             contact_message,
@@ -43,11 +51,11 @@ def home(request):
         )
 
         return render(request, 'home.html')
-    
-    # context ={
-    #     'visible': user.is_visible,
-    # }
-    return render(request, 'home.html')
+
+    context = {
+        'visible': user_visible,
+    }
+    return render(request, 'home.html', context)
 
 def otp(request):
     return render(request, 'otp.html', {})
@@ -1852,3 +1860,19 @@ def visibility(request):
         return JsonResponse({'status': 'success', 'is_visible': user.is_visible})
     else:
         return JsonResponse({'status': 'failed', 'error': 'Invalid request method'}, status=400)
+    
+
+def portal(request):
+    return render(request, 'search_portal/portal.html', {})
+
+def list_user(request):
+    user = request.user.establishmentuser
+    individual_user = IndividualUser.objects.all().filter(is_visible=True)
+    ngo_user = NGOUser.objects.filter(is_visible=True)
+    consultant_user = ConsultancyUser.objects.filter(is_visible=True)
+
+    visible_all = list(individual_user) + list(ngo_user) + list(consultant_user)
+    context ={
+        'visible_all': visible_all,
+    }
+    return render(request, 'search_portal/user_list.html', context)

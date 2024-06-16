@@ -70,6 +70,10 @@ urlpatterns = [
 
     path('consult-profile/', views.consult_profile, name="consult-profile"),
     path('consult-profile/document/<int:pk>', views.consult_delete_document, name="consult_delete_document"),
+
+
+    path('portal/', views.portal, name="portal"),
+    path('user-list/', views.list_user, name="list_user"),
 ]
 
 if settings.DEBUG:
