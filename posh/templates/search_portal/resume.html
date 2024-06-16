@@ -83,6 +83,11 @@
       <h1>{{ fname }} {{ mname }} {{ lname }}</h1>
       {% endif %}
       <h6 class="card-subtitle mb-2 text-muted">{{ city }}, {{ state }}</h6>
+      {% if has_invited %}
+        <p><span class="text-danger">You have already invited this user.</span></p>
+      {% else %}
+        <a class="btn btn-primary btn-lg"  href="{% url 'recruit' username %}">Recruit</a>
+      {% endif %}
     </div>
 
     <!-- About Section -->

@@ -223,3 +223,14 @@ class VendorDetails(models.Model):
     vendor_others = models.PositiveIntegerField(null=True, blank=True)
     vendor_address = models.TextField(null=True, blank=True)
 
+
+class RecruitUser(models.Model):
+    status_choices = (
+        ("Accepted", "Accepted"),
+        ("Declined", "Declined"),
+        ("Pending", "Pending"),
+    )
+    establishment_id = models.ForeignKey(EstablishmentUser, on_delete=models.CASCADE, related_name='establishment_id')
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_id')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    status= models.CharField(max_length=20, choices=status_choices)

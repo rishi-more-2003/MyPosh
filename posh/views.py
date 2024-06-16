@@ -5,7 +5,8 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from .models import (IndividualUser, Education, NGOUser, PoshUser, ConsultancyUser, EstablishmentUser, 
                      EstablishmentLocation, PrincipalEmployer, Vendor, PEDetails, VendorDetails,
-                     ComitteeCount, CurrentClient, Service, Skill, Certification, Document, Experience, EmployeeCount)
+                     ComitteeCount, CurrentClient, Service, Skill, Certification, Document, Experience, EmployeeCount, 
+                     RecruitUser)
 
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
@@ -1863,12 +1864,12 @@ def visibility(request):
     
 @allowed_users(allowed_roles=['admin', 'EST'])
 def portal(request):
-    return render(request, 'search_portal/portal.html', {})
+    return render(request, 'search_portal/portal.html', {'establishment_id': request.user})
 
 @allowed_users(allowed_roles=['admin', 'EST'])
 def list_user(request):
     user = request.user.establishmentuser
-    individual_user = IndividualUser.objects.all().filter(is_visible=True)
+    individual_user = IndividualUser.objects.all().filter(is_visible=True).order_by('-timestamp')
     ngo_user = NGOUser.objects.filter(is_visible=True)
     consultant_user = ConsultancyUser.objects.filter(is_visible=True)
 
@@ -1893,8 +1894,7 @@ def user_details(request, pk):
             city = user.city
 
             description = user.description
-            
-            
+              
             education_list = user.education.all()  
             service_list = user.service.all()
             skill_list = user.skill.all()
@@ -1902,6 +1902,7 @@ def user_details(request, pk):
             experience_list = user.experience.all()
 
             context = {
+                'username':user,
                 'email': email,
                 'phone': phone,
                 'fname': first_name,
@@ -1918,7 +1919,80 @@ def user_details(request, pk):
                 'cert_list': cert_list,
                 'experience_list': experience_list,
                 'visible': user.is_visible,
+                'has_invited': True if RecruitUser.objects.filter(establishment_id = request.user.establishmentuser, user_id = primary_user) else False
             }
         else:
             context={}
     return render(request, 'search_portal/resume.html', context)
+
+
+def recruit(request, pk):
+    user_id = PoshUser.objects.get(pk=pk)
+    RecruitUser.objects.create(
+        establishment_id = request.user.establishmentuser,
+        user_id = user_id,
+        status = "Pending"
+    )
+    return redirect(f'/user-details/{pk}')
+
+
+def all_invites(request):
+    combined_data = []
+
+    # Assuming the user model has a relationship to the establishment
+    establisments = request.user.establishmentuser
+
+    # Fetch RecruitUser records
+    applicants = RecruitUser.objects.filter(establishment_id=establisments)
+
+    # Extract user_ids from the fetched RecruitUser records
+    user_ids = applicants.values_list('user_id', flat=True)
+
+    # Fetch IndividualUser records based on the extracted user_ids and combine data
+    for user_id in user_ids:
+        posh_user = PoshUser.objects.get(username=user_id)
+        individual_user = IndividualUser.objects.get(username=posh_user)
+        establishment_data = RecruitUser.objects.get(user_id=posh_user, establishment_id=establisments)
+        
+        combined_data.append({
+            'individual_user': individual_user,
+            'establishment_data': establishment_data
+        })
+
+    context = {
+        'combined_data': combined_data
+    }
+
+    return render(request, 'search_portal/all_invites.html', context)
+
+
+def all_establishment(request):
+    combined_data = []
+
+    # Assuming the user model has a relationship to the establishment
+    user = request.user
+
+    # Fetch RecruitUser records
+    establishments = RecruitUser.objects.filter(user_id=user)
+
+    # Extract user_ids from the fetched RecruitUser records
+    user_ids = establishments.values_list('establishment_id', flat=True)
+
+    # Fetch IndividualUser records based on the extracted user_ids and combine data
+    for user_id in user_ids:
+        posh_user = PoshUser.objects.get(username=user_id)
+        establishment_user = EstablishmentUser.objects.get(username=posh_user)
+        establishment_data = RecruitUser.objects.get(user_id=user, establishment_id=establishment_user)
+        
+        combined_data.append({
+            'individual_user': establishment_user,
+            'establishment_data': establishment_data
+        })
+    
+
+    context = {
+        'individual_user': establishment_user,
+        'combined_data': combined_data
+    }
+
+    return render(request, 'search_portal/all_establishment.html', context)

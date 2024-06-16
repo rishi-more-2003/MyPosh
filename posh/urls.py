@@ -75,6 +75,9 @@ urlpatterns = [
     path('portal/', views.portal, name="portal"),
     path('user-list/', views.list_user, name="list_user"),
     path('user-details/<str:pk>/', views.user_details, name="user_details"),
+    path('recruit-user/<str:pk>/', views.recruit, name="recruit"),
+    path('all-invites/', views.all_invites, name="all_invites"),
+    path('all-establishment/', views.all_establishment, name="all_establishment"),
 ]
 
 if settings.DEBUG:
