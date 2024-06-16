@@ -103,6 +103,7 @@ class IndividualUser(PoshUser):
     firm_name = models.CharField(max_length=150, blank=True)
     firm_uid = models.CharField(max_length=15, blank=True)
     is_visible = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Individual User'

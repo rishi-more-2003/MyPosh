@@ -1,10 +1,17 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 
 {% block stylescss %}
 
 <style>
-
+.description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Change this number to the desired number of lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 </style>
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
@@ -34,8 +41,9 @@
     </section>
 
     <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% if visible_all %}
         {% for individual in visible_all %}
-        <div class="col">
+        <div class="col mt-3">
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="card-title">
@@ -47,14 +55,16 @@
                         {% endif %}
                     </h5>
                     <h6 class="card-subtitle mb-2 text-muted">{{ individual.city }}, {{ individual.state }}</h6>
-                    <p class="card-text"> {{ individual.description }}</p>
+                    <p class="card-text description"> {{ individual.description }}</p>
+                    <a class="btn btn-primary btn-sm"  href="{% url 'user_details' individual.username %}">View Details</a>
                 </div>
                 <div class="card-footer">
-                    <small class="text-muted">Last updated 3 mins ago</small>
+                    <small class="text-muted">Joined {{ individual.timestamp|naturaltime }}</small>
                 </div>
             </div>
         </div>
         {% endfor %}
+        {% endif %}
     </div>
 </div>
   

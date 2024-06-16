@@ -74,6 +74,7 @@ urlpatterns = [
 
     path('portal/', views.portal, name="portal"),
     path('user-list/', views.list_user, name="list_user"),
+    path('user-details/<str:pk>/', views.user_details, name="user_details"),
 ]
 
 if settings.DEBUG:

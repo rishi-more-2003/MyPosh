@@ -1861,10 +1861,11 @@ def visibility(request):
     else:
         return JsonResponse({'status': 'failed', 'error': 'Invalid request method'}, status=400)
     
-
+@allowed_users(allowed_roles=['admin', 'EST'])
 def portal(request):
     return render(request, 'search_portal/portal.html', {})
 
+@allowed_users(allowed_roles=['admin', 'EST'])
 def list_user(request):
     user = request.user.establishmentuser
     individual_user = IndividualUser.objects.all().filter(is_visible=True)
@@ -1876,3 +1877,48 @@ def list_user(request):
         'visible_all': visible_all,
     }
     return render(request, 'search_portal/user_list.html', context)
+
+def user_details(request, pk):
+    primary_user = PoshUser.objects.get(pk=pk)
+    if primary_user:
+        if str(primary_user).startswith('IN'):
+            user = IndividualUser.objects.get(pk=pk)
+            email = user.email
+            phone = user.phone
+            prefix = user.prefix
+            first_name = user.fname
+            mid_name = user.mname
+            last_name = user.lname
+            state = user.state
+            city = user.city
+
+            description = user.description
+            
+            
+            education_list = user.education.all()  
+            service_list = user.service.all()
+            skill_list = user.skill.all()
+            cert_list = user.certification.all()
+            experience_list = user.experience.all()
+
+            context = {
+                'email': email,
+                'phone': phone,
+                'fname': first_name,
+                'lname': last_name,
+                'mname': mid_name,
+                'prefix': prefix,
+                'state': state,
+                'city': city,
+                'description': description,
+                'profile_pic': user.profile_pic.url if user.profile_pic else None,
+                'education_list': education_list,
+                'service_list': service_list,
+                'skill_list': skill_list,
+                'cert_list': cert_list,
+                'experience_list': experience_list,
+                'visible': user.is_visible,
+            }
+        else:
+            context={}
+    return render(request, 'search_portal/resume.html', context)

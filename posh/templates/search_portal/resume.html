@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block stylescss %}
+{{ block.super }}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+  .profile-header {
+    text-align: center;
+    margin: 20px 0;
+  }
+  .profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+  }
+  .profile-section {
+    margin: 20px 0;
+  }
+  .btn-primary{
+    background-color: hsl(30, 100%, 52%);
+  }
+
+  .btn-primary:hover{
+    background-color: hsl(30, 100%, 85%); 
+  }
+
+
+  .profile-section h3 {
+    border-bottom: 2px solid hsl(30, 100%, 52%);
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+  }
+  .card-container {
+    margin-top: 80px;
+    padding: 20px;
+  }
+  .fa{
+      cursor: pointer;
+      color: black;
+      margin-left: -50px;
+  }
+  .badge-primary{
+    background-color: hsl(30, 100%, 85%); 
+    color: black;
+  }
+</style>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Card Container -->
+  <div class="card card-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      {% if profile_pic %}
+          <img id="profile-image" src="{{ profile_pic }}" alt="Profile Picture" style="max-width: 200px; max-height: 200px;" class="profile-img">
+      {% else %}
+          <img id="profile-image" src="{% static 'assets/img/default_profile.svg' %}" alt="profile pic" class="profile-img">
+      {% endif %}
+      {% if prefix == "Mr." %}
+        <h1>Mr. {{ fname }} {{ mname }} {{ lname }}
+        </h1>
+      {% elif prefix == "Mrs." %}
+        <h1>Mrs. {{ fname }} {{ mname }} {{ lname }}</h1>
+      {% elif prefix == "Miss." %}
+        <h1>Miss. {{ fname }} {{ mname }} {{ lname }}</h1>
+      {% else %}
+      <h1>{{ fname }} {{ mname }} {{ lname }}</h1>
+      {% endif %}
+      <h6 class="card-subtitle mb-2 text-muted">{{ city }}, {{ state }}</h6>
+    </div>
+
+    <!-- About Section -->
+    <div class="profile-section">
+      {% if description %}
+      <h3>About</h3>
+        <p>
+          {{ description }}
+        </p>
+        {% endif %}
+    </div>
+
+          {% if service_list %}
+          <!-- Service Charges -->
+          <div class="profile-section">
+              <h3>Service Charges
+              </h3>
+              <table id="service-table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Charges</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- service will be dynamically added here -->
+                    {% if service_list %}
+                        {% for service in service_list %}
+                            <tr>
+                                <td>{{ service.service_name }}</td>
+                                <td>{{ service.service_charge }}</td>
+                                <td>
+                                {{ service.service_description }}<br>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+          </div>
+      {% endif %}
+
+
+
+    <!-- Experience Section -->
+        {% if experience_list %}
+          <div class="profile-section">
+              <h3>Experience
+              </h3>
+              {% for exp in experience_list %}
+              <div class="card mb-3">
+                  <div class="card-body">
+                          <h5 class="card-title">{{ exp.titleInput }}</h5>
+                          <h6 class="card-subtitle mb-2 text-muted">{{ exp.companyNameInput }}</h6>
+                          {% if exp.startDateexp and exp.endDateexp %}
+                              <p class="card-text">{{  exp.startDateexp }} - {{ exp.endDateexp }}</p>
+                          {% elif exp.startDateexp %}
+                          <p class="card-text">{{  exp.startDateexp }} - Present</p>
+                          {% endif %}
+                          {% if exp.industryInput %}
+                              <p class="card-text"><strong>Industry:</strong> {{ exp.industryInput }}</p>
+                          {% endif %}
+                          {% if exp.locationInput %}
+                              <p class="card-text"><strong>Location:</strong> {{ exp.locationInput }}</p>
+                          {% endif %}
+                  </div>
+              </div>
+              {% endfor %}
+          </div>
+      {% endif %}
+
+      {% if education_list %}
+        <!-- Education Section -->
+        <div class="profile-section">
+            <h3>Education
+            </h3>
+
+            {% for edu in education_list %}
+            <div class="card mb-3">
+                <div class="card-body">
+                        <h5 class="card-title">{{ edu.school }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ edu.degree }}</h6>
+                        {% if edu.field_of_study %}
+                          <h6 class="card-subtitle mb-2 text-muted">{{ edu.field_of_study }}</h6>
+                        {% endif %}
+                        {% if edu.start_date and edu.end_date %}
+                            <p class="card-text">{{  edu.start_date }} - {{ edu.end_date }}</p>
+                        {% endif %}
+                        {% if edu.grade %}
+                            <p class="card-text"><strong>Grade:</strong> {{ edu.grade }}</p>
+                        {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if skill_list  %}
+      <!-- Skills Section -->
+      <div class="profile-section">
+        <h3>Skills
+        </h3>
+        <ul class="list-inline">
+          {% for skill in skill_list %}
+          <li class="list-inline-item badge badge-primary">{{ skill.skillsInput }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+      {% if cert_list %}
+      <!-- Certification Section -->
+      <div class="profile-section">
+          <h3>Certification</h3>
+          {% for cert in cert_list %}
+          <div class="card mb-3">
+              <div class="card-body">
+                 
+                      <h5 class="card-title">{{ cert.certificationNameInput }}</h5>
+                      <h6 class="card-subtitle mb-2 text-muted">{{ cert.issuingOrganizationInput }}</h6>
+                      {% if cert.issueDate and cert.expirationDate %}
+                          <p class="card-text">{{ cert.issueDate }} - {{ cert.expirationDate }}</p>
+                      {% endif %}
+                      {% if cert.credentialIdInput %}
+                          <p class="card-text"><strong>Certification ID:</strong> {{ cert.credentialIdInput }}</p>
+                      {% endif %}
+                      {% if cert.credentialUrlInput %}
+                          <p class="card-text"><strong>Certification URL:</strong> {{ cert.credentialUrlInput }}</p>
+                      {% endif %}
+                  
+              </div>
+          </div>
+          {% endfor %}
+      </div>
+  {% endif %}
+
+    <!-- Contact Information -->
+    <div class="profile-section">
+      <h3>Contact Information</h3>
+      <p><strong>Email:</strong> {{ email }}</p>
+      <p><strong>Phone:</strong> {{ phone }}</p>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
