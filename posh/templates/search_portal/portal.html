@@ -1,10 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
-
+{% load humanize %}
 {% block stylescss %}
 
 <style>
-
+    .description {
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Change this number to the desired number of lines */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 </style>
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
@@ -13,6 +19,31 @@
 {% endblock %}
 
 {% block js %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stateSelect = document.getElementById('stateSelect');
+        const citySelect = document.getElementById('citySelect');
+        const stateCityData = {{ state_city_data|safe }};
+
+        stateSelect.addEventListener('change', function() {
+            const selectedState = stateSelect.value;
+            const cities = stateCityData[selectedState] || [];
+
+            // Clear previous options
+            citySelect.innerHTML = '<option value="">Choose City</option>';
+
+            // Populate new options
+            cities.forEach(function(city) {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+        });
+    });
+</script>
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
@@ -25,43 +56,41 @@
     <section>
         <div class="p-5 mb-4 bg-light rounded-3">
             <div class="container-fluid py-5">
-                <h2 class="display-5 fw-bold">Available Users. Recruit Them to your Comittee!</h2> <br>
-                
+                <h2 class="display-5 fw-bold">Available Users. Recruit Them to your Committee!</h2> <br>
                 <div class="card">
                     <div class="card-body">
-                        <form class="row gy-2 gx-3 align-items-center">
+                        <form class="row gy-2 gx-3 align-items-center" method="GET" action="{% url 'portal' %}">
                             <div class="col-sm-4">
                                 <label class="visually-hidden form-label" for="autoSizingInput">Name</label>
-                                <input type="text" class="form-control" id="autoSizingInput" placeholder="Job Keyword">
+                                <input type="text" name="name" class="form-control" id="autoSizingInput" placeholder="Name">
                             </div>
                             <div class="col-auto">
-                                <label class="visually-hidden form-label" for="autoSizingSelect">Location</label>
-                                <select class="form-select form-control" id="autoSizingSelect">
-                                    <option selected>Select Location</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                <label class="visually-hidden form-label" for="stateSelect">Select State</label>
+                                <select name="state" class="form-select form-control" id="stateSelect">
+                                    <option value="">Choose State</option>
+                                    {% for state in state_data %}
+                                        <option value="{{ state }}">{{ state }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
+                            
                             <div class="col-auto">
-                                <label class="visually-hidden form-label" for="autoSizingSelect">User Type</label>
-                                <select class="form-select form-control" id="autoSizingSelect">
-                                    <option selected>Choose Type</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                <label class="visually-hidden form-label" for="citySelect">Select City</label>
+                                <select name="city" class="form-select form-control" id="citySelect">
+                                    <option value="">Choose City</option>
                                 </select>
                             </div>
+                        
                             <div class="col-auto">
-                                <label class="visually-hidden form-label" for="autoSizingSelect">Industry</label>
-                                <select class="form-select form-control" id="autoSizingSelect">
-                                    <option selected>Select Industry</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                <label class="visually-hidden form-label" for="typeSelect">User Type</label>
+                                <select name="user_type" class="form-select form-control" id="typeSelect">
+                                    <option value="">Select Type</option>
+                                    {% for type in types %}
+                                        <option value="{{ type }}">{{ type }}</option>
+                                    {% endfor %}
                                 </select>
-                            </div> 
-
+                            </div>
+                        
                             <div class="col-auto mt-4">
                                 <button type="submit" class="btn btn-primary">Search</button>
                             </div>
@@ -69,66 +98,76 @@
                     </div>
                 </div>
                 <p class="col-md-12 fs-6 mt-3">
-                    Welcome to MyPosh! Search and get your user. We have many number of users for you. Don't forget to leave a like when you get the desired recruit. Goodluck with your Comittee Building!
+                    Welcome to MyPosh! Search and get your user. We have many users for you. Don't forget to leave a like when you get the desired recruit. Good luck with your Committee Building!
                 </p> 
-                <button class="btn btn-outline-primary ml-3" type="button">More Users</button>
+                <a class="btn btn-outline-primary ml-3"  href="{% url 'list_user'  %}">All Users</a>
             </div>
         </div>
     </section>
-
+    
+    
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col">
+        {% for individual in page_obj %}
+        <div class="col mt-3">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Card Title</h5>
-                    <p class="card-text"> This is a wider card with supporting text below as a natural lead-in to additional content. THis content is a little bit longer.</p>
+                    <h5 class="card-title">
+                        {% if individual.prefix == "Mr." %}Mr. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                        {% elif individual.prefix == "Mrs." %}Mrs. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                        {% elif individual.prefix == "Miss." %}Miss. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                        {% else %}
+                            {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                        {% endif %}
+                    </h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ individual.city }}, {{ individual.state }}</h6>
+                    <p class="card-text description"> {{ individual.description }}</p>
+                    <a class="btn btn-primary btn-sm"  href="{% url 'user_details' individual.username %}">View Details</a>
                 </div>
                 <div class="card-footer">
-                    <small class="text-muted">Last updated 3 mins ago</small>
+                    <small class="text-muted">Joined {{ individual.timestamp|naturaltime }}</small>
                 </div>
             </div>
         </div>
-        <div class="col">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Card Title</h5>
-                    <p class="card-text"> This is a wider card with supporting text below as a natural lead-in to additional content. THis content is a little bit longer.</p>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">Last updated 3 mins ago</small>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Card Title</h5>
-                    <p class="card-text"> This is a wider card with supporting text below as a natural lead-in to additional content. THis content is a little bit longer.</p>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">Last updated 3 mins ago</small>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 
     <div class="row align-items-center">
         <div class="col-md-10 mx-auto col-lg-2 mt-4">
-            <nav aria-label="...">
+            <nav aria-label="Page navigation">
                 <ul class="pagination">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item active" aria-current="page">
-                        <a class="page-link" href="#">2</a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                    </li>
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}&{{ query_params }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ query_params }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
+                        </li>
+                    {% endif %}
                 </ul>
-            </nav>  
+            </nav>
+            
+            
         </div>
     </div>
 </div>

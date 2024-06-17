@@ -26,6 +26,9 @@ from .decorators import unauthenticated_user, allowed_users
 from .forms import EstablishmentLocationForm, PEDetailsForm, VendorDetailsForm, CurrentClientForm, ComitteeCountForm, MemberCountForm
 from django.forms import formset_factory
 from .models import Document
+from .filter import IndividualUserFilter, NGOUserFilter, ConsultancyUserFilter
+from django.core.paginator import Paginator
+from itertools import chain
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
@@ -1862,20 +1865,83 @@ def visibility(request):
     else:
         return JsonResponse({'status': 'failed', 'error': 'Invalid request method'}, status=400)
     
+# views.py
 @allowed_users(allowed_roles=['admin', 'EST'])
 def portal(request):
-    return render(request, 'search_portal/portal.html', {'establishment_id': request.user})
+    # Fetch and filter data for IndividualUser
+    individual_user_qs = IndividualUser.objects.filter(is_visible=True).order_by('-timestamp')
+    individual_user_filter = IndividualUserFilter(request.GET, queryset=individual_user_qs)
+    individual_users = individual_user_filter.qs
+
+    # Fetch and filter data for NGOUser
+    ngo_user_qs = NGOUser.objects.filter(is_visible=True)
+    ngo_user_filter = NGOUserFilter(request.GET, queryset=ngo_user_qs)
+    ngo_users = ngo_user_filter.qs
+
+    # Fetch and filter data for ConsultancyUser
+    consultant_user_qs = ConsultancyUser.objects.filter(is_visible=True)
+    consultant_user_filter = ConsultancyUserFilter(request.GET, queryset=consultant_user_qs)
+    consultant_users = consultant_user_filter.qs
+
+    # Combine the filtered results
+    visible_all = list(chain(individual_users, ngo_users, consultant_users))
+
+    # Pagination
+    paginator = Paginator(visible_all, 3)  # Show 3 users per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Fetching data from IndividualUser, NGOUser, and ConsultancyUser models
+    ind_state_city_data = IndividualUser.objects.filter(is_visible=True).values_list('state', 'city')
+    ngo_state_city_data = NGOUser.objects.filter(is_visible=True).values_list('ngo_state', 'ngo_city')
+    con_state_city_data = ConsultancyUser.objects.filter(is_visible=True).values_list('consultancy_state', 'consultancy_city')
+
+    # Combine data and create a dictionary of states and corresponding cities
+    state_city_data = {}
+    for state, city in list(ind_state_city_data) + list(ngo_state_city_data) + list(con_state_city_data):
+        if state in state_city_data:
+            state_city_data[state].add(city)
+        else:
+            state_city_data[state] = {city}
+
+    # Convert sets to lists for easier handling in templates
+    for state in state_city_data:
+        state_city_data[state] = list(state_city_data[state])
+
+    # Get unique states for the state dropdown
+    state_data = list(state_city_data.keys())
+
+    types = ['Individual', 'NGO', "Consultancy"]
+
+    # Prepare context with state and city data
+    context = {
+        'establishment_id': request.user,
+        'state_data': state_data,
+        'state_city_data': state_city_data,
+        'types': types,
+        'individual_user_filter': individual_user_filter,
+        'ngo_user_filter': ngo_user_filter,
+        'consultant_user_filter': consultant_user_filter,
+        'visible_all': visible_all,
+        'page_obj': page_obj,
+    }
+
+    return render(request, 'search_portal/portal.html', context)
+
+
 
 @allowed_users(allowed_roles=['admin', 'EST'])
 def list_user(request):
     user = request.user.establishmentuser
+    
     individual_user = IndividualUser.objects.all().filter(is_visible=True).order_by('-timestamp')
     ngo_user = NGOUser.objects.filter(is_visible=True)
     consultant_user = ConsultancyUser.objects.filter(is_visible=True)
 
     visible_all = list(individual_user) + list(ngo_user) + list(consultant_user)
+
     context ={
-        'visible_all': visible_all,
+        'visible_all' : visible_all ,
     }
     return render(request, 'search_portal/user_list.html', context)
 
