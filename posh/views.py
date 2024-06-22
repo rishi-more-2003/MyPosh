@@ -1887,7 +1887,7 @@ def portal(request):
     visible_all = list(chain(individual_users, ngo_users, consultant_users))
 
     # Pagination
-    paginator = Paginator(visible_all, 3)  # Show 3 users per page
+    paginator = Paginator(visible_all, 9)  # Show 3 users per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

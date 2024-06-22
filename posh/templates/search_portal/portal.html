@@ -6,10 +6,75 @@
 <style>
     .description {
         display: -webkit-box;
-        -webkit-line-clamp: 3; /* Change this number to the desired number of lines */
+        -webkit-line-clamp: 6; /* Change this number to the desired number of lines */
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+    /* Primary button */
+    button.btn.btn-primary, page-link, .btn.btn-primary.btn-sm, .btn.btn-outline-primary{
+        background-color: var(--first-color);
+        border-color: var(--first-color);
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .btn.btn-outline-primary{
+        color: white;
+    }
+
+    .page-item.active .page-link{
+        background-color: var(--first-color) !important;
+        border-color: var(--first-color) !important;;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    button.btn.btn-primary:hover, page-link:hover, .btn.btn-primary.btn-sm:hover, .btn.btn-outline-primary:hover {
+        background-color: var(--first-color-alt);
+        border-color: var(--first-color-alt);
+    }
+
+    .card {
+        margin-top: 1rem;
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .card-title {
+        font-weight: bold;
+    }
+    
+    .card-subtitle {
+        margin-bottom: 1rem;
+    }
+    
+    .card-text {
+        margin-bottom: 1.5rem;
+    }
+    
+    .card-footer {
+        background-color: #f8f9fa;
+        border-top: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+    }
+
+    .form-control,
+    .form-select {
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    }
+
+    .form-range {
+        width: 100%;
+    }
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
     }
 </style>
 
@@ -104,72 +169,98 @@
             </div>
         </div>
     </section>
+
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <form method="get">
+                    <h6 class="sidebar-heading">Filters</h6>
+        
+                    <!-- Price Range Slider -->
+                    <div class="form-group">
+                        <label for="customRange3" class="form-label">Example range</label>
+                        <input type="range" class="form-range" min="0" max="5" step="0.5" id="customRange3">
+                    </div>
+        
+                    <!-- Rating Range Slider -->
+                    <div class="form-group">
+                        <label for="customRange3" class="form-label">Example range</label>
+                        <input type="range" class="form-range slider" min="0" max="5" step="0.5" id="customRange3">
+                    </div>
+        
+                    <button type="submit" class="btn btn-primary mt-3">Apply</button>
+                </form>
+            </div>
+        </nav>
+                
+        <!-- Main content -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">   
     
-    
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for individual in page_obj %}
-        <div class="col mt-3">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        {% if individual.prefix == "Mr." %}Mr. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
-                        {% elif individual.prefix == "Mrs." %}Mrs. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
-                        {% elif individual.prefix == "Miss." %}Miss. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
-                        {% else %}
-                            {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
-                        {% endif %}
-                    </h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ individual.city }}, {{ individual.state }}</h6>
-                    <p class="card-text description"> {{ individual.description }}</p>
-                    <a class="btn btn-primary btn-sm"  href="{% url 'user_details' individual.username %}">View Details</a>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">Joined {{ individual.timestamp|naturaltime }}</small>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for individual in page_obj %}
+            <div class="col mt-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {% if individual.prefix == "Mr." %}Mr. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                            {% elif individual.prefix == "Mrs." %}Mrs. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                            {% elif individual.prefix == "Miss." %}Miss. {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                            {% else %}
+                                {{ individual.fname }} {{ individual.mname }} {{ individual.lname }}
+                            {% endif %}
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ individual.city }}, {{ individual.state }}</h6>
+                        <p class="card-text description"> {{ individual.description }}</p>
+                        <a class="btn btn-primary btn-sm"  href="{% url 'user_details' individual.username %}">View Details</a>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Joined {{ individual.timestamp|naturaltime }}</small>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
 
-    <div class="row align-items-center">
-        <div class="col-md-10 mx-auto col-lg-2 mt-4">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                        </li>
-                    {% endif %}
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+        <div class="row align-items-center">
+            <div class="col-md-10 mx-auto col-lg-2 mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
                         {% else %}
-                            <li class="page-item"><a class="page-link" href="?page={{ num }}&{{ query_params }}">{{ num }}</a></li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                            </li>
                         {% endif %}
-                    {% endfor %}
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ query_params }}" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            
-            
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}&{{ query_params }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ query_params }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>        
+            </div>
         </div>
+
+        </main>
     </div>
 </div>
-
-{% endblock %}
+{% endblock %}  
