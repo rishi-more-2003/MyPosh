@@ -51,6 +51,9 @@
                     <li class="nav__item">
                         <a href="{% url 'home' %}#contact" class="nav__link">Contact Us</a>
                     </li>
+                    <li class="nav__item">
+                        <a href="{% url 'conversation:inbox' %}" class="nav__link login-btn">Inbox</a>
+                    </li>
                     {% if request.user.is_authenticated %}
                         {% load get_group %}
                         {% if request.user|has_group:"IND" %} 

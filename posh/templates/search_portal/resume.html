@@ -85,6 +85,7 @@
       <h6 class="card-subtitle mb-2 text-muted">{{ city }}, {{ state }}</h6>
       {% if has_invited %}
         <p><span class="text-danger">You have already invited this user.</span></p>
+        <a class="btn btn-primary btn-lg"  href="{% url 'conversation:new' id %}">Message</a>
       {% else %}
         <a class="btn btn-primary btn-lg"  href="{% url 'recruit' username %}">Recruit</a>
       {% endif %}

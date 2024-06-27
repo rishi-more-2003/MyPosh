@@ -1967,6 +1967,10 @@ def user_details(request, pk):
             cert_list = user.certification.all()
             experience_list = user.experience.all()
 
+            has_invited = True if RecruitUser.objects.filter(establishment_id = request.user.establishmentuser, user_id = primary_user) else False
+
+            recruit_user_id = RecruitUser.objects.filter(establishment_id=request.user.establishmentuser, user_id=primary_user).first().id if has_invited else None
+
             context = {
                 'username':user,
                 'email': email,
@@ -1985,7 +1989,8 @@ def user_details(request, pk):
                 'cert_list': cert_list,
                 'experience_list': experience_list,
                 'visible': user.is_visible,
-                'has_invited': True if RecruitUser.objects.filter(establishment_id = request.user.establishmentuser, user_id = primary_user) else False
+                'has_invited': has_invited ,
+                'id': recruit_user_id,
             }
         else:
             context={}

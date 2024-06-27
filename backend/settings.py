@@ -40,8 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'posh',
+    'conversation',
     'django_cleanup',
-    'django_filters'
+    'django_filters',
 ]
 
 MIDDLEWARE = [
