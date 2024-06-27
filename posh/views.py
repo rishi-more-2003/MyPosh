@@ -29,6 +29,7 @@ from .models import Document
 from .filter import IndividualUserFilter, NGOUserFilter, ConsultancyUserFilter
 from django.core.paginator import Paginator
 from itertools import chain
+from conversation.models import Conversation
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
@@ -1970,6 +1971,12 @@ def user_details(request, pk):
             has_invited = True if RecruitUser.objects.filter(establishment_id = request.user.establishmentuser, user_id = primary_user) else False
 
             recruit_user_id = RecruitUser.objects.filter(establishment_id=request.user.establishmentuser, user_id=primary_user).first().id if has_invited else None
+           
+            # First, filter conversations that include the current user
+            conversations_with_user = Conversation.objects.filter(members=request.user)
+
+            # Further filter those conversations to find ones that also include the primary_user
+            is_message = True if conversations_with_user.filter(members=primary_user) else False
 
             context = {
                 'username':user,
@@ -1991,6 +1998,7 @@ def user_details(request, pk):
                 'visible': user.is_visible,
                 'has_invited': has_invited ,
                 'id': recruit_user_id,
+                'is_message': is_message,
             }
         else:
             context={}

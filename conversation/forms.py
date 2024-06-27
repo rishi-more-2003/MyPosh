@@ -4,9 +4,9 @@ from .models import ConversationMessage
 class ConversationMessageForm(forms.ModelForm):
     class Meta:
         model = ConversationMessage
-        fields = ('content',)
+        fields = ('message',)
         widgets = {
-            'content': forms.Textarea(attrs={
-                'class': 'w-full py-1 px-8 rounded-xl border'
+            'message': forms.Textarea(attrs={
+                'class': 'w-full py-1 px-8 rounded-xl border',
             })
         }

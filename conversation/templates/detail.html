@@ -61,6 +61,33 @@
         color: #dc3545;
         margin-top: 0.25rem;
     }
+        .bg-blue {
+        background-color: #007bff; /* Bootstrap primary color */
+    }
+    .bg-gray {
+        background-color: #6c757d; /* Bootstrap secondary color */
+    }    
+    .bg-blue {
+        text-align: end;
+        padding-left: 20px;
+        padding-right: 20px;
+        background-color: aliceblue; /* Bootstrap primary color */
+        border-radius: 20px;
+    }
+    .bg-gray {
+        text-align: start;
+        padding-left: 20px;
+        padding-right: 20px;
+        background-color: honeydew; /* Bootstrap secondary color */
+        border-radius: 20px;
+    }
+    .message-container {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    .wordwrap{
+        word-wrap: break-word;
+    }
     /* Scrollbar styling for WebKit browsers */
     .message-container::-webkit-scrollbar {
         width: 12px;
@@ -100,10 +127,7 @@
     .message-container::-webkit-scrollbar-thumb:hover {
         background-color: var(--first-color-alt);
     }
-    .message-container {
-        max-height: 70vh;
-        overflow-y: auto;
-    }
+
 </style>
 
 {% endblock %}
@@ -120,22 +144,31 @@
 
 {% block content %}
 <div class="container mt-5">
-        <div class="p-5 mb-4 rounded-3 form-container min-vh-100">
-            <h1 class="mb-4">Inbox</h1>
-            <div class="message-container list-group">
-                {% for user in individual_users %}
-                    <a href="{% url 'conversation:detail' user.id %}" class="list-group-item list-group-item-action flex  mb-2">
-                        {% if user.name %}
-                            <p><strong>{{ user.name }}</strong> , {{ user.city }}, {{ user.state }}</p>
-                        {% else %}
-                            <p><strong>{{ user.fname }} {{ user.lname }}</strong> , {{ user.city }}, {{ user.state }}</p>
-                        {% endif %}
-                        <p>Message: {{ user.modified_at }}</p>
-                    </a>
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-5 form-container">
+            <h1 class="mb-6 text-3xl">Conversation</h1>
+
+            <div class="message-container space-y-6">
+                {% for message in conversation.messages.all %}
+                    {% comment %} <div class="p-6 flex {% if message.created_by == request.user %}bg-primary{% else %}bg-secondary{% endif %} rounded-xl"> {% endcomment %}
+                    <div class="p-6 flex {% if message.created_by == request.user %}bg-blue{% else %}bg-gray{% endif %} rounded-xl">
+                        <div class='wordwrap'>
+                            <p class="mb-2"><strong>{% if message.created_by == request.user %}{{ est_name.name }}{% else %}{{ user_name.name }}{% endif %}</strong> @ {{ message.created_at }}</p>
+                            <p>{{ message.message }}</p>
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
 
+            <form method="post" action="." class="mt-6">
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button class="btn btn-primary">Send</button>
+            </form>
         </div>
+    </div>
 </div>
 
 {% endblock %}
