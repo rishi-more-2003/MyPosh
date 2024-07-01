@@ -83,6 +83,11 @@
                                         </a> 
                                     </li> 
                                     <li>
+                                        <a href="{% url 'group:group' %}" class="dropdown__link">
+                                            Join Comittee
+                                        </a> 
+                                    </li> 
+                                    <li>
                                         {% if visible == False %}
                                         <a data-target="#myModal" data-toggle="modal" class="dropdown__link MainNavText" id="MainNavHelp" 
                                             href="#myModal">Visibility: <span style="color: red">Off</span> </a>
@@ -118,6 +123,11 @@
                                     <li>
                                         <a href="{% url 'all_invites' %}" class="dropdown__link">
                                             All Invites
+                                        </a> 
+                                    </li> 
+                                    <li>
+                                        <a href="{% url 'group:group' %}" class="dropdown__link">
+                                            Create Comittee
                                         </a> 
                                     </li> 
                                     <li>

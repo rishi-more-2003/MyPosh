@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block stylescss %}
+{{ block.super }}
+
+<style>
+  .mybtn {
+    background-color: var(--first-color);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+.mybtn-active {
+    background-color: var(--first-color-alt);
+    color: white;
+}
+
+.mybtn:hover {
+    background-color: var(--first-color-alt);
+    color: white;
+}
+
+.profile_pic_style {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+.image_cropper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+.modal-header {
+    background-color: var(--first-color);
+    color: white;
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.form-control {
+    border-radius: 8px;
+}
+
+div#top {
+  margin-top: 100px;
+}
+
+.card.custom_card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  
+  .card-margin {
+    margin-bottom: 1.5rem;
+  }
+  
+  .img-as-background {
+    position: relative;
+    padding: 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+    text-align: center;
+  }
+  
+  .class-link {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .class-name-style {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .section-style {
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+  
+  .card-body {
+    padding: 1rem;
+    background-color: #f8f9fa;
+  }
+  
+  .card-text i {
+    color: #6c757d;
+  }
+
+</style>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+
+<script>
+  $('#create_class_form').on('submit', function (e) {
+    e.preventDefault();
+    $.ajax({
+        type:'POST',
+        url:'create_request/',
+        data:{
+            class_name:$('#class_name').val(),
+            section:$('#section').val(),
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            action: 'post'
+        },
+        success:function(json){
+            document.getElementById("create_class_form").reset();
+            $(".posts").prepend('<div class="col-md-6">'+
+                '<div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">' +
+                    '<div class="col p-4 d-flex flex-column position-static">' +
+                        '<h3 class="mb-0">' + json.class_name + '</h3>' +
+                        '<p class="mb-auto">' + json.section + '</p>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' 
+            )
+            window.location.href='http://127.0.0.1:8000/group/';
+            window.location.reload();
+        },
+        error : function(xhr,errmsg,err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+        }
+    });
+  });
+
+  $('#join_class_form').on('submit', function (e) {
+    e.preventDefault();
+    $.ajax({
+        type:'POST',
+        url:'join_request/',
+        data:{
+            class_name:$('#class_name').val(),
+            class_code:$('#class_code').val(),
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            action: 'post'
+        },
+        success:function(json){
+            document.getElementById("create_class_form").reset();
+            $(".posts").prepend('<div class="col-md-6">'+
+                '<div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">' +
+                    '<div class="col p-4 d-flex flex-column position-static">' +
+                        '<h3 class="mb-0">' + json.class_code + '</h3>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' 
+            )
+            window.location.href='http://127.0.0.1:8000/group/';
+            window.location.reload();
+        },
+        error : function(xhr,errmsg,err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+        }
+    });
+  });
+  var colors_1 = ['#D35400', '#A04000', '#F39C12', '#E67E22']; // Orange and brown tones (dark colors)
+  var colors_2 = ['#F5CBA7', '#EDBB99', '#FAD7A0', '#F8C471']; // Orange and brown tones (light colors)
+  var x = document.getElementsByClassName('colorme');
+  for (var i = 0; i < x.length; i++) {
+      var index = Math.floor(Math.random() * colors_1.length);
+      var random_color_1 = colors_1[index];
+      var random_color_2 = colors_2[index];
+      var ans = "linear-gradient(90deg, " + random_color_1 + ", " + random_color_2 + ")";
+      x[i].style.background = ans;
+  }
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+<div class="container min-vh-100" id="top">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        {% if is_enterprise %}
+          <button class="mybtn myinfo mybtn-active" type="button" data-toggle="modal" data-target="#add_class">Create Class</button>
+        {% endif %}
+          <button class="mybtn myinfo mybtn-active" type="button" data-toggle="modal" data-target="#join_class">Join Class</button>
+          <a href="{% url 'logout' %}" class="mybtn myinfo mybtn-active" style="text-decoration: none;">Logout</a>
+      </div>
+      {% comment %} <div class="image_cropper">
+          <img src="{% get_media_prefix %}{{ user.profile_photo }}" alt="Profile Pic" class="profile_pic_style">
+      </div> {% endcomment %}
+  </div>
+
+  <!-- Create Class Modal -->
+  <div class="modal fade" id="add_class" tabindex="-1" aria-labelledby="addClassLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addClassLabel">Create Class</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <form method="POST" class="cclass_form" id="create_class_form">
+                      {% csrf_token %}
+                      <div class="form-group">
+                          <label for="class_name">Group Name</label>
+                          <input type="text" class="form-control" id="class_name" placeholder="Class Name">
+                      </div>
+                      <div class="form-group">
+                          <label for="section">Short Description</label>
+                          <textarea class="form-control" id="section" placeholder="Section"></textarea>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Join Class Modal -->
+  <div class="modal fade" id="join_class" tabindex="-1" aria-labelledby="joinClassLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="joinClassLabel">Join Class</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <form method="POST" class="cclass_form" id="join_class_form">
+                      {% csrf_token %}
+                      <div class="form-group">
+                          <label for="class_code">Group Code</label>
+                          <input type="text" class="form-control" id="class_code" placeholder="Class Code">
+                      </div>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+  {% if mappings %}
+  <div class="row">
+    {% for mapping in mappings %}
+      {% if forloop.counter|divisibleby:4 %}
+        <div class="col-md-3">
+          <div class="card custom_card card-margin">
+            <div class="img-as-background colorme">
+              <a href="{% url 'group:render_class' mapping.group_id.id %}" class="class-link">
+                <h2 class="class-name-style">{{ mapping.group_id.group_name|truncatechars:30 }}</h2>
+              </a>
+              {% comment %} <p class="section-style"><i>{{ state|truncatechars:30 }},{{ city|truncatechars:30 }}</i></p> {% endcomment %}
+              {% for teacher in enterprise %}
+                {% comment %} {% if teacher.group_id == mapping.group_id %} {% endcomment %}
+                  <p class="section-style"><i>{{ teacher.state|truncatechars:30 }},{{ teacher.city|truncatechars:30 }}</i></p>
+                {% comment %} {% endif %} {% endcomment %}
+              {% endfor %} 
+            </div>
+            <div class="card-body card-text">
+              <i>{{ mapping.group_id.section|truncatechars:20 }}</i>
+            </div>
+          </div>
+        </div>
+      {% if not forloop.last %} 
+        <br>
+        <div class="row">
+      {% endif %}
+      {% else %}
+        <div class="col-md-3">
+          <div class="card custom_card card-margin">
+            <div class="img-as-background colorme">
+              <a href="{% url 'group:render_class' mapping.group_id.id %}" class="class-link">
+                <h2 class="class-name-style">{{ mapping.group_id.group_name|truncatechars:30 }}</h2>
+              </a>
+              {% comment %} <p class="section-style"><i>{{ state|truncatechars:30 }},{{ city|truncatechars:30 }}</i></p> {% endcomment %}
+              {% for teacher in enterprise %}
+                {% comment %} {% if teacher.group_id == mapping.group_id %} {% endcomment %}
+                  <p class="section-style"><i>{{ teacher.state|truncatechars:30 }},{{ teacher.city|truncatechars:30 }}</i></p>
+                {% comment %} {% endif %} {% endcomment %}
+              {% endfor %} 
+            </div>
+            <div class="card-body card-text">
+              <i>{{ mapping.group_id.section|truncatechars:30 }}</i>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+  
+</div>
+{% endblock %}  

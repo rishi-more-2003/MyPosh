@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'posh',
     'conversation',
+    'group',
     'django_cleanup',
     'django_filters',
 ]

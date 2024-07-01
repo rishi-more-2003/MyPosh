@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block stylescss %}
+{{ block.super }}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
+    .navbar-custom {
+        background-color: #fff;
+        padding: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .navbar-brand {
+        font-size: 2rem;
+        color: #2e45c7;
+        font-weight: bold;
+    }
+    .navbar-nav {
+        display: flex;
+        align-items: center;
+    }
+    .nav-item {
+        margin-left: 15px;
+    }
+    .custom-btn {
+        padding: 10px 20px;
+        border: none;
+        color: #fff;
+        background-color: #2e45c7;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+    .custom-btn:hover {
+        background-color: #1d3199;
+    }
+    .image_cropper {
+        width: 50px;
+        height: 50px;
+        overflow: hidden;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .profile_pic_style {
+        width: 100%;
+        height: auto;
+    }
+    .container-custom {
+        padding: 20px;
+    }
+    .card-custom {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+    .card-header-custom {
+        background-color: #2e45c7;
+        color: #fff;
+        border-radius: 10px 10px 0 0;
+        padding: 15px;
+        font-size: 1.25rem;
+    }
+    .card-body-custom {
+        padding: 20px;
+    }
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+    }
+    .card-text {
+        color: #666;
+    }
+    .mybtn {
+        background-color: var(--first-color);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+        border-radius: 12px;
+    }
+    
+    .mybtn-active {
+        background-color: var(--first-color-alt);
+        color: white;
+    }
+    
+    .mybtn:hover {
+        background-color: var(--first-color-alt);
+        color: white;
+    }
+    div#top {
+        margin-top: 100px;
+      }
+</style>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script>
+</script> 
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+<div class="navbar-custom d-flex justify-content-between align-items-center">
+    <div class="container min-vh-100" id="top">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                {% for teacher in teachers %}
+                {% comment %} {{ teacher.enterprise_id}} {{ user.username }} {% endcomment %}
+                    {% if teacher.enterprise_id|stringformat:"s" == user.username|stringformat:"s" %}
+                    {% comment %} {{ teacher.enterprise_id }} {% endcomment %}
+                        <a href="{% url 'group:create_assignment' classroom_id=classroom.id %}" type="button" class="mybtn myinfo mybtn-active">Create Assignment</a>
+                        <a class="mybtn myinfo mybtn-active" type="button" href="{% url 'group:delete_class' classroom_id=classroom.id %}">Delete Class</a>
+                    {% endif %}
+                {% endfor %}
+                {% for student in students %}
+                {% comment %} {{ student.employee_id }} {{ user.username }} {% endcomment %}
+                    {% if student.employee_id|stringformat:"s" == user.username|stringformat:"s" %}  
+                    {% comment %} {{ classroom.id }} {% endcomment %}
+                    <a class="mybtn myinfo mybtn-active" type="button" href="{% url 'group:unenroll_class' classroom.id %}">Unenroll Class</a>
+                    {% endif %}
+                {% endfor %} 
+                <a class="mybtn myinfo mybtn-active" type="button" href="{% url 'group:group' %}" style="text-decoration: none;">Group</a>
+                <a href="{% url 'logout' %}" class="mybtn myinfo mybtn-active" style="text-decoration: none;">Logout</a>
+            </div>
+        </div>
+        <div class="container container-custom">
+            <h1 class="display-4 class_title">{{ classroom.group_name }}</h1>
+            <p class="lead class_code">Class code: {{ classroom.group_code }}</p>
+            <input type="hidden" id="assignment_id" name="assignment_id">
+            <div class="contatiner_of_assignments">
+                {% if assignments %}
+                    {% for assignment in assignments %}
+                        {% for teacher in teachers %}
+                            {% if teacher.enterprise_id|stringformat:"s" == user.username|stringformat:"s" %}
+                                <a href="{% url 'group:assignment_summary' assignment_id=assignment.id %}">
+                            {% else %}
+                                <a href="#submit_assignment" data-value="{{ assignment.id }}">
+                            {% endif %}
+                        {% endfor %}
+                        <div class="card card-custom">
+                            <div class="card-header card-header-custom">
+                                <h6 class="card-title">{{ assignment.notice_name }}</h6>
+                            </div>
+                            <div class="card-body card-body-custom">
+                                <h6 class="card-subtitle mb-2"><p class="card-text">Instructions: {{ assignment.instructions }}</p></h6>
+                                <p class="card-text">Assignment posted on {{ assignment.posted_date }}</p>
+                                <p class="card-text">Assignment due at {{ assignment.due_time }} on {{ assignment.due_date }}</p>
+                                {% comment %} <a href="{% url 'group:render_class' mapping.group_id.id %}" class="btn btn-primary">View Class</a> {% endcomment %}
+                            </div>
+                        </div>
+                        </a>
+                  {% endfor %}
+                {% endif %}
+              </div>
+              <div class="modal" tabindex="-1" id="submit_assignment">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Submit Assignment</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                     <div class="modal-body">
+                          <form method="POST" class="cclass_form" id="submit_assignment_form" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input type="file" id="myfile" name="myfile">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Assignment</button>
+                          </form> 
+                     </div>
+                  </div>
+                </div>
+              </div>
+            {% comment %} {% for mapping in mappings %}
+                <div class="card card-custom">
+                    <div class="card-header card-header-custom">
+                        {{ mapping.group_id.group_name }}
+                    </div>
+                    <div class="card-body card-body-custom">
+                        <h5 class="card-title">{{ mapping.group_id.group_name }}</h5>
+                        <p class="card-text">Section: {{ mapping.group_id.section }}</p>
+                        {% for teacher in teachers_all %}
+                            {% if teacher.group_id == mapping.group_id %}
+                                <p class="card-text"><i>{{ teacher.enterprise_id }}</i></p>
+                            {% endif %}
+                        {% endfor %}
+                        <a href="{% url 'group:render_class' mapping.group_id.id %}" class="btn btn-primary">View Class</a>
+                    </div>
+                </div>
+            {% endfor %} {% endcomment %}
+            </div>
+    </div>
+</div>
+{% endblock %}  

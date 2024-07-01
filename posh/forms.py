@@ -1,5 +1,7 @@
 from django import forms
 from .models import Education, EstablishmentLocation, PEDetails, VendorDetails, ComitteeCount, CurrentClient, EmployeeCount
+from group.models import Notice
+import datetime
 
 class EducationForm(forms.ModelForm):
     class Meta:
@@ -36,4 +38,16 @@ class CurrentClientForm(forms.ModelForm):
         model = CurrentClient
         exclude = ['user']
 
-
+class CreateAssignmentForm(forms.ModelForm):
+    class Meta:
+        model = Notice
+        fields = ['notice_name', 'due_date', 'due_time', 'instructions']
+        widgets = {
+            'due_date': forms.DateInput(attrs={'type': 'date'}),
+            'due_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
+    
+    notice_name = forms.CharField(max_length=50, label='Notice Name')
+    due_date = forms.DateField(initial=datetime.date.today, label='Due Date', widget=forms.DateInput(attrs={'type': 'date'}))
+    due_time = forms.TimeField(initial=datetime.time(10, 10), label='Due Time', widget=forms.TimeInput(attrs={'type': 'time'}))
+    instructions = forms.CharField(label='Instructions', widget=forms.Textarea)

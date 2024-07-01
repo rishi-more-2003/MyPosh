@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block stylescss %}
+{{ block.super }}
+
+<style>
+    p{
+        display: grid;
+    }
+    .login-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    
+    .myform {
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 500px;
+    }
+    
+    .login-form button {
+        background-color: hsl(30, 100%, 52%);;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .login-form button:hover {
+        background-color: hsl(29, 54%, 73%);;
+    }
+    
+    .login-form input, .login-form textarea, .login-form select {
+        margin-bottom: 15px;
+    }
+    
+</style>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+
+<script>
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+<div class="login-page container">
+    <div class="myform">
+        <form class="login-form" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary btn-block">Create Notice</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}  
