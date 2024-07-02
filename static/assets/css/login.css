@@ -300,3 +300,13 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none; 
   margin: 0; 
 }
+
+.d-flex.flex-column.my-4 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+a.m-auto {
+    color: hsl(30, 4%, 25%);
+}

@@ -114,9 +114,9 @@
             <input type="hidden" id="assignment_id" name="assignment_id">
             <input type="hidden" id="user_id" name="user_id">
             <h4 class="text-center w-100">
-                Total students: {{ no_of_students.count }} &emsp;|&emsp; 
+                Total Members: {{ no_of_students.count }} &emsp;|&emsp; 
                 No. of Submissions: {{ submissions.count }} &emsp;|&emsp; 
-                <a href="{% url 'group:delete_assignment' assignment_id=assignment.id %}" class="btn btn-danger btn-sm">Delete Assignment</a>
+                <a href="{% url 'group:delete_assignment' assignment_id=assignment.id %}" class="btn btn-danger btn-sm">Delete Notice</a>
             </h4> 
         </div>
 

@@ -207,9 +207,9 @@ div#top {
   <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         {% if is_enterprise %}
-          <button class="mybtn myinfo mybtn-active" type="button" data-toggle="modal" data-target="#add_class">Create Class</button>
+          <button class="mybtn myinfo mybtn-active" type="button" data-toggle="modal" data-target="#add_class">Create Comittee</button>
         {% endif %}
-          <button class="mybtn myinfo mybtn-active" type="button" data-toggle="modal" data-target="#join_class">Join Class</button>
+          <button class="mybtn myinfo mybtn-active" type="button" data-toggle="modal" data-target="#join_class">Join Comittee</button>
           <a href="{% url 'logout' %}" class="mybtn myinfo mybtn-active" style="text-decoration: none;">Logout</a>
       </div>
       {% comment %} <div class="image_cropper">
@@ -222,7 +222,7 @@ div#top {
       <div class="modal-dialog">
           <div class="modal-content">
               <div class="modal-header">
-                  <h5 class="modal-title" id="addClassLabel">Create Class</h5>
+                  <h5 class="modal-title" id="addClassLabel">Create Comittee</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                   </button>
@@ -250,7 +250,7 @@ div#top {
       <div class="modal-dialog">
           <div class="modal-content">
               <div class="modal-header">
-                  <h5 class="modal-title" id="joinClassLabel">Join Class</h5>
+                  <h5 class="modal-title" id="joinClassLabel">Join Comittee</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                   </button>

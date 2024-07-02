@@ -174,15 +174,15 @@
                 {% comment %} {{ teacher.enterprise_id}} {{ user.username }} {% endcomment %}
                     {% if teacher.enterprise_id|stringformat:"s" == user.username|stringformat:"s" %}
                     {% comment %} {{ teacher.enterprise_id }} {% endcomment %}
-                        <a href="{% url 'group:create_assignment' classroom_id=classroom.id %}" type="button" class="mybtn myinfo mybtn-active">Create Assignment</a>
-                        <a class="mybtn myinfo mybtn-active" type="button" href="{% url 'group:delete_class' classroom_id=classroom.id %}">Delete Class</a>
+                        <a href="{% url 'group:create_assignment' classroom_id=classroom.id %}" type="button" class="mybtn myinfo mybtn-active">Create Notice</a>
+                        <a class="mybtn myinfo mybtn-active" type="button" href="{% url 'group:delete_class' classroom_id=classroom.id %}">Delete Comittee</a>
                     {% endif %}
                 {% endfor %}
                 {% for student in students %}
                 {% comment %} {{ student.employee_id }} {{ user.username }} {% endcomment %}
                     {% if student.employee_id|stringformat:"s" == user.username|stringformat:"s" %}  
                     {% comment %} {{ classroom.id }} {% endcomment %}
-                    <a class="mybtn myinfo mybtn-active" type="button" href="{% url 'group:unenroll_class' classroom.id %}">Unenroll Class</a>
+                    <a class="mybtn myinfo mybtn-active" type="button" href="{% url 'group:unenroll_class' classroom.id %}">Unenroll Comittee</a>
                     {% endif %}
                 {% endfor %} 
                 <a class="mybtn myinfo mybtn-active" type="button" href="{% url 'group:group' %}" style="text-decoration: none;">Group</a>
@@ -209,8 +209,8 @@
                             </div>
                             <div class="card-body card-body-custom">
                                 <h6 class="card-subtitle mb-2"><p class="card-text">Instructions: {{ assignment.instructions }}</p></h6>
-                                <p class="card-text">Assignment posted on {{ assignment.posted_date }}</p>
-                                <p class="card-text">Assignment due at {{ assignment.due_time }} on {{ assignment.due_date }}</p>
+                                <p class="card-text">Notice posted on {{ assignment.posted_date }}</p>
+                                <p class="card-text">Notice due at {{ assignment.due_time }} on {{ assignment.due_date }}</p>
                                 {% comment %} <a href="{% url 'group:render_class' mapping.group_id.id %}" class="btn btn-primary">View Class</a> {% endcomment %}
                             </div>
                         </div>
@@ -222,7 +222,7 @@
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title">Submit Assignment</h5>
+                      <h5 class="modal-title">Submission</h5>
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                       </button>
@@ -234,7 +234,7 @@
                                 {{assignment_id}}
                                 <input type="file" id="myfile" name="myfile">
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit Assignment</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
                           </form> 
                      </div>
                   </div>
