@@ -16,7 +16,7 @@ urlpatterns = [
     path('delete_notice/<int:assignment_id>', views.delete_assignment,name='delete_assignment'),
 
     path('submit_request/<int:assignment_id>', views.submit_assignment_request, name='submit_assignment_request'),
-    path('mark_request/<int:submission_id>/<int:teacher_id>', views.mark_submission_request, name='mark_submission_request')
+    path('mark_request/<int:submission_id>/<str:teacher_id>', views.mark_submission_request, name='mark_submission_request')
 
 
 ]

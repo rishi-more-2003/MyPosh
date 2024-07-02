@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from posh.decorators import access_class, enterprise_required, employee_required
-
+from django.utils.timesince import timesince
 from posh.models import EstablishmentUser, PoshUser
-from .models import Employee, Enterprise, Groups, Notice
+from .models import Employee, Enterprise, Groups, Notice, Submissions
 from posh.utils import generate_class_code
 from django.http import JsonResponse
-
+import datetime
 from posh.forms import CreateAssignmentForm
 
 from itertools import chain
@@ -122,14 +123,59 @@ def create_assignment(request,classroom_id):
     # print(form)
     return render(request,'create_assignment.html',{'form':form,'mappings':mappings})
 
-def assignment_summary(request, pk):
-    return render(request,'assignment_summary',{})
+@login_required
+@enterprise_required('group:group')
+def assignment_summary(request, assignment_id):
+    assignment = Notice.objects.filter(pk = assignment_id).first()
+    submissions = Submissions.objects.filter(notice_id = assignment_id)
+    teachers = Enterprise.objects.filter(group_id = assignment.group_id)
+    teacher_mapping = Enterprise.objects.filter(enterprise_id=request.user).select_related('group_id')
+    student_mapping = Employee.objects.filter(employee_id=request.user).select_related('group_id')
+    no_of_students = Employee.objects.filter(group_id=assignment.group_id)
+    mappings = chain(teacher_mapping,student_mapping)
+    return render(request,'assignment_summary.html',{'assignment':assignment,'submissions':submissions,'mappings':mappings,'no_of_students':no_of_students})
 
-def delete_assignment(request):
-    pass
+@login_required
+@enterprise_required('group:group')
+def delete_assignment(request, assignment_id):
+    try:
+        assignment = Notice.objects.get(pk=assignment_id)
+        classroom_id = assignment.group_id
+        Notice.objects.get(pk=assignment_id).delete()
+        return redirect('group:render_class', id=classroom_id.id)
+    except Exception as e:
+        return redirect('group:group')
 
-def submit_assignment_request(request):
-    pass
+@csrf_exempt
+@login_required
+@employee_required('group:group')
+def submit_assignment_request(request,assignment_id):
+    assignment = Notice.objects.get(pk=assignment_id)
+    student_id = Employee.objects.get(group_id=assignment.group_id, employee_id=request.user.username)
+    file_name = request.FILES.get('myfile')
+    try:
+        submission = Submissions.objects.get(notice_id=assignment, employee_id = student_id)
+        submission.submission_file = file_name
+        submission.save()
+        return JsonResponse({'status':'SUCCESS'})
 
-def mark_submission_request(request):
-    pass
+    except Exception as e:  
+        print(str(e))  
+        submission = Submissions(notice_id = assignment, employee_id= student_id, submission_file = file_name)
+        dt1 = datetime.datetime.now()
+        dt2 = datetime.datetime.combine(assignment.due_date, assignment.due_time)
+        time = timesince(dt1, dt2)
+        if time[0]=='0':
+            submission.submitted_on_time=False
+        submission.save()
+        # email.submission_done_mail(assignment_id,request.user,file_name)
+        return JsonResponse({'status':'SUCCESS'})
+
+def mark_submission_request(request,submission_id,teacher_id):
+    if request.POST.get('action') == 'post':
+        marks = request.POST.get('submission_marks')
+        print(marks)
+        submission = Submissions.objects.get(pk=submission_id)
+        submission.save()
+        # email.submission_marks_mail(submission_id,teacher_id,marks)
+        return JsonResponse({'status':'SUCCESS'})

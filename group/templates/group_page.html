@@ -117,6 +117,46 @@
 {% block js %}
 {{ block.super }}
 <script>
+    $('a[href$="#submit_assignment"]').on( "click", function() {
+        $('#submit_assignment').modal('show');
+        var assignment_id = $(this).data('value');
+        var hidden_field = document.getElementById('assignment_id');
+        hidden_field.value = assignment_id;
+      });
+      $('#submit_assignment_form').on('submit', function (e) {
+        e.preventDefault();
+        var assignment_id = document.getElementById('assignment_id').value;
+        var submit_assignment_url =  "{% url 'group:submit_assignment_request' assignment_id=0 %}".replace('0', assignment_id);
+        var formData = new FormData(this);
+        var class_id = '{{assignment_id.classroom_id.id}}';
+        var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        formData.append('submission_file',$('#myfile'));
+        formData.append('csrfmiddlewaretoken', csrftoken);
+        $.ajax({
+            type:'POST',
+            url:submit_assignment_url,
+            data:formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            success:function(json){
+                document.getElementById("submit_assignment_form").reset();
+                $(".posts").prepend('<div class="col-md-6">'+
+                    '<div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">' +
+                        '<div class="col p-4 d-flex flex-column position-static">' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' 
+                );
+                window.location.href='http://127.0.0.1:8000/group/' + class_id.toString();
+                window.location.reload();
+            },
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+      });
 </script> 
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -191,6 +231,7 @@
                           <form method="POST" class="cclass_form" id="submit_assignment_form" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="form-group">
+                                {{assignment_id}}
                                 <input type="file" id="myfile" name="myfile">
                             </div>
                             <button type="submit" class="btn btn-primary">Submit Assignment</button>

@@ -63,7 +63,7 @@ def employee_required(redirect_to):
                     assignment = Notice.objects.get(pk=int(kwargs['assignment_id']))
                 except Exception as e:
                     return redirect('group:group')
-                query_id = assignment.group_id
+                query_id = assignment.group_id.id  
             
             try:
                 classroom = Groups.objects.get(pk=query_id)

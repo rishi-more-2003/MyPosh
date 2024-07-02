@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block stylescss %}
+{{ block.super }}
+
+<style>
+    .navbar-custom {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+        margin-top: 60px;
+    }
+    
+    .submission-card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal .modal-header {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .modal .modal-body .form-control {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-outline-primary, .btn-outline-secondary {
+        margin-top: 1rem;
+    }
+    
+    .text-danger {
+        color: crimson !important;
+    }
+    
+</style>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+
+<script>
+    $('a[href$="#mark_assignment"]').on( "click", function() {
+        $('#mark_assignment').modal('show');
+        var assignment_id = $(this).data('assignment_value');
+        var submission_id = $(this).data('submission_value');
+        var user_id = $(this).data('user_id');
+
+        var assignment_hidden_field = document.getElementById('assignment_id');
+        assignment_hidden_field.value = assignment_id;
+
+        var submission_hidden_field = document.getElementById('submission_id');
+        submission_hidden_field.value = submission_id;
+
+        var user_hidden_field = document.getElementById('user_id');
+        user_hidden_field.value = user_id;
+
+    });
+
+    $('#mark_assignment_form').on('submit', function (e) {
+        var submission_id = document.getElementById('submission_id').value;    
+        var user_id = document.getElementById('user_id').value;    
+        var mark_assignment_url =  "{% url 'group:mark_submission_request' submission_id=1 teacher_id=0 %}".replace('1', submission_id);
+        mark_assignment_url = mark_assignment_url.replace('0',user_id)
+        console.log(mark_assignment_url);
+        var assignment_id = document.getElementById('assignment_id').value;   
+        $.ajax({
+            type:'POST',
+            url:mark_assignment_url,
+            data:{
+                submission_marks:$('#submission_marks').val(),
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                action: 'post'
+            },
+            success:function(json){
+                document.getElementById("mark_assignment_form").reset();
+                $(".posts").prepend('<div class="col-md-6">'+
+                    '<div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">' +
+                        '<div class="col p-4 d-flex flex-column position-static">' +
+                            '<h3 class="mb-0">' + json.submission_marks + '</h3>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' 
+                )
+                window.location.href='http://127.0.0.1:8000/notice_summary/' + assignment_id.toString();
+                window.location.reload();
+            },
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+      });
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid navbar-custom min-vh-100">
+    <div class="container py-4 mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <input type="hidden" id="submission_id" name="submission_id">
+            <input type="hidden" id="assignment_id" name="assignment_id">
+            <input type="hidden" id="user_id" name="user_id">
+            <h4 class="text-center w-100">
+                Total students: {{ no_of_students.count }} &emsp;|&emsp; 
+                No. of Submissions: {{ submissions.count }} &emsp;|&emsp; 
+                <a href="{% url 'group:delete_assignment' assignment_id=assignment.id %}" class="btn btn-danger btn-sm">Delete Assignment</a>
+            </h4> 
+        </div>
+
+        {% for submission in submissions %} 
+        <div class="card mb-3 submission-card">
+            <div class="card-body">
+                <h5 class="card-title">{{ submission.employee_id.employee_id.username }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Submitted at {{ submission.submitted_time }} on {{ submission.submitted_date }}</h6>
+                <h6 class="card-subtitle mb-2 text-muted">Due date and time: {{ submission.notice_id.due_time }} on {{ submission.notice_id.due_date }}</h6>
+                {% if submission.submitted_on_time %}
+                <h6 class="card-subtitle mb-2 text-success">Submitted on time</h6>
+                {% else %}
+                <h6 class="card-subtitle mb-2 text-danger">Oops! Submitted late</h6>
+                {% endif %}
+                <a href="{% get_media_prefix %}{{ submission.submission_file }}" download class="btn btn-outline-primary btn-sm">Download submitted file</a>
+                <a href="#mark_assignment" class="btn btn-outline-secondary btn-sm ml-2" data-toggle="modal" data-submission_value="{{ submission.id }}" data-assignment_value="{{ submission.notice_id.id }}" data-user_id="{{ user.username }}">Mark Submission</a>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Modal -->
+        <div class="modal fade" id="mark_assignment" tabindex="-1" role="dialog" aria-labelledby="mark_assignment_label" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="mark_assignment_label">Mark Submission</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" class="form" id="mark_assignment_form">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="submission_marks">Submission Marks</label>
+                                <input type="number" class="form-control" id="submission_marks" placeholder="Enter marks">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}  
