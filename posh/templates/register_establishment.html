@@ -26,7 +26,7 @@
         <title>Registration Form</title>
 </head>
 <body>
-    <div class="container">
+    <div class="container" style="margin-top: 30px; margin-bottom: 30px;">
         <header>
             Registration
         </header>
@@ -99,6 +99,22 @@
                             <input type="number" name="indirectEmpothers" id="indirectEmpothers" placeholder="">
                         </div>
                     </div>
+
+                    <div class="fields">
+                        <!-- Remove previous input fields -->
+                        <div class="button-field">
+                            <button type="button"  class="form-control" onclick="fillManually()">Fill Manually</button>
+                        </div>
+                    
+                        <div class="button-field">
+                            <button type="button"  class="form-control" onclick="downloadSample()">Download Sample</button>
+                        </div>
+                    
+                        <div class="button-field">
+                            <button type="button"  class="form-control" onclick="uploadFile()">Upload File</button>
+                        </div>
+                    </div>
+
                         <!-- Number of Vendors/Contractors -->
                         <div class="input-field">
                             <label>No. of Vendors/Contractors</label>
@@ -231,61 +247,6 @@
                     </div>
                 </div>
             </div>
-
-                    {% comment %} <div class="align-columns-two">
-                        <div class="input-field new"> 
-                            <div class="inp">
-                                <label class="required-field">Password</label>
-                                <div class="flexble">
-                                    <input type="password" id= "password" name="password1" placeholder="Enter your Password" required>
-                                    <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
-                                </div>
-                            </div>
-
-                            <div class="inp">
-                                <label class="required-field">Confirm Password</label>
-                                <div class="flexble">
-                                <input type="password" id= "password1" name="password2" placeholder="Confirm your Password" required>
-                                <i class="ri-eye-off-fill toggle" style="color: hsl(30, 97%, 29%);"></i>
-                                </div>
-                            </div>
-                        </div> {% endcomment %}
-
-                {% comment %} <div class="fields">
-                <div class="details ID">   
-                    <div class="input-field email-field">
-                        <label class="required-field">Email</label>
-                        <p id="error-msg">Please Enter A Valid Email Id</p>
-                        <div class="combine">
-                            <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
-                            <button type="button" class="ValBtn one" id="sendOTP">Send OTP</button>
-                        </div>
-
-                        {% if otp_sent %}
-                            <div class="input-field otp-field">
-                                <label class="required-field">OTP</label>
-                                <input type="text" name='otp' id="otp" placeholder="Enter OTP" required>
-                            </div>
-                        {% endif %} {% endcomment %}
-
-                        <!-- <div class="combine">
-                            <input type="email" name='email' id="email-id" placeholder="Enter your email" oninput="checker()" required>
-                            <button class="ValBtn one" disabled>Validate</button>
-                        </div>
-                    </div> -->
-
-                    {% comment %} <div class="input-field phone-field">
-                        <label class="required-field">Mobile Number</label>
-                        <p id="errormsg">Please Enter A Valid Phone Number</p>
-                        <div class="combine">
-                            <input type="tel" name='phone' id="phone" placeholder="Enter mobile number" minlength="10" maxlength="10" oninput="checkerphone()" required>
-                            <button class="ValBtn two" disabled>Validate</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </div>
-            </div>  {% endcomment %}
 
                     <div class="buttons">
                         <div class="backBtn">

@@ -85,17 +85,17 @@
       <h6 class="card-subtitle mb-2 text-muted">{{ city }}, {{ state }}</h6>
       {% if has_invited %}
         <p><span class="text-danger">You have already invited this user.</span></p>
-        {% if not is_message %}
-          <a class="btn btn-primary btn-lg"  href="{% url 'conversation:new' id %}">Message</a>
+        {% if is_message %}
+        <a class="btn btn-primary btn-lg"  href="{% url 'conversation:inbox' %}">Inbox</a>
         {% else %}
-          <a class="btn btn-primary btn-lg"  href="{% url 'conversation:inbox' %}">Inbox</a>
+        <a class="btn btn-primary btn-lg"  href="{% url 'conversation:new' id %}">Message</a>
         {% endif %}
       {% else %}
         <a class="btn btn-primary btn-lg"  href="{% url 'recruit' username %}">Recruit</a>
-        {% if not is_message %}
-          <a class="btn btn-primary btn-lg"  href="{% url 'conversation:new' id %}">Message</a>
-        {% else %}
+        {% if is_message %}
           <a class="btn btn-primary btn-lg"  href="{% url 'conversation:inbox' %}">Inbox</a>
+        {% else %}
+        <a class="btn btn-primary btn-lg"  href="{% url 'conversation:new' id %}">Message</a>
         {% endif %}
       {% endif %}
     </div>
