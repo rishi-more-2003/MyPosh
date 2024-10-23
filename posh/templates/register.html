@@ -19,8 +19,34 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
         <title>Registration Form</title>
+        <style>
+            /* Loader wrapper */
+            .load {
+                display: none; /* Initially hidden */
+                position: fixed; /* Overlay the entire page */
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+                z-index: 9999; /* Ensure it appears on top of everything */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            /* Loader GIF styling */
+            .load__gif {
+                width: 100px; /* Adjust size as necessary */
+                height: auto;
+            }
+        </style>
 </head>
 <body>
+    <!-- LOADER -->
+    <div class="load" id="load">
+        <img src="{% static 'assets/img/ZNeT.gif' %}" alt="loader" class="load__gif">
+    </div>
     <div class="container">
         <div id="message-section"></div>
         {% if messages %}
@@ -145,6 +171,7 @@
     </div>
 <div class="overlay" id="overlay"></div>
 <script>
+
 $(document).on('click', "#sendOTP", function(e){
     e.preventDefault();
 
@@ -319,6 +346,10 @@ $(document).on('click', "#verify-otp", function(e){
 $(document).ready(function() {
     $('#submitButton').click(function(e) {
         e.preventDefault();
+
+        // Show the loader when the form is submitted
+        const load = document.getElementById('load');
+        load.style.display = 'flex';
         
         // Serialize form data
         var formData = $('#form-main').serialize();
@@ -329,6 +360,10 @@ $(document).ready(function() {
             url: '',
             data: formData,  // Send serialized form data
             success: function(response) {
+                setTimeout(() => {
+                    load.style.display = 'none';  // Hide the loader
+                }, 500);  // Adjust the timeout as needed
+
                 if (response.status === 'success') {
                     console.log('User created successfully');
                     window.location = response.redirect_url;
@@ -339,6 +374,7 @@ $(document).ready(function() {
             error: function(xhr, status, error) {
                 // Handle error response
                 console.error(xhr.responseText);
+                load.style.display = 'none';
             }
         });
     });

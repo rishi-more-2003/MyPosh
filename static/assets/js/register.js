@@ -1,3 +1,11 @@
+// LOADER
+onload = () => {
+    const load = document.getElementById('load')
+    setTimeout(() => {
+        load.style.display = 'none'
+    }, 500)
+}
+
 // Date-picker
 var today = new Date().toISOString().split('T')[0];
 document.getElementById('date-input');
