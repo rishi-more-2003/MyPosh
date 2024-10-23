@@ -107,7 +107,7 @@
                                 <p id="errormsg">Please Enter A Valid Phone Number</p>
                                 <div class="inp combine">
                                     <input type="tel" name='phone' id="phone" placeholder="Enter mobile number" minlength="10" maxlength="10" oninput="checkerphone()" required>
-                                    <button class="ValBtn two" disabled>Get OTP</button>
+                                    <button class="ValBtn two" name='verifotp' class="ValBtn one" id="sendPhoneOTP" onclick="openPopup()" disabled>Get OTP</button>
                                 </div>
                             </div>
 
@@ -156,6 +156,7 @@ $(document).on('click', "#sendOTP", function(e){
         type: 'POST',
         url: '',
         data: {
+            type: 'email-otp',
             email: $('#email-id').val(),
             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
         },
@@ -177,6 +178,70 @@ $(document).on('click', "#sendOTP", function(e){
     });
 });
 
+$(document).on('click', "#sendPhoneOTP", function(e){
+    e.preventDefault();
+
+    // Disable the button to prevent multiple clicks
+    $(this).prop('disabled', true);
+
+    // Make the AJAX call
+    $.ajax({
+        type: 'POST',
+        url: '',
+        data: {
+            type: 'phone-otp',
+            phone: '+' + phoneInput.getSelectedCountryData()['dialCode'] + $('#phone').val(),
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function(response) {
+            // Handle success response here
+            // For example, you can show a message to the user or perform further actions
+            console.log('AJAX request succeeded');
+            openPopup(); // Call the function to open the popup
+        },
+        error: function(xhr, status, error) {
+            // Handle error response here
+            // For example, you can show an error message to the user
+            console.error('AJAX request failed:', status, error);
+        },
+        complete: function() {
+            // Re-enable the button after the AJAX request is complete
+            $("#sendPhoneOTP").prop('disabled', false);
+        }
+    });
+});
+
+$(document).on('click', "#resend-link", function(e){
+    e.preventDefault();
+
+    // Disable the button to prevent multiple clicks
+    $(this).prop('disabled', true);
+
+    // Make the AJAX call
+    $.ajax({
+        type: 'POST',
+        url: '',
+        data: {
+            type: 'email-otp',
+            email: $('#email-id').val(),
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function(response) {
+            // Handle success response here
+            // For example, you can show a message to the user or perform further actions
+            console.log('AJAX request succeeded');
+        },
+        error: function(xhr, status, error) {
+            // Handle error response here
+            // For example, you can show an error message to the user
+            console.error('AJAX request failed:', status, error);
+        },
+        complete: function() {
+            // Re-enable the button after the AJAX request is complete
+            $("#resend-link").prop('disabled', false);
+        }
+    });
+});
 
 
 $(document).on('click', "#verify-otp", function(e){
@@ -217,6 +282,12 @@ $(document).on('click', "#verify-otp", function(e){
         } else if (response.status === 'error') {
             // OTP mismatch
             console.log('OTP mismatch');
+            $('#otp1').val('');  // Use assignment operator '='
+            $('#otp2').val('');
+            $('#otp3').val('');
+            $('#otp4').val('');
+            $('#otp5').val('');
+            $('#otp6').val('');
             $('#message-section').html(`
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     OTP Mismatch!

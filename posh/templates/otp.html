@@ -2,17 +2,17 @@
     <h1>OTP Verification</h1>
     <p id="otp-message">An OTP has been sent to the specified recipient.</p>
     <div class="otp-card-inputs" id="otp-card-inputs">
-        <input type="text" id="otp1" name="otp1" maxlength="1" autofocus>
-        <input type="text" id="otp2" name="otp2" maxlength="1">
-        <input type="text" id="otp3" name="otp3" maxlength="1">
-        <input type="text" id="otp4" name="otp4" maxlength="1">
-        <input type="text" id="otp5" name="otp5" maxlength="1">
-        <input type="text" id="otp6" name="otp6" maxlength="1">
+        <input type="text" id="otp1" name="otp1" value="" maxlength="1" autofocus>
+        <input type="text" id="otp2" name="otp2" value="" maxlength="1">
+        <input type="text" id="otp3" name="otp3" value="" maxlength="1">
+        <input type="text" id="otp4" name="otp4" value="" maxlength="1">
+        <input type="text" id="otp5" name="otp5" value="" maxlength="1">
+        <input type="text" id="otp6" name="otp6" value="" maxlength="1">
     </div>
     <p id="resend-message">If you haven't received the OTP yet, you can request it again. <span id="timer"></span></p>
     <div class="backBtn verify">
         <span class="btnText">
-            <a href="{% url 'home' %}" id="resend-link" class="disabled-link" disabled>
+            <a href='javascript:;' id="resend-link" class="disabled-link" onclick='resendstartTimer()' style="pointer-events: none; ">
                 Resend OTP
             </a>
         </span>

@@ -1,6 +1,7 @@
 const inputs = document.querySelectorAll(".otp-card-inputs input");
 const button = document.querySelector('.otp-card button');
 
+
 inputs.forEach(input => {
   let lastInputStatus = 0;
 
@@ -37,14 +38,41 @@ var timerElement = document.getElementById('timer');
 var resendLink = document.getElementById('resend-link');
 var otpMessage = document.getElementById('otp-message');
 var resendMessage = document.getElementById('resend-message');
+var timerId;  // Moved outside to access globally
 
-var timerId = setInterval(countdown, 1000);
+function startTimer() {
+    // Reset timer values
+    timeLeft = 30;
+    resendLink.style.pointerEvents = 'none'
+    // Clear any existing interval
+    clearInterval(timerId);
+
+    // Start new timer
+    timerId = setInterval(countdown, 1000);
+}
+
+function resendstartTimer() {
+  // Reset timer values
+  timeLeft = 30;
+
+  resendMessage.innerHTML = "If you haven't received the OTP yet, you can request it again.<span id='timer'></span></p> "
+
+  // Get reference to the timer <span> after setting the innerHTML
+  timerElement = document.getElementById('timer');
+  
+  resendLink.style.pointerEvents = 'none'
+  // Clear any existing interval
+  clearInterval(timerId);
+
+  // Start new timer
+  timerId = setInterval(countdown, 1000);
+}
 
 function countdown() {
     if (timeLeft == -1) {
         clearTimeout(timerId);
-        resendLink.classList.remove('disabled-link');
-        resendLink.removeAttribute('disabled');
+        resendLink.style.pointerEvents = 'auto'
+        resendLink.style.cursor = 'pointer'
         resendLink.style.color = 'green'; 
         resendMessage.innerHTML = 'Click below to resend';
     } else {
@@ -59,6 +87,7 @@ let popup = document.getElementById('otp-popup');
 function openPopup(){
     popup.classList.add("open-popup");  
     overlay.style.display = 'block';
+    startTimer();  // Reset and start the timer whenever popup opens
 }
 
 function closePopup(){

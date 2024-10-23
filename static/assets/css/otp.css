@@ -139,7 +139,6 @@ body.dark-theme{
     border-radius: 5px;
     margin: 25px 0;
     transition: all 0.3s linear;
-    cursor: pointer;
     font-size: var(--h3-font-size);
     padding-left: 0px;
 
@@ -151,7 +150,6 @@ body.dark-theme{
 
 #verify-otp[disabled]{
     background-color: var(--first-color-alt);
-    cursor: not-allowed;
 }
 
 .backBtn{
@@ -174,10 +172,6 @@ body.dark-theme{
 
 .otp-card .backBtn.verify .btnText a{
     color: gray
-}
-
-.disabled-link {
-    cursor: not-allowed;
 }
 
 .open-popup{

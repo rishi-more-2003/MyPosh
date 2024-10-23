@@ -1715,18 +1715,28 @@ def register_establishment(request):
 @unauthenticated_user
 def register(request):
     if request.method == 'POST':
-        
-        if request.POST.get('email'):  # Check if it's the initial form submission
-            if 'otp' not in request.session: # If OTP is not in session, generate a new OTP and send it to user's email
-                otp = generate_otp()
-                email = request.POST.get('email')
-                send_verification_email(email, otp)
-                
-                # Save user data in session
-                request.session['otp'] = otp
+        if request.POST.get('type') ==  'email-otp': # Check if it's the initial form submission
+            otp = generate_otp()
+            email = request.POST.get('email')
+            send_verification_email(email, otp)
+            
+            # Save user data in session
+            request.session['otp'] = otp
+
+        if request.POST.get('type') ==  'phone-otp': 
+            # otp = generate_otp()
+            otp = '222222'
+            phone = request.POST.get('phone')
+            # send_verification_email(email, otp)
+            print(phone)
+            return JsonResponse({'status': 'success'})
+            
+            # Save user data in session
+            # request.session['otp'] = otp
 
         elif all(request.POST.get(field) for field in ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']):  # OTP verification
             user_otp = ''.join(request.POST.get(field) for field in ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6'])
+            # print(request.session.get('otp'), user_otp)
             if user_otp == request.session.get('otp'):
                 return JsonResponse({'status': 'success'})
             else:
@@ -1792,7 +1802,6 @@ def register(request):
             else:
                 return JsonResponse({'status': 'error'})
 
-            
     return render(request, 'register.html')
 
 @unauthenticated_user
