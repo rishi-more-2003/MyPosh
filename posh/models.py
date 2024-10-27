@@ -168,6 +168,7 @@ class EstablishmentUser(PoshUser):
     city = models.CharField(max_length=255, null=True, blank=True)
     pincode = models.CharField(max_length=16, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
+    is_complete = models.BooleanField(default=False)
     # locationCount = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):

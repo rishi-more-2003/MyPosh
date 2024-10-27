@@ -114,6 +114,12 @@
                                 <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
                             </div>
                             <ul class="dropdown__menu profile">
+                                {% if visible == True %}
+                                <li>  
+                                    <a data-target="#completeModal" data-toggle="modal" class="dropdown__link MainNavText"
+                                        href="#completeModal"> <span style="color: red">Complete Profile</span> </a>   
+                                </li>
+                                {% else %}
                                 <li>
                                     <a href="{% url 'establishment-profile' %}" class="dropdown__link">
                                         Profile
@@ -134,11 +140,13 @@
                                         Create Comittee
                                     </a> 
                                 </li> 
+                                {% endif %}
                                 <li>
-                                <a href="{% url 'logout'%}" class="dropdown__link">
-                                        Logout
-                                </a> 
+                                    <a href="{% url 'logout'%}" class="dropdown__link">
+                                            Logout
+                                    </a> 
                                 </li>
+
                     {% elif request.user|has_group:"NGO" %}
                         <li class="nav__item dropdown__item">
                             <div class="nav__link">            

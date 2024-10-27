@@ -41,6 +41,10 @@ def home(request):
         if hasattr(request.user, 'individualuser'):
             user = request.user.individualuser
             user_visible = user.is_visible
+        elif hasattr(request.user, 'establishmentuser'):
+            user = request.user.establishmentuser
+            print(user.is_complete)
+            user_visible = user.is_complete
 
     if request.method == "POST":
         contact_email = request.POST['contact-email']
