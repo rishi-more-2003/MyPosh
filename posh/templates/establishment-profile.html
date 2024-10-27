@@ -227,106 +227,14 @@
                                         <input type="tel" name='phone' class="form-control non-editable" value="{{ user.individualuser.phone }}" readonly>
                                     </div>
                                 </div>
-                                <div class="form-group"  id="longdescription">
+                                {% comment %} <div class="form-group"  id="longdescription">
                                     <label class="form-label">Aadhar Card</label>
                                     <input type="number" name='aadhar' class="form-control mb-1" value="{{ user.individualuser.aadhar }}" >
-                                </div>
+                                </div> {% endcomment %}
                                 <!-- Full Description -->
                                 <div class="form-group">
                                     <label for="longdescriptionInput">Description</label>
                                     <textarea id="longdescriptionInput" name="description" class="form-control" rows="5" placeholder="Describe yourself in up to 500 words">{{ user.individualuser.description }}</textarea>
-                                </div>
-
-                                {% comment %} <hr> {% endcomment %}
-
-                                <div class="form-group">
-                                    <label for="committeesInput" class="mr-2">Currently Member in How Many Establishment's Committees</label>
-                                    <!-- Currently Member in How Many Committees -->
-                                    <div class="input-field d-flex align-items-center">
-                                        <input type="number" id="comitteeCount" name="comitteeCount" class="form-control mr-2" placeholder="Enter count" value="{{ user.individualuser.current_member }}">
-                                        <button type="button" class="btn btn-primary" onclick="addCommitteeField()">Add UID</button>
-                                    </div>
-
-                                    <div id="education-section">
-                                        <ul id="education-list">
-                                            {% if comittee_uid_list %}
-                                            <ul>
-                                                {% for comittee in comittee_uid_list %}
-                                                <li class="d-flex justify-content-between align-items-center">
-                                                    {{ forloop.counter }}. {{ comittee.comittee_name }} (UID: {{ comittee.comittee_uid }})
-                                                    <a href="{% url 'comittee_uid' comittee.id %}" class="btn btn-danger btn-sm delete-button">
-                                                        Delete
-                                                    </a>
-                                                </li>
-                                                {% endfor %}
-                                            </ul>
-                                            {% endif %}
-                                        </ul>
-                                    </div>
-                                    
-
-                                    <!-- Generated Vendor/Contractor Details -->
-                                    <div id="committeesDetailsSection" class="details comittee-details">
-                                        <!-- The dynamically generated vendor details will be appended here -->
-                                    </div>
-                                </div>
-                                <hr>
-                                    
-                                    <!-- Currently Member in How Many Committees -->
-                                    <div class="form-group">
-                                        <div class="input-field d-flex justify-content-between align-items-center mb-2">
-                                            <label for="clientCount" class="mr-2">CURRENT TOP FIVE CLIENTS</label>
-                                            <div class="d-flex align-items-center">
-                                                <button type="button" class="btn btn-primary" onclick="addClientsField()">Add+</button>
-                                            </div>
-                                        </div>
-
-                                    <!-- Generated Vendor/Contractor Details -->
-                                    <div id="clientDetailsSection" class="details client-details">
-                                        <!-- The dynamically generated vendor details will be appended here -->
-                                    </div>
-                                </div>
-                                
-                                <div id="education-section">
-                                    <ul id="education-list">
-                                        {% if current_client_list %}
-                                        <ul>
-                                            {% for client in current_client_list %}
-                                            <li class="d-flex justify-content-between align-items-center">
-                                                {{ forloop.counter }}. Committee UID: {{ client.client_name }}
-                                                <a href="{% url 'client_name' client.id %}" class="btn btn-danger btn-sm delete-button">
-                                                    Delete
-                                                </a>
-                                            </li>
-                                            {% endfor %}
-                                        </ul>
-                                        {% endif %}
-                                    </ul>
-                                </div>
-
-                                <hr>
-                                
-                                <div class="form-group">
-
-                                <div class="input-field d-flex justify-content-between align-items-center mb-2">
-                                    <label>Associated with NGO/Consultancy Firm</label>
-                                    <select id="association" name="association" class="form-control">
-                                        <option value="" disabled {% if association != "yes" and association != "no" %}selected{% endif %}>Select</option>
-                                        <option value="yes" {% if association == "yes" %}selected{% endif %}>Yes</option>
-                                        <option value="no" {% if association == "no" %}selected{% endif %}>No</option>
-                                    </select>
-                                </div>
-                                
-                                    <!-- Section for Association Employer -->
-                                    <div id="associationSection" class="details association-section" style="display: {% if association == 'yes' %}block{% else %}none{% endif %};">
-                                        <span>
-                                            NGO/Consultancy Details
-                                        </span>
-                                        <div class="input-field d-flex justify-content-between align-items-center mb-2">
-                                            <input type="text" name="firmname" id="firmname" placeholder="Name of the Firm" class="form-control mr-2" value="{{ firm_name }}">
-                                            <input type="text" name="firmuid" id="firmuid" placeholder="Enter Firm UID" class="form-control mr-2" value="{{ firm_uid }}">
-                                        </div>
-                                    </div>
                                 </div>
 
                                 {% comment %} <hr> {% endcomment %}

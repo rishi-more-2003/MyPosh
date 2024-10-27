@@ -134,7 +134,9 @@ a{
 .main{
     overflow: hidden;
 }
-
+i.ri-menu-line{
+    margin-right: 20px;
+}
 /* HEADER */
 .header{
    width: 100%;
@@ -1238,7 +1240,7 @@ body.dark-theme{
     }
 
     ul.dropdown__menu.profile{
-        margin-left: 10px;
+        margin-left: -10px;
     }
 
 }

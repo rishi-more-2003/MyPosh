@@ -27,262 +27,261 @@
         <img src="{% static 'assets/img/ZNeT.gif' %}" alt="loader" class="load__gif" >
     </div>
 
-    <!-- HEADER -->
-    <header class="header" id="header">
-        <nav class="nav container">
-            <a href="{% url 'home' %}" class="nav__logo">
-                <i class="ri-pages-line nav__logo-icon"></i>MYPOSH
-            </a>
-            <!-- {% comment %} NAV-MENU {% endcomment %} -->
-            <div class="nav__menu" id="nav-menu">
-                <ul class="nav__list">
-                    <li class="nav__item">
-                        <a href="{% url 'home' %}#home" class="nav__link active-link">Home</a>
-                    </li>
-                    <li class="nav__item">
-                        <a href="{% url 'home' %}#about" class="nav__link">About</a>
-                    </li>
-                    <li class="nav__item">
-                        <a href="{% url 'home' %}#services" class="nav__link">Services</a>
-                    </li>
-                    <li class="nav__item">
-                        <a href="{% url 'home' %}#faqs" class="nav__link">FAQs</a>
-                    </li>
-                    <li class="nav__item">
-                        <a href="{% url 'home' %}#contact" class="nav__link">Contact Us</a>
-                    </li>
-                    {% if request.user.is_authenticated %}
-                    <li class="nav__item">
-                        <a href="{% url 'conversation:inbox' %}" class="nav__link login-btn">Inbox</a>
-                    </li>
-                    {% endif %}
-                    {% if request.user.is_authenticated %}
-                        {% load get_group %}
-                        {% if request.user|has_group:"IND" %} 
-                            <li class="nav__item dropdown__item">
-                                <div class="nav__link">            
-                                    {{request.user.individualuser.fname}} 
-                                    <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
-                                </div>
-                                <ul class="dropdown__menu profile">
-                                    <li>
-                                        <a href="{% url 'profile' %}" class="dropdown__link">
-                                            Profile
-                                        </a> 
-                                        
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'page' %}" class="dropdown__link">
-                                            Preview
-                                        </a> 
-                                        
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'all_establishment' %}" class="dropdown__link">
-                                            All Invites
-                                        </a> 
-                                    </li> 
-                                    <li>
-                                        <a href="{% url 'group:group' %}" class="dropdown__link">
-                                            Join Comittee
-                                        </a> 
-                                    </li> 
-                                    <li>
-                                        {% if visible == False %}
-                                        <a data-target="#myModal" data-toggle="modal" class="dropdown__link MainNavText" id="MainNavHelp" 
-                                            href="#myModal">Visibility: <span style="color: red">Off</span> </a>
-                                        {% else %}
-                                        <a data-target="#myModal" data-toggle="modal" class="dropdown__link MainNavText" id="MainNavHelp" 
-                                        href="#myModal">Visibility: <span style="color: green">On</span> </a>
-                                        {% endif %}
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'password_change' %}" class="dropdown__link">
-                                            Change Password
-                                        </a> 
-                                    </li> 
-                                    <li>
-                                    <a href="{% url 'logout'%}" class="dropdown__link">
-                                            Logout
-                                    </a> 
-                                    </li>
-                        
-                        {% elif request.user|has_group:"EST" %}
-                            <li class="nav__item dropdown__item">
-                                <div class="nav__link">   
-                                    {{request.user.individualuser.fname}}          
-                                    Establishment
-                                    <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
-                                </div>
-                                <ul class="dropdown__menu profile">
-                                    <li>
-                                        <a href="{% url 'profile' %}" class="dropdown__link">
-                                            Profile
-                                        </a> 
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'portal' %}" class="dropdown__link">
-                                            Portal
-                                        </a> 
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'all_invites' %}" class="dropdown__link">
-                                            All Invites
-                                        </a> 
-                                    </li> 
-                                    <li>
-                                        <a href="{% url 'group:group' %}" class="dropdown__link">
-                                            Create Comittee
-                                        </a> 
-                                    </li> 
-                                    <li>
-                                    <a href="{% url 'logout'%}" class="dropdown__link">
-                                            Logout
-                                    </a> 
-                                    </li>
-                        {% elif request.user|has_group:"NGO" %}
-                            <li class="nav__item dropdown__item">
-                                <div class="nav__link">            
-                                    {{ request.user.ngouser.ngo_name }}
-                                    <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
-                                </div>
-                                <ul class="dropdown__menu profile">
-                                    <li>
-                                        <a href="{% url 'ngo-profile' %}" class="dropdown__link">
-                                            Profile
-                                        </a> 
-                                    </li>
-                                    <li>
-                                    <a href="{% url 'logout'%}" class="dropdown__link">
-                                            Logout
-                                    </a> 
-                                    </li>                        
-                        {% elif request.user|has_group:"CON" %}
-                            <li class="nav__item dropdown__item">
-                                <div class="nav__link">            
-                                    {{request.user.consultancyuser.consultancy_name}}  
-                                    <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
-                                </div>
-                                <ul class="dropdown__menu profile">
-                                    <li>
-                                        <a href="{% url 'consult-profile' %}" class="dropdown__link">
-                                            Profile
-                                        </a> 
-                                    </li>
-                                    <li>
-                                    <a href="{% url 'logout'%}" class="dropdown__link">
-                                            Logout
-                                    </a> 
-                                    </li>
-                                {% endif %}
-                    {% else %}
-                    <!-- DROPDOWN Register-->
-
-                    <li class="nav__item dropdown__item">
-                        <div class="nav__link">
-                            Register
-                            <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
-                        </div>
-                        <ul class="dropdown__menu">
-                            <li>
-                               <a href="{% url 'register_establishment'%}" class="dropdown__link">
-                                    Establishment 
-                               </a> 
-                            </li>
-
-                             <!-- DROPDOWN SUBMENU -->
-
-                            <li class="dropdown__subitem">
-                                <div class="dropdown__link">
-                                    Posh Associate 
-                                    <i class="ri-arrow-right-s-line dropdrop__add"></i>
-                                </div> 
-
-                                <ul class="dropdown__submenu">
-                                    <li>
-                                       <a href="{% url 'register'%}" class="dropdown__sublink">
-                                            Individual
-                                       </a> 
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'register_ngo'%}" class="dropdown__sublink">
-                                             NGO
-                                        </a> 
-                                     </li>
-                                     <li>
-                                        <a href="{% url 'register_consultancy'%}" class="dropdown__sublink">
-                                             Posh Consultancy
-                                        </a> 
-                                     </li>
-                                </ul>
-                             </li>
-                        </ul>
-                    </li>
-
-                    <li class="nav__item">
-                        <a href="{% url 'login' %}" class="nav__link login-btn">Login</a>
-                    </li>
-
-                     <!-- DROPDOWN Login-->
-
-                   {% comment %} <li class="nav__item dropdown__item">
-                        <div class="nav__link">
-                            Login
-                            <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
-                        </div>
-                        <ul class="dropdown__menu">
-                            <li>
-                               <a href="#" class="dropdown__link">
-                                    Establishment 
-                               </a> 
-                            </li>
-                            <li>
-                                <a href="#" class="dropdown__link">
-                                    Employee 
-                                </a> 
-                             </li>
-
-                             <!-- DROPDOWN SUBMENU -->
-
-                            <li class="dropdown__subitem">
-                                <div class="dropdown__link">
-                                    Posh Associate
-                                    <i class="ri-arrow-right-s-line"></i>
-                                </div> 
-                                <ul class="dropdown__submenu">
-                                    <li>
-                                       <a href="{% url 'login'%}" class="dropdown__sublink">
-                                            Individual
-                                       </a> 
-                                    </li>
-                                    <li>
-                                        <a href="" class="dropdown__sublink">
-                                             NGO
-                                        </a> 
-                                     </li>
-                                     <li>
-                                        <a href="" class="dropdown__sublink">
-                                             Posh Consultancy
-                                        </a> 
-                                     </li>
-                                </ul>
-                             </li> 
-                        </ul>
-                    </li>
-                </ul> {% endcomment %}
-
+<!-- HEADER -->
+<header class="header" id="header">
+    <nav class="nav container">
+        <a href="{% url 'home' %}" class="nav__logo">
+            <i class="ri-pages-line nav__logo-icon"></i>MYPOSH
+        </a>
+        <!-- {% comment %} NAV-MENU {% endcomment %} -->
+        <div class="nav__menu" id="nav-menu">
+            <ul class="nav__list">
+                <li class="nav__item">
+                    <a href="{% url 'home' %}#home" class="nav__link active-link">Home</a>
+                </li>
+                <li class="nav__item">
+                    <a href="{% url 'home' %}#about" class="nav__link">About</a>
+                </li>
+                <li class="nav__item">
+                    <a href="{% url 'home' %}#services" class="nav__link">Services</a>
+                </li>
+                <li class="nav__item">
+                    <a href="{% url 'home' %}#faqs" class="nav__link">FAQs</a>
+                </li>
+                <li class="nav__item">
+                    <a href="{% url 'home' %}#contact" class="nav__link">Contact Us</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                <li class="nav__item">
+                    <a href="{% url 'conversation:inbox' %}" class="nav__link login-btn">Inbox</a>
+                </li>
                 {% endif %}
-                <div class="nav__close" id="nav-close">
-                    <i class="ri-close-line"></i>
-                </div>
-            </div>
+                {% if request.user.is_authenticated %}
+                    {% load get_group %}
+                    {% if request.user|has_group:"IND" %} 
+                        <li class="nav__item dropdown__item">
+                            <div class="nav__link">            
+                                {{request.user.individualuser.fname}} 
+                                <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                            </div>
+                            <ul class="dropdown__menu profile">
+                                <li>
+                                    <a href="{% url 'profile' %}" class="dropdown__link">
+                                        Profile
+                                    </a> 
+                                    
+                                </li>
+                                <li>
+                                    <a href="{% url 'page' %}" class="dropdown__link">
+                                        Preview
+                                    </a> 
+                                    
+                                </li>
+                                <li>
+                                    <a href="{% url 'all_establishment' %}" class="dropdown__link">
+                                        All Invites
+                                    </a> 
+                                </li> 
+                                <li>
+                                    <a href="{% url 'group:group' %}" class="dropdown__link">
+                                        Join Comittee
+                                    </a> 
+                                </li> 
+                                <li>
+                                    {% if visible == False %}
+                                    <a data-target="#myModal" data-toggle="modal" class="dropdown__link MainNavText" id="MainNavHelp" 
+                                        href="#myModal">Visibility: <span style="color: red">Off</span> </a>
+                                    {% else %}
+                                    <a data-target="#myModal" data-toggle="modal" class="dropdown__link MainNavText" id="MainNavHelp" 
+                                    href="#myModal">Visibility: <span style="color: green">On</span> </a>
+                                    {% endif %}
+                                </li>
+                                <li>
+                                    <a href="{% url 'password_change' %}" class="dropdown__link">
+                                        Change Password
+                                    </a> 
+                                </li> 
+                                <li>
+                                <a href="{% url 'logout'%}" class="dropdown__link">
+                                        Logout
+                                </a> 
+                                </li>
+                    
+                    {% elif request.user|has_group:"EST" %}
+                        <li class="nav__item dropdown__item">
+                            <div class="nav__link">   
+                                {{request.user.establishmentuser.name}}          
+                                <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                            </div>
+                            <ul class="dropdown__menu profile">
+                                <li>
+                                    <a href="{% url 'establishment-profile' %}" class="dropdown__link">
+                                        Profile
+                                    </a> 
+                                </li>
+                                <li>
+                                    <a href="{% url 'portal' %}" class="dropdown__link">
+                                        Portal
+                                    </a> 
+                                </li>
+                                <li>
+                                    <a href="{% url 'all_invites' %}" class="dropdown__link">
+                                        All Invites
+                                    </a> 
+                                </li> 
+                                <li>
+                                    <a href="{% url 'group:group' %}" class="dropdown__link">
+                                        Create Comittee
+                                    </a> 
+                                </li> 
+                                <li>
+                                <a href="{% url 'logout'%}" class="dropdown__link">
+                                        Logout
+                                </a> 
+                                </li>
+                    {% elif request.user|has_group:"NGO" %}
+                        <li class="nav__item dropdown__item">
+                            <div class="nav__link">            
+                                {{ request.user.ngouser.ngo_name }}
+                                <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                            </div>
+                            <ul class="dropdown__menu profile">
+                                <li>
+                                    <a href="{% url 'ngo-profile' %}" class="dropdown__link">
+                                        Profile
+                                    </a> 
+                                </li>
+                                <li>
+                                <a href="{% url 'logout'%}" class="dropdown__link">
+                                        Logout
+                                </a> 
+                                </li>                        
+                    {% elif request.user|has_group:"CON" %}
+                        <li class="nav__item dropdown__item">
+                            <div class="nav__link">            
+                                {{request.user.consultancyuser.consultancy_name}}  
+                                <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                            </div>
+                            <ul class="dropdown__menu profile">
+                                <li>
+                                    <a href="{% url 'consult-profile' %}" class="dropdown__link">
+                                        Profile
+                                    </a> 
+                                </li>
+                                <li>
+                                <a href="{% url 'logout'%}" class="dropdown__link">
+                                        Logout
+                                </a> 
+                                </li>
+                            {% endif %}
+                {% else %}
+                <!-- DROPDOWN Register-->
 
-            <div class="nav__btns">
-                <!-- Theme change button -->
-                {% comment %} <i class="ri-moon-line change-theme" id='theme-button'></i> {% endcomment %}
-                <div class="nav__toggle" id="nav-toggle">
-                    <i class="ri-menu-line"></i>
-                </div> 
-            </div>     
-        </nav>
-    </header>
+                <li class="nav__item dropdown__item">
+                    <div class="nav__link">
+                        Register
+                        <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                    </div>
+                    <ul class="dropdown__menu">
+                        <li>
+                           <a href="{% url 'register_establishment'%}" class="dropdown__link">
+                                Establishment 
+                           </a> 
+                        </li>
+
+                         <!-- DROPDOWN SUBMENU -->
+
+                        <li class="dropdown__subitem">
+                            <div class="dropdown__link">
+                                Posh Associate 
+                                <i class="ri-arrow-right-s-line dropdrop__add"></i>
+                            </div> 
+
+                            <ul class="dropdown__submenu">
+                                <li>
+                                   <a href="{% url 'register'%}" class="dropdown__sublink">
+                                        Individual
+                                   </a> 
+                                </li>
+                                <li>
+                                    <a href="{% url 'register_ngo'%}" class="dropdown__sublink">
+                                         NGO
+                                    </a> 
+                                 </li>
+                                 <li>
+                                    <a href="{% url 'register_consultancy'%}" class="dropdown__sublink">
+                                         Posh Consultancy
+                                    </a> 
+                                 </li>
+                            </ul>
+                         </li>
+                    </ul>
+                </li>
+
+                <li class="nav__item">
+                    <a href="{% url 'login' %}" class="nav__link login-btn">Login</a>
+                </li>
+
+                 <!-- DROPDOWN Login-->
+
+               {% comment %} <li class="nav__item dropdown__item">
+                    <div class="nav__link">
+                        Login
+                        <i class="ri-arrow-down-s-line dropdown__arrow-down"></i>
+                    </div>
+                    <ul class="dropdown__menu">
+                        <li>
+                           <a href="#" class="dropdown__link">
+                                Establishment 
+                           </a> 
+                        </li>
+                        <li>
+                            <a href="#" class="dropdown__link">
+                                Employee 
+                            </a> 
+                         </li>
+
+                         <!-- DROPDOWN SUBMENU -->
+
+                        <li class="dropdown__subitem">
+                            <div class="dropdown__link">
+                                Posh Associate
+                                <i class="ri-arrow-right-s-line"></i>
+                            </div> 
+                            <ul class="dropdown__submenu">
+                                <li>
+                                   <a href="{% url 'login'%}" class="dropdown__sublink">
+                                        Individual
+                                   </a> 
+                                </li>
+                                <li>
+                                    <a href="" class="dropdown__sublink">
+                                         NGO
+                                    </a> 
+                                 </li>
+                                 <li>
+                                    <a href="" class="dropdown__sublink">
+                                         Posh Consultancy
+                                    </a> 
+                                 </li>
+                            </ul>
+                         </li> 
+                    </ul>
+                </li>
+            </ul> {% endcomment %}
+
+            {% endif %}
+            <div class="nav__close" id="nav-close">
+                <i class="ri-close-line"></i>
+            </div>
+        </div>
+
+        <div class="nav__btns">
+            <!-- Theme change button -->
+            {% comment %} <i class="ri-moon-line change-theme" id='theme-button'></i> {% endcomment %}
+            <div class="nav__toggle" id="nav-toggle">
+                <i class="ri-menu-line"></i>
+            </div> 
+        </div>     
+    </nav>
+</header>

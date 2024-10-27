@@ -40,12 +40,21 @@ function addCommitteeField() {
 
         // Add the required fields for each committee
         comitteeDiv.innerHTML = `
-        <div class="fields" style="margin-top: 20px">
-            <label>Committee UID</label>
-            <div class="input-field d-flex align-items-center">
-                <input name='form-${currentCount}-comittee_uid' id="committee-${currentCount}-comittee_uid" class="form-control mr-2" placeholder="Enter UID if Committee is registered on MyPosh"></input>
-                <button type="button" class="btn btn-danger" onclick="removeCommitteeField(${currentCount})">Remove</button>
-            </div>
+        <div class="fields">
+            <div class="input-field d-flex align-items-center"">
+                <!-- Committee Name Column -->
+                <div class="col-md-5 form-group">
+                    <label class="form-label">Company Name</label>
+                    <input name='form-${currentCount}-comittee_name' id="committee-${currentCount}-comittee_name" class="form-control mr-2" placeholder="Enter Commpany Name"></input>
+                </div>
+        
+                <!-- Committee UID Column -->
+                <div class="col-md-5 form-group">
+                    <label class="form-label">Committee UID</label>
+                    <input name='form-${currentCount}-comittee_uid' id="committee-${currentCount}-comittee_uid" class="form-control mr-2" placeholder="Enter UID if Committee is registered on MyPosh"></input>
+                </div>
+                <button type="button" class="btn btn-danger mt-3" onclick="removeCommitteeField(${currentCount})">Remove</button>
+            </div>  
         </div>
     `;
 

@@ -152,6 +152,13 @@ body{
     flex-wrap: wrap;
 }
 
+form .fields .input-field1{
+    display: flex;
+    width: calc(100% / 2 - 15px);
+    flex-direction: column;
+    margin: 4px 0;
+}
+
 form .fields .input-field{
     display: flex;
     width: calc(100% / 3 - 15px);
@@ -165,6 +172,7 @@ form .fields .password-input-field{
 }
 
 .input-field label,
+.input-field1 label,
 .password-input-field label{
     font-size: 12px;
     font-weight: 500;
@@ -172,6 +180,7 @@ form .fields .password-input-field{
 }
 
 .input-field input,
+.input-field1 input,
 .password-input-field input,
 select{
     outline: none;
@@ -187,6 +196,8 @@ select{
 
 .input-field input:is(:focus),
 .input-field select:is(:focus),
+.input-field1 input:is(:focus),
+.input-field1 select:is(:focus),
 .password-input-field input:is(:focus){
     box-shadow: 0 3px 6px var(--first-color-alt);
 }
@@ -309,7 +320,8 @@ form .buttons button, .backBtn{
         display: none;
     }
 
-    form .fields .input-field{
+    form .fields .input-field,
+    form .fields .input-field1{
         width: calc(100% / 2 - 15%);
     }    
 
@@ -322,7 +334,8 @@ form .buttons button, .backBtn{
 
 @media screen and (max-width: 600px){
 
-    form .fields .input-field{
+    form .fields .input-field,
+    form .fields .input-field1{
         width: 100%;
     }
 

@@ -78,6 +78,7 @@ function countdown() {
     } else {
         timerElement.innerHTML = ' (' + timeLeft + 's)';
         timeLeft--;
+        resendLink.style.color = 'gray'; 
     }
 }
 

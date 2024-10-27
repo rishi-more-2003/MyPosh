@@ -111,6 +111,7 @@ class IndividualUser(PoshUser):
     
 class ComitteeCount(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comitteecount')
+    comittee_name = models.CharField(max_length=150, blank=True)
     comittee_uid = models.CharField(max_length=15, blank=True)
 
 class CurrentClient(models.Model):
@@ -162,11 +163,12 @@ class EstablishmentUser(PoshUser):
     name = models.CharField(max_length=255, null=True, blank=True)
     setdate = models.DateField(null=True, blank=True)
     nature = models.CharField(max_length=255, null=True, blank=True)
+    structure = models.CharField(max_length=255, null=True, blank=True)
     state = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)
     pincode = models.CharField(max_length=16, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
-    locationCount = models.PositiveIntegerField(null=True, blank=True)
+    # locationCount = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.username

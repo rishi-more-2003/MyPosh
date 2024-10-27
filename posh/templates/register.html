@@ -337,6 +337,12 @@ $(document).on('click', "#verify-otp", function(e){
             // closePopup()
         },
         complete: function() {
+            $('#otp1').val('');  // Use assignment operator '='
+            $('#otp2').val('');
+            $('#otp3').val('');
+            $('#otp4').val('');
+            $('#otp5').val('');
+            $('#otp6').val('');
             // Re-enable the button after the AJAX request is complete
             $("#verify-otp").prop('disabled', false);
         }
