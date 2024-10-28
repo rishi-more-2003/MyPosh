@@ -3,7 +3,7 @@ from posh.models import RecruitUser
 from django.conf import settings
 
 class Conversation(models.Model):
-    est = models.ForeignKey(RecruitUser, related_name='conversations', on_delete=models.CASCADE)
+    est = models.ForeignKey(RecruitUser, related_name='conversations', on_delete=models.CASCADE, null=True, blank=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='conversations')
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
