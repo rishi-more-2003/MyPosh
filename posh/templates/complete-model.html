@@ -1,23 +1,22 @@
-{% if visible == False %}
-    <div id="completeModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Complete Profile</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p>We would require some additional information about your establishment before we proceed.</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="{% url 'establishment-profile' %}">
-                        <button type="button" class="btn btn-primary">Complete</button>
-                    </a> 
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Remind me Later</button>
-                </div>
+
+<div id="completeModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Complete Profile</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>We would require some additional information about your establishment before we proceed.</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'multistep_form' %}">
+                    <button type="button" class="btn btn-primary">Complete</button>
+                </a> 
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Remind me Later</button>
             </div>
         </div>
     </div>
-{% endif %}
+</div>
 

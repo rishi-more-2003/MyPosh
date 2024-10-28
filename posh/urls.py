@@ -9,6 +9,7 @@ urlpatterns = [
 
     path('page/', views.page, name='page'),
     path('visibility/', views.visibility, name='visibility'),
+    path('info/', views.multistep_form, name='multistep_form'),
 
     path('register/', views.register, name="register"),
     path('register/ngo/', views.register_ngo, name="register_ngo"),

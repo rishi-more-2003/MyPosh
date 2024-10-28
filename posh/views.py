@@ -2139,6 +2139,101 @@ def all_establishment(request):
 
 def establishment_profile(request):
     context ={
-
     }
     return render(request, 'establishment-profile.html', context)
+
+def multistep_form(request):
+    user = request.user.establishmentuser
+    # if request.method == 'POST':
+    #     # Handle form submission for updating profile data
+    #     user.email = request.POST.get('email')
+    #     user.phone = request.POST.get('phone')
+    #     user.prefix = request.POST.get('prefix')
+    #     user.fname = request.POST.get('fname')
+    #     user.mname = request.POST.get('mname')
+    #     user.lname = request.POST.get('lname')
+    #     user.state = request.POST.get('state', user.state)
+    #     user.city = request.POST.get('city', user.city)
+    #     user.pincode = request.POST.get('pincode')
+    #     user.dob = request.POST.get('dob')
+    #     user.gender = request.POST.get('gender')
+    #     user.occupation = request.POST.get('occupation')
+
+    #     user.aadhar = request.POST.get('aadhar', '')
+    #     user.marital = request.POST.get('marital', '')
+    #     user.description = request.POST.get('description', '')
+    #     user.current_member = request.POST.get('comitteeCount', '')
+    #     user.association = request.POST.get('association', '')
+
+    #     user.firm_name = request.POST.get('firmname', '')
+    #     user.firm_uid = request.POST.get('firmuid', '')
+
+
+    #     # Handle profile picture reset
+    #     if request.POST.get('reset_profile_pic') == '1':
+    #         user.profile_pic.delete(save=False)  # This deletes the old image file
+    #         user.profile_pic = None  # Set to None to use the default image
+
+    #     # Handle profile picture upload
+    #     elif 'profile_pic' in request.FILES:
+    #         user.profile_pic = request.FILES['profile_pic']
+
+    #     user.save()
+
+    #     if user.current_member:
+    #         # Handle the Committee Count forms
+    #         CommitteeCountFormSet = formset_factory(ComitteeCountForm, extra=int(user.current_member))
+    #         committee_count_formset = CommitteeCountFormSet(request.POST)
+
+    #         if committee_count_formset.is_valid():
+    #             for form in committee_count_formset:
+    #                 if form.cleaned_data:  # Ensure the form is not empty
+    #                     ComitteeCount.objects.create(
+    #                         user=user,
+    #                         comittee_uid=form.cleaned_data.get('comittee_uid'),
+    #                         comittee_name=form.cleaned_data.get('comittee_name'),
+    #                     )
+
+    #     # Handle the Current Client forms
+    #     CurrentClientFormSet = formset_factory(CurrentClientForm, extra=5)
+    #     current_client_formset = CurrentClientFormSet(request.POST)
+
+    #     if current_client_formset.is_valid():
+    #         for form in current_client_formset:
+    #             if form.cleaned_data:  # Ensure the form is not empty
+    #                 CurrentClient.objects.create(
+    #                     user=user,
+    #                     client_name=form.cleaned_data.get('client_name'),
+    #                 )
+
+    #     messages.success(request, 'Profile updated successfully.')
+
+    #     return redirect('profile')  # Redirect to the profile page to display updated data
+
+    # If the request method is GET, display the profile form with current user data
+    name = user.name
+    setdate = user.setdate
+    nature = user.nature
+    structure = user.structure
+    state = user.state
+    city = user.city
+    pincode = user.pincode
+    address = user.address
+  
+    email = user.email
+    phone = user.phone
+
+    context = {
+        'email': email,
+        'phone': phone,
+        'name': name,
+        'state': state,
+        'city': city,
+        'pincode': pincode,
+        'setdate': setdate,
+        'nature': nature,
+        'structure': structure,
+        'address': address,
+        'uid': request.user.username,
+    }
+    return render(request, 'multi-step-form.html', context)
