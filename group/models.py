@@ -12,16 +12,16 @@ class Groups(models.Model):
         return self.group_name
 
 class Employee(models.Model):
-    employee_id = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
-    group_id = models.ForeignKey(Groups, on_delete=models.CASCADE)
+    employee_id = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE, null=True, blank=True)
+    group_id = models.ForeignKey(Groups, on_delete=models.CASCADE, null=True, blank=True)
 
 class Enterprise(models.Model):
-    enterprise_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    group_id = models.ForeignKey(Groups, on_delete=models.CASCADE)
+    enterprise_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    group_id = models.ForeignKey(Groups, on_delete=models.CASCADE, null=True, blank=True)
 
 class Notice(models.Model):
     notice_name = models.CharField(max_length=50)
-    group_id = models.ForeignKey(Groups,on_delete=models.CASCADE)
+    group_id = models.ForeignKey(Groups,on_delete=models.CASCADE, null=True, blank=True)
     due_date = models.DateField()
     due_time = models.TimeField(default=datetime.time(10,10))
     posted_date = models.DateField(auto_now_add=True)
@@ -31,8 +31,8 @@ class Notice(models.Model):
         return self.notice_name
 
 class Submissions(models.Model):
-    notice_id = models.ForeignKey(Notice,on_delete=models.CASCADE)
-    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    notice_id = models.ForeignKey(Notice,on_delete=models.CASCADE, null=True, blank=True)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True)
     submitted_date=models.DateField(auto_now_add=True)
     submitted_time=models.TimeField(auto_now_add=True)
     submitted_on_time = models.BooleanField(default=True)
