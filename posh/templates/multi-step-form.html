@@ -8,7 +8,7 @@
         
         <!-- FAVICON -->
         <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
-    
+        <script src="{% static 'assets/js/cities.js' %}"></script>
         <!-- ICONS -->
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
         <!-- CSS -->
@@ -29,7 +29,7 @@
                     <div class="steps-content">
                         <h3>Step <span class="step-number">1</span></h3>
                         <p class="step-number-content active">Verify your establishment information to get closer to complete registration.</p>
-                        <p class="step-number-content d-none">Get to know better by adding your diploma,certificate and education life.</p>
+                        <p class="step-number-content d-none">Get to know better by adding your establishment's location details.</p>
                         <p class="step-number-content d-none">Help companies get to know you better by telling then about your past experiences.</p>
                         <p class="step-number-content d-none">Add your profile piccture and let companies find youy fast.</p>
                     </div>
@@ -75,70 +75,63 @@
                         <div class="input-text">
                             <div class="input-div">
                                 <select>
-                                    <option value="married" {% if user.establishmentuser.nature == "married" %} selected {% endif %}>Married</option>
-                                    <option value="unmarried" {% if user.establishmentuser.nature == "unmarried" %} selected {% endif %}>Unmarried</option>
-                                    <option value="others" {% if user.establishmentuser.nature == "others" %} selected {% endif %}>Others</option>
+                                    <option value="principal" {% if user.establishmentuser.nature == "principal" %} selected {% endif %}>Principal Employer</option>
+                                    <option value="vendor" {% if user.establishmentuser.nature == "vendor" %} selected {% endif %}>Vendor</option>
+                                    <option value="both" {% if user.establishmentuser.nature == "both" %} selected {% endif %}>Both</option>
                                 </select>
                                 <span id='readonly-nature'>Nature of Establishment</span>
                             </div>
                             <div class="input-div">
-                                
                                 <select>
-                                    <option>Select City</option>
-                                    <option>New Delhi</option>
-                                    <option>Paris</option>
-                                    <option>London</option>
-                                    <option>Washington D.C.</option>
-                                    <option>Berlin</option>
-                                    <option>Moscow</option>
-                                    <option>Bejing</option>
-                                    <option>Tokyo</option>
-                                    <option>Islamabad</option>
+                                    <option value="single" {% if user.establishmentuser.nature == "single" %} selected {% endif %}>Single Location</option>
+                                    <option value="multi" {% if user.establishmentuser.nature == "multi" %} selected {% endif %}>Multi Location</option>
                                 </select>
+                                <span id='readonly-structure'>Structure of Establishment</span>
+                            </div>
+                        </div>
+                        <div class="input-text">
+                            <div class="input-div">
+                                <select name='state' onchange="print_selected_city('city', this.selectedIndex, '{{ user.establishmentuser.city }}');" id="states" class="form-control">
+                                </select>
+                                <span id='readonly-state'>State</span>
+                            </div>
+                            <div class="input-div">
+                                <select name='city' id ="city" class="form-control" disabled>
+                                    <option value="state" {% if user.establishmentuser.city == "{{ user.establishmentuser.city }}" %} selected {% endif %}>{{ user.establishmentuser.city }}</option>
+                                </select>
+                                <script language="javascript">print_selected_state("states", '{{ user.establishmentuser.state }}');</script>
+                                <span id='readonly-city'>City</span>
+                            </div>
+                            <div class="input-div">
+                                <input type="number" required require id="pincode" value="{{ user.establishmentuser.pincode }}">
+                                <span>Pincode</span>
+                            </div>
+                        </div>
+                        <div class="input-text">
+                            <div class="input-div">
+                                <input type="textarea" wrap="hard" required require id="address" value="{{ user.establishmentuser.address }}">
+                                <span>Address</span>
                             </div>
                         </div>
                         <div class="buttons">
                             <button class="next_button">Next Step</button>
                         </div>
                     </div>
+
+                    {% comment %} STEP-2 {% endcomment %}
                     <div class="main">
                         <small><i class="fa fa-smile-o"></i></small>
                         <div class="text">
-                            <h2>Education</h2>
-                            <p>Inform companies about your education life.</p>
+                            <h2>Location Details</h2>
+                            <p>Inform us about your different locations.</p>
                         </div>
                         <div class="input-text">
                             <div class="input-div">
-                                <input type="text" required require>
-                                <span>School Name</span>
-                            </div>
-                            <div class="input-div"> 
-                                <input type="text" required>
-                                <span>Board Name</span>
+                                <input type="number" required require>
+                                <span>Count of Locations</span>
                             </div>
                         </div>
-                        <div class="input-text">
-                            <div class="input-div">
-                                <input type="text" required require>
-                                <span>College/University name</span>
-                            </div>
-                        </div>
-                        <div class="input-text">
-                            <div class="input-div">
-                                <select>
-                                    <option>Select Course</option>
-                                    <option>BCA</option>
-                                    <option>B-TECH</option>
-                                    <option>BA</option>
-                                    <option>B-COM</option>
-                                    <option>B-SC</option>
-                                    <option>MBA</option>
-                                    <option>MCA</option>
-                                    <option>M-COM</option>
-                                    <option>M-TECH</option>
-                                </select>
-                            </div>
-                        </div>
+
                         <div class="buttons button_space">
                             <button class="back_button">Back</button>
                             <button class="next_button">Next Step</button>
