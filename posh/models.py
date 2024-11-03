@@ -237,3 +237,14 @@ class RecruitUser(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_id')
     timestamp = models.DateTimeField(auto_now_add=True)
     status= models.CharField(max_length=20, choices=status_choices)
+
+
+class Location(models.Model):
+    est_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=100,null=True, blank=True)
+    address = models.CharField(max_length=255,null=True, blank=True)
+    choiceOfDirect = models.CharField(max_length=15,null=True, blank=True)
+    noOFDirect = models.PositiveIntegerField(null=True, blank=True)
+    choiceOfVendor = models.CharField(max_length=15,null=True, blank=True)
+    noOFVendor = models.PositiveIntegerField(null=True, blank=True)
+    totalno = models.PositiveIntegerField(null=True, blank=True)

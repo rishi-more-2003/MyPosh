@@ -6,8 +6,8 @@ from django.contrib import messages
 from .models import (IndividualUser, Education, NGOUser, PoshUser, ConsultancyUser, EstablishmentUser, 
                      EstablishmentLocation, PrincipalEmployer, Vendor, PEDetails, VendorDetails,
                      ComitteeCount, CurrentClient, Service, Skill, Certification, Document, Experience, EmployeeCount, 
-                     RecruitUser)
-
+                     RecruitUser, Location)
+import pandas as pd
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -23,13 +23,15 @@ import datetime
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from .decorators import unauthenticated_user, allowed_users
-from .forms import EstablishmentLocationForm, PEDetailsForm, VendorDetailsForm, CurrentClientForm, ComitteeCountForm, MemberCountForm
+from .forms import EstablishmentLocationForm, PEDetailsForm, VendorDetailsForm, CurrentClientForm, ComitteeCountForm, MemberCountForm, LocationForm
 from django.forms import formset_factory
 from .models import Document
 from .filter import IndividualUserFilter, NGOUserFilter, ConsultancyUserFilter
 from django.core.paginator import Paginator
 from itertools import chain
 from conversation.models import Conversation
+import json
+import os
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
@@ -43,7 +45,7 @@ def home(request):
             user_visible = user.is_visible
         elif hasattr(request.user, 'establishmentuser'):
             user = request.user.establishmentuser
-            print(user.is_complete)
+            # print(user.is_complete)
             user_visible = user.is_complete
 
     if request.method == "POST":
@@ -2144,71 +2146,27 @@ def establishment_profile(request):
 
 def multistep_form(request):
     user = request.user.establishmentuser
-    # if request.method == 'POST':
-    #     # Handle form submission for updating profile data
-    #     user.email = request.POST.get('email')
-    #     user.phone = request.POST.get('phone')
-    #     user.prefix = request.POST.get('prefix')
-    #     user.fname = request.POST.get('fname')
-    #     user.mname = request.POST.get('mname')
-    #     user.lname = request.POST.get('lname')
-    #     user.state = request.POST.get('state', user.state)
-    #     user.city = request.POST.get('city', user.city)
-    #     user.pincode = request.POST.get('pincode')
-    #     user.dob = request.POST.get('dob')
-    #     user.gender = request.POST.get('gender')
-    #     user.occupation = request.POST.get('occupation')
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        table_data = data.get("tableData", [])
 
-    #     user.aadhar = request.POST.get('aadhar', '')
-    #     user.marital = request.POST.get('marital', '')
-    #     user.description = request.POST.get('description', '')
-    #     user.current_member = request.POST.get('comitteeCount', '')
-    #     user.association = request.POST.get('association', '')
+        # Iterate through each row and insert it into the database
+        for row in table_data:
+            location = Location.objects.create(
+                est_id = user,
+                name = row.get('location'),
+                address = row.get('address'),
+                choiceOfDirect = row.get('direct'),
+                noOFDirect = 0 if row.get('noOfDirect') == '' else row.get('noOfDirect'),
+                choiceOfVendor = row.get('vendor'),
+                noOFVendor = 0 if row.get('noOfVendor') == '' else row.get('noOfVendor'),
+                totalno = row.get('total'),
+            )
+            location.save()
 
-    #     user.firm_name = request.POST.get('firmname', '')
-    #     user.firm_uid = request.POST.get('firmuid', '')
-
-
-    #     # Handle profile picture reset
-    #     if request.POST.get('reset_profile_pic') == '1':
-    #         user.profile_pic.delete(save=False)  # This deletes the old image file
-    #         user.profile_pic = None  # Set to None to use the default image
-
-    #     # Handle profile picture upload
-    #     elif 'profile_pic' in request.FILES:
-    #         user.profile_pic = request.FILES['profile_pic']
-
-    #     user.save()
-
-    #     if user.current_member:
-    #         # Handle the Committee Count forms
-    #         CommitteeCountFormSet = formset_factory(ComitteeCountForm, extra=int(user.current_member))
-    #         committee_count_formset = CommitteeCountFormSet(request.POST)
-
-    #         if committee_count_formset.is_valid():
-    #             for form in committee_count_formset:
-    #                 if form.cleaned_data:  # Ensure the form is not empty
-    #                     ComitteeCount.objects.create(
-    #                         user=user,
-    #                         comittee_uid=form.cleaned_data.get('comittee_uid'),
-    #                         comittee_name=form.cleaned_data.get('comittee_name'),
-    #                     )
-
-    #     # Handle the Current Client forms
-    #     CurrentClientFormSet = formset_factory(CurrentClientForm, extra=5)
-    #     current_client_formset = CurrentClientFormSet(request.POST)
-
-    #     if current_client_formset.is_valid():
-    #         for form in current_client_formset:
-    #             if form.cleaned_data:  # Ensure the form is not empty
-    #                 CurrentClient.objects.create(
-    #                     user=user,
-    #                     client_name=form.cleaned_data.get('client_name'),
-    #                 )
-
-    #     messages.success(request, 'Profile updated successfully.')
-
-    #     return redirect('profile')  # Redirect to the profile page to display updated data
+        user.is_complete = True
+        user.save()
+        return JsonResponse({"status": "success"})
 
     # If the request method is GET, display the profile form with current user data
     name = user.name
@@ -2237,3 +2195,78 @@ def multistep_form(request):
         'uid': request.user.username,
     }
     return render(request, 'multi-step-form.html', context)
+
+
+#Add Location 
+def addnew(request):
+    if request.method == "POST":
+        form = LocationForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                return redirect('/info/?step=2')  
+            except:
+                pass
+    else:
+        form = LocationForm()
+    
+    return render(request, 'multi-step-form.html', {'form': form})
+
+
+def download_sample_file(request):
+    # Path to the Excel file in the static directory
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/MyPosh.xlsx')
+    
+    # Open and serve the file
+    with open(file_path, 'rb') as file:
+        response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response["Content-Disposition"] = 'attachment; filename="MyPosh.xlsx"'
+        return response
+    
+def upload_csv(request):
+    user = request.user.establishmentuser
+    if request.method == 'POST' and request.FILES['file']:
+        file = request.FILES['file']
+        
+        # Process the file based on its extension
+        try:
+            # Read the file into a DataFrame
+            if file.name.endswith('.csv'):
+                df = pd.read_csv(file)  # Read CSV file
+            elif file.name.endswith('.xlsx'):
+                df = pd.read_excel(file)  # Read XLSX file
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Unsupported file format'})
+
+            # Clean up non-breaking spaces and replace NaN values
+            df = df.map(lambda x: str(x).replace('\xa0', ' ') if isinstance(x, str) else x)
+            df = df.fillna("")  # Replace NaN with empty strings
+
+            # Process the DataFrame (for example, print it or save to the database)
+            for index, row in df.iterrows():
+                # Convert the row to a dictionary for easier handling
+                row_data = row.to_dict()
+
+                # Create a new Location object with data from the current row
+                location = Location.objects.create(
+                    est_id=user,  # Set your user or establishment ID here
+                    name=row_data.get('Location Name', '').strip(),  # Default to empty string if not present
+                    address=row_data.get('Address', '').strip(),
+                    choiceOfDirect=row_data.get('Direct Employees', '').strip(),
+                    noOFDirect=0 if row_data.get('No. of Direct Employees') in [None, ''] else row_data.get('No. of Direct Employees'),
+                    choiceOfVendor=row_data.get('Vendor', '').strip(),
+                    noOFVendor=0 if row_data.get('No. of Vendors') in [None, ''] else row_data.get('No. of Vendors'),
+                    totalno=row_data.get('Total No. of Employees', 0),  # Default to 0 if not present
+                )
+
+                # Save the location instance to the database
+                location.save()
+
+            user.is_complete = True
+            user.save()
+            
+            return JsonResponse({'status': 'success', 'message': 'File uploaded successfully'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})

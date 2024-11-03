@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+        <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
         <!-- FAVICON -->
         <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
         <script src="{% static 'assets/js/cities.js' %}"></script>
@@ -15,7 +15,12 @@
         {% comment %} <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> {% endcomment %}
         {% comment %} <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet"> {% endcomment %}
         <link rel="stylesheet" href="{% static 'assets/css/multistep.css' %}">
-        {% comment %} <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> {% endcomment %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+        <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
         <title>MYPOSH</title>
     </head>
 <body>
@@ -28,20 +33,20 @@
                     </div>
                     <div class="steps-content">
                         <h3>Step <span class="step-number">1</span></h3>
-                        <p class="step-number-content active">Verify your establishment information to get closer to complete registration.</p>
-                        <p class="step-number-content d-none">Get to know better by adding your establishment's location details.</p>
-                        <p class="step-number-content d-none">Help companies get to know you better by telling then about your past experiences.</p>
-                        <p class="step-number-content d-none">Add your profile piccture and let companies find youy fast.</p>
+                        <p class="step-number-content" data-step="1">Verify your establishment information to get closer to complete registration.</p>
+                        <p class="step-number-content d-none" data-step="2">Get to know better by adding your establishment's location details.</p>
+                        {% comment %} <p class="step-number-content d-none" data-step="3">Help companies get to know you better by telling then about your past experiences.</p> {% endcomment %}
+                        {% comment %} <p class="step-number-content d-none" data-step="4">Add your profile piccture and let companies find youy fast.</p> {% endcomment %}
                     </div>
                     <ul class="progress-bar">
-                        <li class="active">Establishment Information</li>
-                        <li>Location Details</li>
-                        <li>Vendor Details</li>
-                        <li>Employee Details</li>
-                    </ul>                
+                        <li class="progress-item" data-step="1">Establishment Information</li>
+                        <li class="progress-item" data-step="2">Location Details</li>
+                        {% comment %} <li class="progress-item" data-step="3">Vendor Details</li> {% endcomment %}
+                        {% comment %} <li class="progress-item" data-step="4">Employee Details</li> {% endcomment %}
+                    </ul>                 
                 </div>
                 <div class="right-side">
-                    <div class="main active">
+                    <div class="main" data-step="1">
                         <div class="text">
                             <h2>Your Establishment Information</h2>
                             <p>Please verify the details provided to us during registration</p>
@@ -119,25 +124,75 @@
                     </div>
 
                     {% comment %} STEP-2 {% endcomment %}
-                    <div class="main">
-                        <small><i class="fa fa-smile-o"></i></small>
+                    <div class="main" data-step="2">
                         <div class="text">
                             <h2>Location Details</h2>
                             <p>Inform us about your different locations.</p>
                         </div>
                         <div class="input-text">
                             <div class="input-div">
-                                <input type="number" required require>
+                                <input type="number" id='countloc' required require> 
                                 <span>Count of Locations</span>
                             </div>
+                            <button id="optionBtn" class="add_button" onclick="checkInput()">Add</button>
                         </div>
 
                         <div class="buttons button_space">
                             <button class="back_button">Back</button>
-                            <button class="next_button">Next Step</button>
+                            {% comment %} <button class="next_button">Submit</button> {% endcomment %}
                         </div>
                     </div>
-                    <div class="main">
+
+                    <!-- Completed Modal for Option -->
+                    <div id="optionModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h2>Select an option </h2>
+                            <div class="option_space">
+                                <button class="opt_button" id="manualBtn">Manually</button>
+                                <button class="opt_button" id='excelBtn'>Excel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% comment %} Modal for Manually {% endcomment %}
+                    <div id="manualModal" class="modal">
+                        <div class="modal-content"  id="manual">
+                            <span class="close-loc">&times;</span>
+                            <div class="location_space">
+                                <h2>Location Records</h2>
+                                <div class="buttons">
+                                    <button class="save_button" id="manual-submission">Submit</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                        
+                            {% include 'manual.html' %}
+
+                        </div>
+                    </div>
+
+                    <!-- Modal for Upload -->
+                    <div id="excelModal" class="modal">
+                        <div class="modal-content" id="excel">
+                            <span class="close-excel">&times;</span>
+                            <h2>Upload File</h2>
+                            <div class="upload-area" id="uploadArea">
+                                <p>Drag & Drop a file here or click to upload</p>
+                                <input type="file" id="fileInput" accept=".csv, .xlsx" hidden>
+                            </div>
+                            <button class="download-button button-secondary">Download Sample File</button>
+                            <button class="upload-button button-secondary" id="uploadButton">Submit</button>
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                            <div class="preview-container" id="previewContainer">
+                                <h3>Preview:</h3><input type="text" id="mytext" disabled>
+                                <table id="filePreview"></table>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% comment %} STEP - 3 {% endcomment %}
+                    {% comment %} <div class="main" data-step="3">
                         <small><i class="fa fa-smile-o"></i></small>
                         <div class="text">
                             <h2>Work Experiences</h2>
@@ -177,8 +232,10 @@
                             <button class="back_button">Back</button>
                             <button class="next_button">Next Step</button>
                         </div>
-                    </div>
-                    <div class="main">
+                    </div> {% endcomment %}
+
+                    {% comment %} STEP - 4 {% endcomment %}
+                    {% comment %} <div class="main" data-step="4">
                         <small><i class="fa fa-smile-o"></i></small>
                         <div class="text">
                             <h2>User Photo</h2>
@@ -218,16 +275,91 @@
                             <h2>Congratulations!</h2>
                             <p>Thanks Mr./Mrs. <span class="shown_name"></span> your information have been submitted successfully for the future reference we will contact you soon.</p>
                         </div>
-                    </div>
+                    </div> {% endcomment %}
                 </div>
             </div>
         </div>
     </div>
 <!-- SCROLL REVEAL -->
 <script src="{% static 'assets/js/scrollreveal.min.js' %}"></script>
-
 <!-- MAIN JS -->
 <script src="{% static 'assets/js/multistep.js' %}"></script>
+<script>
+    $('#manual-submission').on('click', function(event) {
+        event.preventDefault();
+    
+        const tableData = collectTableData();
+        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();  // Correct CSRF token selector
+    
+        // Send AJAX POST request to update certification details
+        $.ajax({
+            url: '/info/',  // Use your endpoint URL here
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken   // Correct CSRF header
+            },
+            contentType: 'application/json',  // Set content type for JSON data
+            data: JSON.stringify({ tableData: tableData }),
+            success: function(response) {
+                // Handle success (e.g., close modal, show success message)
+                const manualModal = document.getElementById("manualModal");
+                manualModal.style.display = "none";
+                // location.reload();  // Reload the page to see the changes
+                if(response['status'] === 'success'){
+                    window.location = '/';
+                }
+            },
+            error: function(xhr, errmsg, err) {
+                // Handle error (e.g., show error message)
+                console.log("Error:", errmsg);
+            }
+        });
+    });
+    $(document).ready(function() {
+        $('#uploadButton').on('click', function(event) {
+            event.preventDefault();
+            
+            // Get the selected file
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0]; // Get the first file
+            const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
+            
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file); // Append the file to FormData
+    
+                // Send AJAX POST request to upload the CSV file
+                $.ajax({
+                    url: '/upload-csv/', // Your Django URL for handling the file upload
+                    type: 'POST',
+                    processData: false, // Prevent jQuery from automatically processing the data
+                    contentType: false, // Set content type to false to let jQuery set it
+                    headers: {
+                        'X-CSRFToken': csrfToken  // Get CSRF token from cookies
+                    },
+                    data: formData,
+                    success: function(response) {
+                        console.log('File uploaded successfully:', response);
+                        const excelModal = document.getElementById("excelModal");
+                        excelModal.style.display = "none";
+                        if(response['status'] === 'success'){
+                            window.location = '/';
+                        }
+                        // Handle success (e.g., close modal, show success message)
+                    },
+                    error: function(xhr, errmsg, err) {
+                        console.error('Error uploading file:', errmsg);
+                        // Handle error (e.g., show error message)
+                    }
+                });
+            }
+        });
+    });
+    
+    
+</script>
+<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
