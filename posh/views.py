@@ -32,6 +32,7 @@ from itertools import chain
 from conversation.models import Conversation
 import json
 import os
+from django.core.paginator import Paginator
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
@@ -2140,7 +2141,38 @@ def all_establishment(request):
 
 
 def establishment_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        # Handle form submission for updating profile data
+        user.establishmentuser.name = request.POST.get('name')
+        user.establishmentuser.setdate = request.POST.get('setdate')
+        user.establishmentuser.nature = request.POST.get('nature')
+        user.establishmentuser.structure = request.POST.get('structure')
+        user.establishmentuser.state = request.POST.get('state', user.establishmentuser.state)
+        user.establishmentuser.city = request.POST.get('city', user.establishmentuser.city)
+        user.establishmentuser.pincode = request.POST.get('pincode')
+        user.establishmentuser.address = request.POST.get('address', '')
+        
+        user.establishmentuser.save()
+
+    setdate = user.establishmentuser.setdate
+    user = get_object_or_404(EstablishmentUser, username = request.user)
+    locationList = Location.objects.filter(est_id = user) 
+    paginator = Paginator(locationList, 10)
+    page_number = request.GET.get('page', 1)
+    locationPage = paginator.get_page(page_number)
+    totalPage = locationPage.paginator.num_pages
+    
+    # Calculate the starting row number for the current page
+    row_start = (locationPage.number - 1) * paginator.per_page
+
     context ={
+        "user": user,
+        'setdate': setdate,
+        "locationList": locationPage,
+        "lastpage": totalPage,
+        'totalPageList': [n+1 for n in range(totalPage)],
+        'row_start': row_start,
     }
     return render(request, 'establishment-profile.html', context)
 
@@ -2149,6 +2181,7 @@ def multistep_form(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         table_data = data.get("tableData", [])
+        print(table_data)
 
         # Iterate through each row and insert it into the database
         for row in table_data:
@@ -2252,11 +2285,11 @@ def upload_csv(request):
                     est_id=user,  # Set your user or establishment ID here
                     name=row_data.get('Location Name', '').strip(),  # Default to empty string if not present
                     address=row_data.get('Address', '').strip(),
-                    choiceOfDirect=row_data.get('Direct Employees', '').strip(),
+                    choiceOfDirect=row_data.get('Direct Employee', '').strip(),
                     noOFDirect=0 if row_data.get('No. of Direct Employees') in [None, ''] else row_data.get('No. of Direct Employees'),
-                    choiceOfVendor=row_data.get('Vendor', '').strip(),
+                    choiceOfVendor=row_data.get('Vendors', '').strip(),
                     noOFVendor=0 if row_data.get('No. of Vendors') in [None, ''] else row_data.get('No. of Vendors'),
-                    totalno=row_data.get('Total No. of Employees', 0),  # Default to 0 if not present
+                    totalno=row_data.get('Total Number of Indirect Employees', 0),  # Default to 0 if not present
                 )
 
                 # Save the location instance to the database

@@ -92,11 +92,6 @@
         {% endif %}
       {% else %}
         <a class="btn btn-primary btn-lg"  href="{% url 'recruit' username %}">Recruit</a>
-        {% if is_message %}
-          <a class="btn btn-primary btn-lg"  href="{% url 'conversation:inbox' %}">Inbox</a>
-        {% else %}
-        <a class="btn btn-primary btn-lg"  href="{% url 'conversation:new' id %}">Message</a>
-        {% endif %}
       {% endif %}
     </div>
 

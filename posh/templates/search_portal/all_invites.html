@@ -23,12 +23,11 @@
 {% block content %}
 
 <div class="tab-pane mt-5 card" id="account-service">
-    <div class="card-body pb-2">
+    <div class="card-body pb-2" style="height: 700px;">
         <div class="form-group">
             {% comment %} <div class="card mx-auto" style="width: 80%;"> {% endcomment %}
                 <div class="card-body mx-auto" style="width: 80%;">
                     <h5 class="card-title mb-3" >All Applicants</h5>
-
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -43,24 +42,27 @@
                         </thead>
                         
                         <tbody>
-                            {% for data in combined_data %}
                             
-                            <tr>
-                                <td>{{ data.individual_user.fname }} {{ data.individual_user.mname }} {{ data.individual_user.lname }}</td>
-                                <td>{{ data.individual_user.city }}, {{ data.individual_user.state }}</td>
-                                <td>{{ data.individual_user.email }}</td>
-                                <td>{{ data.individual_user.phone }}</td>
-                                {% if data.establishment_data.status == "Accepted" %}
-                                    <td><span class="badge bg-success">{{ data.establishment_data.status }}</span></td>
-                                {% elif data.establishment_data.status == "Declined" %}
-                                    <td><span class="badge bg-danger">{{ data.establishment_data.status }}</span></td>
-                                {% else %}
-                                <td><span class="badge bg-warning">{{ data.establishment_data.status }}</span></td>
-                                {% endif %}
-                                <td>{{ data.establishment_data.timestamp }}</td>
-                                <td><a href="{% url 'user_details' data.individual_user.username %}">View</a></td>
-                            </tr>
-                            {% endfor %}
+
+                                {% for data in combined_data %}
+                                
+                                <tr>
+                                    <td>{{ data.individual_user.fname }} {{ data.individual_user.mname }} {{ data.individual_user.lname }}</td>
+                                    <td>{{ data.individual_user.city }}, {{ data.individual_user.state }}</td>
+                                    <td>{{ data.individual_user.email }}</td>
+                                    <td>{{ data.individual_user.phone }}</td>
+                                    {% if data.establishment_data.status == "Accepted" %}
+                                        <td><span class="badge bg-success">{{ data.establishment_data.status }}</span></td>
+                                    {% elif data.establishment_data.status == "Declined" %}
+                                        <td><span class="badge bg-danger">{{ data.establishment_data.status }}</span></td>
+                                    {% else %}
+                                    <td><span class="badge bg-warning">{{ data.establishment_data.status }}</span></td>
+                                    {% endif %}
+                                    <td>{{ data.establishment_data.timestamp }}</td>
+                                    <td><a href="{% url 'user_details' data.individual_user.username %}">View</a></td>
+                                </tr>
+                                {% endfor %}
+  
                         </tbody> 
                     </table>
             </div>

@@ -5,6 +5,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
         <!-- FAVICON -->
         <link rel="shortcut icon" href="{% static 'assets/img/MyPosh.svg' %}" type="image/x-icon">
@@ -88,8 +89,8 @@
                             </div>
                             <div class="input-div">
                                 <select>
-                                    <option value="single" {% if user.establishmentuser.nature == "single" %} selected {% endif %}>Single Location</option>
-                                    <option value="multi" {% if user.establishmentuser.nature == "multi" %} selected {% endif %}>Multi Location</option>
+                                    <option value="single" {% if user.establishmentuser.structure == "single" %} selected {% endif %}>Single Location</option>
+                                    <option value="multi" {% if user.establishmentuser.structure == "multi" %} selected {% endif %}>Multi Location</option>
                                 </select>
                                 <span id='readonly-structure'>Structure of Establishment</span>
                             </div>
@@ -185,11 +186,15 @@
                             <button class="upload-button button-secondary" id="uploadButton">Submit</button>
                             <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                             <div class="preview-container" id="previewContainer">
-                                <h3>Preview:</h3><input type="text" id="mytext" disabled>
-                                <table id="filePreview"></table>
+                                <h3>Preview:</h3>
+                                <input type="text" id="mytext" disabled>
+                                <div class="table-wrapper"> <!-- Add this wrapper for scrolling -->
+                                    <table id="filePreview"></table>
+                                </div>
                             </div>
                         </div>
                     </div>
+
 
                     {% comment %} STEP - 3 {% endcomment %}
                     {% comment %} <div class="main" data-step="3">

@@ -22,7 +22,10 @@
 </head>
 <body>
     {% include 'visibilty.html' %}
-    {% include 'complete-model.html' %}
+    {% load get_group %}
+    {% if request.user|has_group:"EST" %}
+        {% include 'complete-model.html' %}
+    {% endif %}
     <!-- LOADER -->
     <div class="load" id="load">
         <img src="{% static 'assets/img/ZNeT.gif' %}" alt="loader" class="load__gif" >

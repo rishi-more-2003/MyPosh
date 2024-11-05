@@ -157,10 +157,10 @@ manualBtn.onclick = () => {
             <td data-type="text" class="editable-cell"></td>
             <td data-type="text" class="editable-cell"></td>
             <td data-type="checkbox" class="editable-cell"></td>
-            <td data-type="text" class="editable-cell"></td>
+            <td data-type="number" class="editable-cell"></td>
             <td data-type="checkbox" class="editable-cell"></td>
-            <td data-type="text" class="editable-cell"></td>
-            <td data-type="text" class="editable-cell"></td>
+            <td data-type="number" class="editable-cell"></td>
+            <td data-type="number" class="editable-cell"></td>
             <td class="but">
                 <button class="btn btn-primary btn-sm save-btn d-none" onclick="saveRow(this)">Save</button>
                 <button class="btn btn-secondary btn-sm edit-btn" onclick="editRow(this)">Edit</button>
@@ -317,6 +317,11 @@ function displayPreview(rows) {
 
     previewRows.forEach((row, i) => {
         const tr = document.createElement("tr");
+
+        // Create a new cell for the Sr. No. (index + 1)
+        const srNoCell = document.createElement(i === 0 ? "th" : "td");
+        srNoCell.innerHTML = i === 0 ? "Sr. No." : i; // Add header for Sr. No. and display index for other rows
+        tr.appendChild(srNoCell); // Append the Sr. No. cell to the row  
         
         row.forEach(cell => {
             const cellElem = i === 0 ? document.createElement("th") : document.createElement("td");
