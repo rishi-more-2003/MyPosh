@@ -33,12 +33,32 @@
         color: #4e5155 !important;
     }
 
+    td{
+        text-align: start;
+    }
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Enables smooth scrolling on touch devices */
+    }
+    
+    .table {
+        width: 200%; /* Makes the table itself twice the container width */
+    }
+    nav {
+        margin-top: 10px;
+    }
+    a.page-link {
+        color: hsl(30, 100%, 52%);
+    }
+
 </style>
 {% endblock %}
 
 {% block js %}
 {{ block.super }}
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+{% comment %} <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script> {% endcomment %}
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
@@ -47,470 +67,251 @@
 <script src="{% static 'assets/js/profile.js' %}"></script>
 <script src="{% static 'assets/js/list_item.js' %}"></script>
 <script>
-    function previewImage(event) {
-        const reader = new FileReader();
-        reader.onload = function() {
-            const output = document.getElementById('profile-image');
-            output.src = reader.result;
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the hash from the URL (e.g., #location-service)
+        const hash = window.location.hash;
+    
+        if (hash) {
+            // Deactivate the General tab and its content
+            const generalTabLink = document.querySelector('a[href="#general"]');
+            const generalTabContent = document.getElementById("general");
+            // Activate the tab specified by the hash
+            const targetTabLink = document.querySelector(`a[href="${hash}"]`);
+            const targetTabContent = document.querySelector(hash);
+    
+            if (generalTabLink && generalTabContent) {
+                generalTabLink.classList.remove("active");
+                generalTabContent.classList.remove("active", "show");
+                if (targetTabLink && targetTabContent) {
+                    targetTabLink.classList.add("active");
+                    targetTabLink.click();  // Trigger a click event to show the tab content
+                    targetTabContent.classList.add("active", "show");
+                }
+            }
         }
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    function resetImage() {
-        const profileImage = document.getElementById('profile-image');
-        profileImage.src = "{% static 'assets/img/default_profile.svg' %}";
-
-        // Set hidden input value to signal reset
-        document.getElementById('resetProfilePic').value = '1';
-
-        // If you also want to clear the file input
-        document.getElementById('uploadPhoto').value = '';
-    }
-</script>
+    }); 
+    </script>
+    
 {% endblock %}
 
 {% block content %}
     <div class="container light-style flex-grow-1 container-p-y">
-        {% comment %} <h4 class="font-weight-bold py-3 mb-4">
+        <h4 class="font-weight-bold py-3 mb-4">
             Profile
-        </h4> {% endcomment %}
+        </h4> 
         <div class="card overflow-hidden">
             <div class="row no-gutters row-bordered row-border-light">
                 <div class="col-md-3 pt-0">
                     <div class="list-group list-group-flush account-settings-links">
                         <a class="list-group-item list-group-item-action active" data-toggle="list"
-                            href="#account-general">General</a>
+                            href="#general">General</a>
                         <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-service">Set Service Charges</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-education">Update Education</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-experience">Update Experience</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-skills">Add Skills</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#account-certification">Add Certifications</a>
+                            href="#location-service">Location Services</a>
                         <a class="list-group-item list-group-item-action"  href="{% url 'password_reset' %}">Change password</a>
                     </div>
                 </div>
                 <div class="col-md-9">
                     <div class="tab-content">
-                        <div class="tab-pane fade active show" id="account-general">
+                        <div class="tab-pane fade active show" id="general">
                             <hr class="border-light m-0">
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="card-body media align-items-center">
-                                {% if profile_pic %}
-                                    <img id="profile-image" src="{{ profile_pic }}" alt="Profile Picture" style="max-width: 200px; max-height: 200px;" class="d-block ui-w-80">
-                                {% else %}
-                                    <img id="profile-image" src="{% static 'assets/img/default_profile.svg' %}" alt="profile pic" class="d-block ui-w-80">
-                                {% endif %}
-                                <div class="media-body ml-4">
-                                    <label class="btn btn-outline-primary">
-                                        Upload new photo
-                                        <input type="file" name="profile_pic" id="uploadPhoto" class="account-settings-fileinput" onchange="previewImage(event)">
-                                    </label> &nbsp;
-                                    <button type="button" id="resetPhoto" class="btn btn-default md-btn-flat" onclick="resetImage()">Reset</button>
-                                    <input type="hidden" name="reset_profile_pic" id="resetProfilePic" value="0">
-                                    <div class="text-light small mt-1">Allowed JPG, GIF, or PNG. Max size of 800K</div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <!-- Prefix Column -->
-                                    <div class="col-md-2 form-group">
-                                        <label class="form-label">Prefix</label>
-                                        <select name="prefix" class="form-control" required>
-                                            <option value="Mr." {% if user.individualuser.prefix == "Mr." %} selected {% endif %}>Mr.</option>
-                                            <option value="Mrs." {% if user.individualuser.prefix == "Mrs." %} selected {% endif %}>Mrs.</option>
-                                            <option value="Miss" {% if user.individualuser.prefix == "Miss" %} selected {% endif %}>Miss</option>
-                                        </select>
-                                    </div>
-                                    
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
 
-                                    <!-- First Name Column -->
-                                    <div class="col-md-3 form-group">
-                                        <label class="form-label">First Name</label>
-                                        <input type="text" name="fname" class="form-control" value="{{ user.individualuser.fname }}" required>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 form-group">
+                                            <label class="form-label">Establishment Name</label>
+                                            <input type="text" name="name" class="form-control" value="{{ user.establishmentuser.name }}" required>
+                                        </div>
+
+                                        <div class="col-md-4 form-group">
+                                            <label class="form-label">UID</label>
+                                            <input type="text" name="uid" class="form-control" value="{{ user.establishmentuser.username }}" required readonly>
+                                        </div>
+                                        
+                                        <div class="col-md-4 form-group">
+                                            <label class="form-label">Set-up Date</label>
+                                            <input type="date" name="setdate" class="form-control" value="{{ user.establishmentuser.setdate|date:'Y-m-d' }}" required>
+                                        </div>
+
                                     </div>
 
-                                    <!-- Middle Name Column -->
-                                    <div class="col-md-3 form-group">
-                                        <label class="form-label">Middle Name</label>
-                                        <input type="text" name="mname" class="form-control" value="{{ user.individualuser.mname }}" required>
-                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 form-group">
+                                            <label class="form-label">Nature of Establishment</label>
+                                            <select class="form-control" name='nature' required>
+                                                <option value="principal" {% if user.establishmentuser.nature == "principal" %} selected {% endif %}>Principal Employer</option>
+                                                <option value="vendor" {% if user.establishmentuser.nature == "vendor" %} selected {% endif %}>Vendor</option>
+                                                <option value="both" {% if user.establishmentuser.nature == "both" %} selected {% endif %}>Both</option>
+                                            </select>
+                                        </div>
 
-                                    <!-- Last Name Column -->
-                                    <div class="col-md-4 form-group">
-                                        <label class="form-label">Last Name</label>
-                                        <input type="text" name="lname" class="form-control" value="{{ user.individualuser.lname }}" required>
-                                    </div>
-
-                                </div>
-                                <div class="row">
-
-                                    <!-- UID Column -->
-                                    <div class="col-md-3 form-group">
-                                        <label class="form-label">UID</label>
-                                        <input type="text" name="uid" class="form-control" value="{{ uid}}" readonly>
-                                    </div>
-
-                                    <!-- Date of Birth Column -->
-                                    <div class="col-md-3 form-group">
-                                        <label class="form-label">Date of Birth</label>
-                                        <input type="date" class="form-control" name="dob" id="date-input" value="{{ user.individualuser.dob|date:'Y-m-d' }}" required>
-                                    </div>
-                            
-                                    <!-- Gender Column -->
-                                    <div class="col-md-3 form-group">
-                                        <label class="form-label">Gender</label>
-                                        <select class="form-control" name='gender' required>
-                                            <option value="male" {% if user.individualuser.gender == "male" %} selected {% endif %}>Male</option>
-                                            <option value="female" {% if user.individualuser.gender == "female" %} selected {% endif %}>Female</option>
-                                            <option value="other" {% if user.individualuser.gender == "other" %} selected {% endif %}>Other</option>
-                                        </select>
-                                    </div>
-                
-
-                                    <div class="col-md-3 form-group">
-                                        <label class="form-label">Marital Status</label>
-                                        <select class="form-control" name='marital'>
-                                            <option value="not selected" {% if user.individualuser.marital == "not selected" %} selected {% endif %}>Not selected</option>
-                                            <option value="married" {% if user.individualuser.marital == "married" %} selected {% endif %}>Married</option>
-                                            <option value="unmarried" {% if user.individualuser.marital == "unmarried" %} selected {% endif %}>Unmarried</option>
-                                            <option value="others" {% if user.individualuser.marital == "others" %} selected {% endif %}>Others</option>
-                                        </select>
-                                    </div>
-
-                                </div>
-                                <div class="row">
-                                    <!-- State Column -->
-                                    <div class="col-md-3 form-group">
-                                        <label class="form-label">State</label>
-                                        <select name='state' onchange="print_selected_city('city', this.selectedIndex, '{{ user.individualuser.city }}');" id="states" class="form-control">
-                                        </select>
-                                    </div>
-                                    
-                                    <!-- City Column -->
-                                    <div class="col-md-3 form-group">
-                                        <label class="form-label">City</label>
-                                        <select name='city' id ="city" class="form-control" disabled>
-                                            <option value="state" {% if user.individualuser.city == "{{ user.individualuser.city }}" %} selected {% endif %}>{{ user.individualuser.city }}</option>
-                                        </select>
-                                        <script language="javascript">print_selected_state("states", '{{ user.individualuser.state }}');</script>
-                                    </div>
-                                    
-                            
-                                    <!-- Pincode Column -->
-                                    <div class="col-md-3 form-group">
-                                        <label class="form-label">Pincode</label>
-                                        <input type="number" name='pincode' class="form-control" value="{{ user.individualuser.pincode }}">
-                                    </div>
-
-                                    <!-- Occupation Column -->
-                                    <div class="col-md-3 form-group">
-                                        <label class="form-label">Occupation</label>
-                                        <input type="text" name='occupation' class="form-control" value="{{ user.individualuser.occupation }}" required>
-                                    </div>
-
-                                </div>
-                                <div class="row">
-                                    <!-- Email Column -->
-                                    <div class="col-md-6 form-group">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" name='email' class="form-control non-editable" value="{{ user.individualuser.email }}" readonly >
-                                    </div>
-                            
-                                    <!-- Phone Column -->
-                                    <div class="col-md-6 form-group">
-                                        <label class="form-label">Phone</label>
-                                        <input type="tel" name='phone' class="form-control non-editable" value="{{ user.individualuser.phone }}" readonly>
-                                    </div>
-                                </div>
-                                {% comment %} <div class="form-group"  id="longdescription">
-                                    <label class="form-label">Aadhar Card</label>
-                                    <input type="number" name='aadhar' class="form-control mb-1" value="{{ user.individualuser.aadhar }}" >
-                                </div> {% endcomment %}
-                                <!-- Full Description -->
-                                <div class="form-group">
-                                    <label for="longdescriptionInput">Description</label>
-                                    <textarea id="longdescriptionInput" name="description" class="form-control" rows="5" placeholder="Describe yourself in up to 500 words">{{ user.individualuser.description }}</textarea>
-                                </div>
-
-                                {% comment %} <hr> {% endcomment %}
+                                        <div class="col-md-6 form-group">
+                                            <label class="form-label">Structure of Establishment</label>
+                                            <select class="form-control" name='structure' required>
+                                                <option value="single" {% if user.establishmentuser.structure == "single" %} selected {% endif %}>Single Location</option>
+                                                <option value="multi" {% if user.establishmentuser.structure == "multi" %} selected {% endif %}>Multi Location</option>
+                                            </select>
+                                        </div>
                                 
-                            <div class="text-right mt-3"  id="account-serviceh1">
-                                <button type="button" class="btn btn-default">Back</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
+                                    </div>
+
+                                    <div class="row">
+                                        <!-- State Column -->
+                                        <div class="col-md-4 form-group">
+                                            <label class="form-label">State</label>
+                                            <select name='state' onchange="print_selected_city('city', this.selectedIndex, '{{ user.establishmentuser.city }}');" id="states" class="form-control">
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- City Column -->
+                                        <div class="col-md-4 form-group">
+                                            <label class="form-label">City</label>
+                                            <select name='city' id ="city" class="form-control" disabled>
+                                                <option value="state" {% if user.establishmentuser.city == "{{ user.establishmentuser.city }}" %} selected {% endif %}>{{ user.establishmentuser.city }}</option>
+                                            </select>
+                                            <script language="javascript">print_selected_state("states", '{{ user.establishmentuser.state }}');</script>
+                                        </div>
+                                        
+                                
+                                        <!-- Pincode Column -->
+                                        <div class="col-md-4 form-group">
+                                            <label class="form-label">Pincode</label>
+                                            <input type="number" name='pincode' class="form-control" value="{{ user.establishmentuser.pincode }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <!-- Email Column -->
+                                        <div class="col-md-6 form-group">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" name='email' class="form-control non-editable" value="{{ user.establishmentuser.email }}" readonly >
+                                        </div>
+                                
+                                        <!-- Phone Column -->
+                                        <div class="col-md-6 form-group">
+                                            <label class="form-label">Phone</label>
+                                            <input type="tel" name='phone' class="form-control non-editable" value="{{ user.establishmentuser.phone }}" readonly>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="longdescriptionInput">Address</label>
+                                        <textarea id="address" name="address" class="form-control" rows="3" placeholder="Address">{{ user.establishmentuser.address }}</textarea>
+                                    </div>
+                                    
+                                    <div class="text-right mt-3"  id="account-serviceh1">
+                                        <button type="button" class="btn btn-default">Back</button>
+                                        <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
+                                    </div>
+                            
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="location-service">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    <div class="add_location">
+                                        <h4>Location Details</h4>
+                                    </div>    
+
+                                    <div class="container-fluid manual" >
+
+                                        <div class="row">
+                                            
+                                            <div class="col-12">
+                                                
+                                                <div class="table-responsive" style="margin-top: 20px">
+                                                    
+                                                    <table id="bootstrapdatatable" class="table table-striped table-bordered text-center">
+                                                        <thead class="thead-light">
+                                                            <tr>
+                                                                <th>No.</th>
+                                                                <th>Location Name</th>
+                                                                <th>Address</th>
+                                                                <th>Direct Employee</th>
+                                                                <th>No. of Direct Employees</th>
+                                                                <th>Vendors</th>
+                                                                <th>No. of Vendors</th>
+                                                                <th>Total Number of Indirect Employees</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                                {% for location in locationList %}
+                                                                    <tr>
+                                                                        <td>{{ row_start|add:forloop.counter }}</td>
+                                                                        <td>{{ location.name }}</td>
+                                                                        <td>{{ location.address }}</td>
+                                                                        <td>{{ location.choiceOfDirect }}</td>
+                                                                        <td>{{ location.noOFDirect }}</td>
+                                                                        <td>{{ location.choiceOfVendor }}</td>
+                                                                        <td>{{ location.noOFVendor }}</td>
+                                                                        <td>{{ location.totalno }}</td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination justify-content-center">
+                                            {% if locationList.has_previous %}
+
+                                            <li class="page-item">
+                                                <a class="page-link" href="{% url 'establishment-profile' %}?page=1#location-service" aria-label="Previous">
+                                                  <span aria-hidden="true">&laquo;</span>
+                                                  <span class="sr-only">First</span>
+                                                </a>
+                                            </li>
+
+                                            <li class="page-item">
+                                                <a class="page-link" href="{% url 'establishment-profile' %}?page={{locationList.previous_page_number}}#location-service" aria-label="Previous">
+                                                  <span aria-hidden="true">&lsaquo;</span>
+                                                  <span class="sr-only">Previous</span>
+                                                </a>
+                                            </li>
+
+                                            {% endif %}
+                                              
+                                            {% for n in totalPageList %}
+                                            <li class="page-item"><a class="page-link" href="{% url 'establishment-profile' %}?page={{n}}#location-service">{{n}}</a></li>
+                                            {% endfor %}
+
+                                            {% if locationList.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{% url 'establishment-profile' %}?page={{locationList.next_page_number}}#location-service" aria-label="Next">
+                                                    <span aria-hidden="true">&rsaquo;</span>
+                                                <span class="sr-only">Next</span>
+                                                </a>
+                                            </li>
+
+                                            <li class="page-item">
+                                                <a class="page-link" href="{% url 'establishment-profile' %}?page={{lastpage}}#location-service" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                                
+                                                <span class="sr-only">Last</span>
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+
+                        
+
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                        {% comment %} <hr> {% endcomment %}
-                        
-                        <div class="tab-pane fade" id="account-service">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    <div class="add_service">
-                                        <h4>Service Charges</h4>
-                                        <a href="{% url 'service' %}" >
-                                        <button type='button' id="add-service-btn" data-toggle="modal" data-target="#addServiceModal">+ Add/Edit</button>
-                                        </a>
-                                    </div>     
-
-                                    <!-- Service Section -->
-                                    <div id="service-section">
-                                        <table id="service-table">
-                                                <!-- service will be dynamically added here -->
-                                                {% if service_list %}
-                                                <thead>
-                                                    <tr>
-                                                        <th>Service</th>
-                                                        <th>Charges</th>
-                                                        <th>Description</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for service in service_list %}
-
-                                                        <tr>
-                                                            <td>{{ service.service_name }}</td>
-                                                            <td>{{ service.service_charge }}</td>
-                                                            <td>
-                                                            {{ service.service_description }}</td><br>
-                                                        </tr>
-                                                    {% endfor %}
-                                                {% else %}
-                                                    <tr>
-                                                        <td colspan="5">No service records found.</td>
-                                                    </tr>
-                                                {% endif %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        {% comment %} <hr> {% endcomment %}
-
-                        <div class="tab-pane fade" id="account-education">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    <div class="add_education">
-                                        <h4>Education Details</h4>
-                                        <a href="{% url 'education' %}" >
-                                        <button type='button' id="add-education-btn" data-toggle="modal" data-target="#addEducationModal">+ Add/Edit</button>
-                                        </a>
-                                    </div>              
-                                    <!-- Education Section -->
-                                    <div id="education-section">
-                                        <ul id="education-list">
-                                            <!-- Educational experiences will be dynamically added here -->
-                                            {% if education_list %}
-                                                <ul>
-                                                    {% for education in education_list %}
-                                                        <li>
-                                                            <strong>School:</strong> {{ education.school }}<br>
-                                                            <strong>Degree:</strong> {{ education.degree }}<br>
-                                                            {% if education.field_of_study %}
-                                                                <strong>Field of Study:</strong> {{ education.field_of_study }}<br>
-                                                            {% endif %}
-                                                            {% if education.start_date %}
-                                                                <strong>Start Date:</strong> {{ education.start_date }}<br>
-                                                            {% endif %}
-                                                            {% if education.end_date %}
-                                                                <strong>End Date:</strong> {{ education.end_date }}<br>
-                                                            {% endif %}
-                                                            {% if education.grade %}
-                                                                <strong>Grade:</strong> {{ education.grade }}<br>
-                                                            {% endif %}
-                                                            {% if education.description %}
-                                                                <strong>Description:</strong> {{ education.description }}<br>
-                                                            {% endif %}
-                                                        </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            {% else %}
-                                                <p>No education records found.</p>
-                                            {% endif %}
-                                        </ul>
-                                    </div>                                  
-                                </div>
-                            </div>
-                        </div>
-
-                        {% comment %} <hr> {% endcomment %}
-
-                        <div class="tab-pane fade" id="account-experience">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    <div class="add_experience">
-                                        <h4>Experience Details</h4>
-                                        <a href="{% url 'experience' %}" >
-                                            <button type='button' id="add-experience-btn" data-toggle="modal" data-target="#addExperienceModal">+ Add/Edit</button>
-                                        </a>
-                                    </div>     
-
-                                    <!-- Experience Section -->
-                                    <div id="experience-section">
-                                        <ul id="experience-list">
-                                            <!-- Experience will be dynamically added here -->
-                                            {% if experience_list %}
-                                                <ul>
-                                                    {% for experience in experience_list %}
-                                                        <li>
-                                                            <strong>Title:</strong> {{ experience.titleInput }}<br>
-                                                            <strong>Company Name:</strong> {{ experience.companyNameInput }}<br>
-                                                
-                                                            {% if experience.currentlyWorkingInput is not None %}
-                                                                <strong>Currently Working:</strong> {{ experience.currentlyWorkingInput|yesno:"Yes,No" }}<br>
-                                                            {% endif %}
-                                                
-                                                            {% if experience.startDateexp %}
-                                                                <strong>Start Date:</strong> {{ experience.startDateexp }}<br>
-                                                            {% endif %}
-                                                
-                                                            {% if experience.endDateexp or experience.currentlyWorkingInput %}
-                                                                <strong>End Date:</strong> {% if experience.currentlyWorkingInput %}Present{% else %}{{ experience.endDateexp }}{% endif %}<br>
-                                                            {% endif %}
-                                                
-                                                            {% if experience.industryInput %}
-                                                                <strong>Industry:</strong> {{ experience.industryInput }}<br>
-                                                            {% endif %}
-                                                
-                                                            {% if experience.locationInput %}
-                                                                <strong>Location:</strong> {{ experience.locationInput }}<br>
-                                                            {% endif %}
-                                                
-                                                            {% if experience.descriptionInputexp %}
-                                                                <strong>Description:</strong> {{ experience.descriptionInputexp }}<br>
-                                                            {% endif %}
-                                                        </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            {% else %}
-                                                <p>No experience records found.</p>
-                                            {% endif %}
-                                        </ul>
-                                    </div>                                 
-                                </div>
-                            </div>
-                        </div>
-
-                        {% comment %} <hr> {% endcomment %}
-
-                        <div class="tab-pane fade" id="account-skills">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    <div class="add_skills">
-                                        <h4>Skill Details</h4>
-                                        <a href="{% url 'skill' %}" >
-                                            <button type='button' id="add-skills-btn" data-toggle="modal" data-target="#addSkillsModal">+ Add/Edit</button>
-                                        </a>
-                                    </div>     
-
-                                    <!-- Skill Section -->
-                                    <div id="skill-section">
-                                        <ul id="skills-list">
-                                            <!-- skills will be dynamically added here -->
-                                            {% if skill_list %}
-                                                <ul>
-                                                    {% for skill in skill_list %}
-                                                        <li>
-                                                            {{ skill.skillsInput }}<br>
-                                                        </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            {% else %}
-                                                <p>No skill records found.</p>
-                                            {% endif %}
-                                        </ul>
-                                    </div>
-                                
-                                </div>
-                            </div>
-                        </div>
-
-                        {% comment %} <hr> {% endcomment %}
-
-                        <div class="tab-pane fade" id="account-certification">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    <div class="add_certification">
-                                        <h4>Certification Details</h4>
-                                        <a href="{% url 'certification' %}" >
-                                            <button type='button' id="add-certification-btn" data-toggle="modal" data-target="#addCertificationModal">+ Add/Edit</button>
-                                        </a>
-                                    </div>     
-
-                                    <!-- certification Section -->
-                                    <div id="certification-section">
-                                        <ul id="certification-list">
-                                            <!-- certificational experiences will be dynamically added here -->
-                                            {% if cert_list %}
-                                                <ul>
-                                                    {% for certification in cert_list %}
-                                                        <li>
-                                                            <strong>Name:</strong> {{ certification.certificationNameInput }}<br>
-                                                            <strong>Organization:</strong> {{ certification.issuingOrganizationInput }}<br>
-
-                                                            {% if certification.issueDate %}
-                                                                <strong>Issue Date:</strong> {{ certification.issueDate }}<br>
-                                                            {% endif %}
-                                                            {% if certification.expirationDate %}
-                                                                <strong>Expiration Date:</strong> {{ certification.expirationDate }}<br>
-                                                            {% endif %}
-
-                                                            {% if certification.credentialIdInput %}
-                                                                <strong>Credential Id:</strong> {{ certification.credentialIdInput }}<br>
-                                                            {% endif %}
-                                                            {% if certification.credentialUrlInput %}
-                                                                <strong>Credential URL:</strong> {{ certification.credentialUrlInput }}<br>
-                                                            {% endif %}
-                                                        </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            {% else %}
-                                                <p>No certification records found.</p>
-                                            {% endif %}
-                                        </ul>
-                                    </div>                              
-                                </div>
-                            </div>
-                        </div>
-
-                        {% comment %} <hr> {% endcomment %}
-
-                        </form>
-
-                    </div>
-                        
-
-
-                        {% comment %} <div class="tab-pane fade" id="account-change-password">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    <label class="form-label">Current password</label>
-                                    <input type="password" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">New password</label>
-                                    <input type="password" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Repeat new password</label>
-                                    <input type="password" class="form-control">
-                                </div>
-                            </div>
-                        </div> {% endcomment %}
-
+                    
                 </div>
-            {% comment %} </div> {% endcomment %}
+            </div>
         </div>
     </div>
-</div>
 
 
 {% endblock %}

@@ -648,10 +648,27 @@ select{
 }
 
 .preview-container {
-    margin-top: 20px;
     max-width: 100%; /* Ensures the preview fits the modal width */
-    overflow-x: auto; /* Enables horizontal scrolling for wide tables */
-    overflow-y: auto; /* Enables horizontal scrolling for wide tables */
+}
+
+
+.table-wrapper {
+    max-height: 400px; /* Set a max height for the preview */
+    overflow-y: auto;  /* Enable vertical scrolling */
+    overflow-x: auto;  /* Enable horizontal scrolling */
+    border: 1px solid #ccc; /* Optional: add a border for visibility */
+    margin-top: 10px; /* Space between input and table */
+}
+
+table {
+    width: 100%; /* Ensure table takes full width */
+    border-collapse: collapse; /* Optional: for better look */
+}
+
+th, td {
+    padding: 8px; /* Add padding for cells */
+    border: 1px solid #ddd; /* Optional: add borders */
+    text-align: left; /* Align text to the left */
 }
 
 #filePreview {
@@ -675,3 +692,4 @@ select{
     justify-content: left;
     margin-bottom: 5px;
 }
+

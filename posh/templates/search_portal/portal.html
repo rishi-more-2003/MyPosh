@@ -211,7 +211,13 @@
                             {% endif %}
                         </h5>
                         <h6 class="card-subtitle mb-2 text-muted">{{ individual.city }}, {{ individual.state }}</h6>
-                        <p class="card-text description"> {{ individual.description }}</p>
+                        <p class="card-text description"> 
+                            {% if individual.description  == None %} 
+    
+                            {% else %}
+                                {{ individual.description }}
+                            {% endif %}
+                            </p>
                         <a class="btn btn-primary btn-sm"  href="{% url 'user_details' individual.username %}">View Details</a>
                     </div>
                     <div class="card-footer">
