@@ -14,7 +14,9 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 import random
 from django.conf import settings
-from .utils import generate_unique_id, generate_unique_consultancy, generate_unique_establishment, generate_unique_ngo
+from .utils import (generate_unique_id, generate_unique_consultancy, generate_unique_establishment, 
+                    generate_unique_ngo, get_session_data, update_locations_session, 
+                    create_vendor_excel, get_vendor_data, update_vendor_session)
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
@@ -1582,189 +1584,6 @@ def register_establishment(request):
                 return JsonResponse({'status': 'error'})
     return render(request, 'register_establishment.html')
 
-        # # Handle the location forms
-        # EstablishmentLocationFormSet = formset_factory(EstablishmentLocationForm, extra=int(establishment_locationCount))
-        # location_formset = EstablishmentLocationFormSet(request.POST)
-
-        # if location_formset.is_valid():
-        #     for form in location_formset:
-        #         if form.cleaned_data:  # Ensure the form is not empty
-        #             EstablishmentLocation.objects.create(
-        #                 username=establishment_user,
-        #                 locstate=form.cleaned_data.get('locstate'),
-        #                 loccity=form.cleaned_data.get('loccity'),
-        #                 locpincode=form.cleaned_data.get('locpincode')
-        #             )
-
-        # if establishment_nature == 'principal':
-        #     username = establishment_user
-        #     directEmpmale = request.POST.get('directEmpmale')
-        #     directEmpfemale = request.POST.get('directEmpfemale')
-        #     directEmpothers = request.POST.get('directEmpothers')
-        #     indirectEmpmale = request.POST.get('indirectEmpmale')
-        #     indirectEmpfemale = request.POST.get('indirectEmpfemale')
-        #     indirectEmpothers = request.POST.get('indirectEmpothers')
-        #     vendorCount = request.POST.get('vendorCount')
-
-        #     principal = PrincipalEmployer(
-        #         username = username ,
-        #         directEmpmale = directEmpmale ,
-        #         directEmpfemale = directEmpfemale,
-        #         directEmpothers = directEmpothers,
-        #         indirectEmpmale =  indirectEmpmale,
-        #         indirectEmpfemale = indirectEmpfemale,
-        #         indirectEmpothers = indirectEmpothers,
-        #         vendorCount =  vendorCount,
-        #     )
-
-        #     principal.save()
-
-        #     # Handle the Vendor Location forms
-        #     VendorDetailsFormLocationFormSet = formset_factory(VendorDetailsForm, extra=int(vendorCount))
-        #     VendorDetailsForm_formset = VendorDetailsFormLocationFormSet(request.POST)
-
-        #     if VendorDetailsForm_formset.is_valid():
-        #         for form in VendorDetailsForm_formset:
-        #             if form.cleaned_data:  # Ensure the form is not empty
-        #                 VendorDetails.objects.create(
-        #                     username=establishment_user,
-        #                     vendor_name = form.cleaned_data.get('vendor_name'),
-        #                     vendor_base_location = form.cleaned_data.get('vendor_base_location'),
-        #                     vendor_employees = form.cleaned_data.get('vendor_employees'),
-        #                     vendor_male_employees = form.cleaned_data.get('vendor_male_employees'),
-        #                     vendor_female_employees = form.cleaned_data.get('vendor_female_employees'),
-        #                     vendor_others = form.cleaned_data.get('vendor_others'),
-        #                     vendor_address = form.cleaned_data.get('vendor_address'),
-        #                 )
-
-        #     # user = authenticate(request, username=username, password=establishment_phone)
-        #     # login(request, user)
-
-        # elif establishment_nature == 'vendor':
-
-        #     username = establishment_user
-        #     noHOEmpmale = request.POST.get('noHOEmpmale')
-        #     noHOEmpfemale = request.POST.get('noHOEmpfemale')
-        #     noHOEmpothers = request.POST.get('noHOEmpothers')
-        #     noDEPEmpmale = request.POST.get('noDEPEmpmale')
-        #     noDEPEmpfemale = request.POST.get('noDEPEmpmale')
-        #     noDEPEmpothers = request.POST.get('noDEPEmpothers')
-        #     siteCount = request.POST.get('siteCount')
-
-        #     vendor = Vendor(
-        #         username = username,
-        #         noHOEmpmale = noHOEmpmale,
-        #         noHOEmpfemale = noHOEmpfemale,
-        #         noHOEmpothers = noHOEmpothers,
-        #         noDEPEmpmale = noDEPEmpmale,
-        #         noDEPEmpfemale = noDEPEmpfemale,
-        #         noDEPEmpothers = noDEPEmpothers,
-        #         siteCount = siteCount ,
-        #     )
-
-        #     vendor.save()
-
-        #     # Handle the Establishment Location forms
-        #     PEDetailsFormLocationFormSet = formset_factory(PEDetailsForm, extra=int(siteCount))
-        #     PEDetailsForm_formset = PEDetailsFormLocationFormSet(request.POST)
-
-        #     if PEDetailsForm_formset.is_valid():
-        #         for form in PEDetailsForm_formset:
-        #             if form.cleaned_data:  # Ensure the form is not empty
-        #                 PEDetails.objects.create(
-        #                     username=establishment_user,
-        #                     site_name=form.cleaned_data.get('site_name'),
-        #                     site_location=form.cleaned_data.get('site_location'),
-        #                     deployed_employees=form.cleaned_data.get('deployed_employees'),
-        #                     deployed_male_employees=form.cleaned_data.get('deployed_male_employees'),
-        #                     deployed_female_employees=form.cleaned_data.get('deployed_female_employees'),
-        #                     deployed_others=form.cleaned_data.get('deployed_others'),
-        #                     site_address=form.cleaned_data.get('site_address'),
-        #                 )
-
-        #     # user = authenticate(request, username=username, password=establishment_phone)
-        #     # login(request, user)
-
-        # else:
-
-        #     username = establishment_user
-
-        #     directEmpmale = request.POST.get('directEmpmale')
-        #     directEmpfemale = request.POST.get('directEmpfemale')
-        #     directEmpothers = request.POST.get('directEmpothers')
-        #     indirectEmpmale = request.POST.get('indirectEmpmale')
-        #     indirectEmpfemale = request.POST.get('indirectEmpfemale')
-        #     indirectEmpothers = request.POST.get('indirectEmpothers')
-        #     vendorCount = request.POST.get('vendorCount')
-
-        #     noHOEmpmale = request.POST.get('noHOEmpmale')
-        #     noHOEmpfemale = request.POST.get('noHOEmpfemale')
-        #     noHOEmpothers = request.POST.get('noHOEmpothers')
-        #     noDEPEmpmale = request.POST.get('noDEPEmpmale')
-        #     noDEPEmpfemale = request.POST.get('noDEPEmpmale')
-        #     noDEPEmpothers = request.POST.get('noDEPEmpothers')
-        #     siteCount = request.POST.get('siteCount')
-            
-        #     principal = PrincipalEmployer(
-        #         username = username ,
-        #         directEmpmale = directEmpmale ,
-        #         directEmpfemale = directEmpfemale,
-        #         directEmpothers = directEmpothers,
-        #         indirectEmpmale =  indirectEmpmale,
-        #         indirectEmpfemale = indirectEmpfemale,
-        #         indirectEmpothers = indirectEmpothers,
-        #         vendorCount =  vendorCount,
-        #     )
-            
-        #     vendor = Vendor(
-        #         username = username,
-        #         noHOEmpmale = noHOEmpmale,
-        #         noHOEmpfemale = noHOEmpfemale,
-        #         noHOEmpothers = noHOEmpothers,
-        #         noDEPEmpmale = noDEPEmpmale,
-        #         noDEPEmpfemale = noDEPEmpfemale,
-        #         noDEPEmpothers = noDEPEmpothers,
-        #         siteCount = siteCount ,
-        #     )
-
-        #     principal.save()
-        #     vendor.save()
-
-        #     # Handle the Establishment Location forms
-        #     PEDetailsFormLocationFormSet = formset_factory(PEDetailsForm, extra=int(siteCount))
-        #     PEDetailsForm_formset = PEDetailsFormLocationFormSet(request.POST)
-
-        #     if PEDetailsForm_formset.is_valid():
-        #         for form in PEDetailsForm_formset:
-        #             if form.cleaned_data:  # Ensure the form is not empty
-        #                 PEDetails.objects.create(
-        #                     username=establishment_user,
-        #                     site_name=form.cleaned_data.get('site_name'),
-        #                     site_location=form.cleaned_data.get('site_location'),
-        #                     deployed_employees=form.cleaned_data.get('deployed_employees'),
-        #                     deployed_male_employees=form.cleaned_data.get('deployed_male_employees'),
-        #                     deployed_female_employees=form.cleaned_data.get('deployed_female_employees'),
-        #                     deployed_others=form.cleaned_data.get('deployed_others'),
-        #                     site_address=form.cleaned_data.get('site_address'),
-        #                 )
-                        
-        #     # Handle the Vendor Location forms
-        #     VendorDetailsFormLocationFormSet = formset_factory(VendorDetailsForm, extra=int(vendorCount))
-        #     VendorDetailsForm_formset = VendorDetailsFormLocationFormSet(request.POST)
-
-        #     if VendorDetailsForm_formset.is_valid():
-        #         for form in VendorDetailsForm_formset:
-        #             if form.cleaned_data:  # Ensure the form is not empty
-        #                 VendorDetails.objects.create(
-        #                     username=establishment_user,
-        #                     vendor_name = form.cleaned_data.get('vendor_name'),
-        #                     vendor_base_location = form.cleaned_data.get('vendor_base_location'),
-        #                     vendor_employees = form.cleaned_data.get('vendor_employees'),
-        #                     vendor_male_employees = form.cleaned_data.get('vendor_male_employees'),
-        #                     vendor_female_employees = form.cleaned_data.get('vendor_female_employees'),
-        #                     vendor_others = form.cleaned_data.get('vendor_others'),
-        #                     vendor_address = form.cleaned_data.get('vendor_address'),
-        #                 )
 
 @unauthenticated_user
 def register(request):
@@ -2179,27 +1998,7 @@ def establishment_profile(request):
 def multistep_form(request):
     user = request.user.establishmentuser
     if request.method == 'POST':
-        data = json.loads(request.body)
-        table_data = data.get("tableData", [])
-        print(table_data)
-
-        # Iterate through each row and insert it into the database
-        for row in table_data:
-            location = Location.objects.create(
-                est_id = user,
-                name = row.get('location'),
-                address = row.get('address'),
-                choiceOfDirect = row.get('direct'),
-                noOFDirect = 0 if row.get('noOfDirect') == '' else row.get('noOfDirect'),
-                choiceOfVendor = row.get('vendor'),
-                noOFVendor = 0 if row.get('noOfVendor') == '' else row.get('noOfVendor'),
-                totalno = row.get('total'),
-            )
-            location.save()
-
-        user.is_complete = True
-        user.save()
-        return JsonResponse({"status": "success"})
+        pass
 
     # If the request method is GET, display the profile form with current user data
     name = user.name
@@ -2227,79 +2026,258 @@ def multistep_form(request):
         'address': address,
         'uid': request.user.username,
     }
+
+    # Check if this is an AJAX request for vendor data
+    if request.headers.get('x-requested-with-vendor-data') == 'vendor-data':
+            
+        locations = get_session_data(request)
+
+        loc_name, loc_vendor = [], []
+        for location in locations:
+            loc_name.append(location["Location Name"])
+            num_vendors = location.get("No. of Vendors", 0) or 0
+            loc_vendor.append(list(range(1, int(num_vendors) + 1)))
+
+        locations_with_vendors = list(zip(loc_name, loc_vendor))
+        
+        # Return JSON response for AJAX
+        return JsonResponse({'locations_with_vendors': locations_with_vendors})
+    
     return render(request, 'multi-step-form.html', context)
 
 
-#Add Location 
-def addnew(request):
-    if request.method == "POST":
-        form = LocationForm(request.POST)
-        if form.is_valid():
-            try:
-                form.save()
-                return redirect('/info/?step=2')  
-            except:
-                pass
-    else:
-        form = LocationForm()
-    
-    return render(request, 'multi-step-form.html', {'form': form})
-
-
 def download_sample_file(request):
-    # Path to the Excel file in the static directory
+  
     file_path = os.path.join(settings.BASE_DIR, 'static/posh/MyPosh.xlsx')
     
-    # Open and serve the file
     with open(file_path, 'rb') as file:
         response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         response["Content-Disposition"] = 'attachment; filename="MyPosh.xlsx"'
         return response
+
+def download_vendor_file(request):
+    data = get_session_data(request)
+    locations = []
+    for loc in data:
+        if loc["No. of Vendors"]  > 0:
+            locations.append({
+                "location_name": loc['Location Name'],
+                "vendors": loc["No. of Vendors"] 
+            })
     
+    file = create_vendor_excel(locations)
+    
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/VendorDataTemplate.xlsx')
+    
+    with open(file_path, 'rb') as file:
+        response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response["Content-Disposition"] = 'attachment; filename="VendorDataTemplate.xlsx"'
+        return response
+
+
 def upload_csv(request):
-    user = request.user.establishmentuser
     if request.method == 'POST' and request.FILES['file']:
         file = request.FILES['file']
-        
-        # Process the file based on its extension
         try:
-            # Read the file into a DataFrame
             if file.name.endswith('.csv'):
-                df = pd.read_csv(file)  # Read CSV file
+                df = pd.read_csv(file)  
             elif file.name.endswith('.xlsx'):
-                df = pd.read_excel(file)  # Read XLSX file
+                df = pd.read_excel(file)
             else:
                 return JsonResponse({'status': 'error', 'message': 'Unsupported file format'})
 
-            # Clean up non-breaking spaces and replace NaN values
             df = df.map(lambda x: str(x).replace('\xa0', ' ') if isinstance(x, str) else x)
-            df = df.fillna("")  # Replace NaN with empty strings
+            df = df.fillna("")  
 
-            # Process the DataFrame (for example, print it or save to the database)
+            locations_data = []
             for index, row in df.iterrows():
-                # Convert the row to a dictionary for easier handling
                 row_data = row.to_dict()
 
-                # Create a new Location object with data from the current row
-                location = Location.objects.create(
-                    est_id=user,  # Set your user or establishment ID here
-                    name=row_data.get('Location Name', '').strip(),  # Default to empty string if not present
-                    address=row_data.get('Address', '').strip(),
-                    choiceOfDirect=row_data.get('Direct Employee', '').strip(),
-                    noOFDirect=0 if row_data.get('No. of Direct Employees') in [None, ''] else row_data.get('No. of Direct Employees'),
-                    choiceOfVendor=row_data.get('Vendors', '').strip(),
-                    noOFVendor=0 if row_data.get('No. of Vendors') in [None, ''] else row_data.get('No. of Vendors'),
-                    totalno=row_data.get('Total Number of Indirect Employees', 0),  # Default to 0 if not present
-                )
+                location = {
+                        'Location Name': row_data.get('Location Name', '').strip(),
+                        'Address': row_data.get('Address', '').strip(),
+                        'Direct Employee': row_data.get('Direct Employee', '').strip(),
+                        'No. of Direct Employees': 0 if row_data.get('No. of Direct Employees') in [None, ''] else int(row_data.get('No. of Direct Employees')),
+                        'Vendors': row_data.get('Vendors', '').strip(),
+                        'No. of Vendors': 0 if row_data.get('No. of Vendors') in [None, ''] else int(row_data.get('No. of Vendors')),
+                        'Total Number of Indirect Employees': row_data.get('Total Number of Indirect Employees', 0),
+                    }
 
-                # Save the location instance to the database
-                location.save()
+                locations_data.append(location)
 
-            user.is_complete = True
-            user.save()
+            update_locations_session(request, locations_data)
+            # print(get_session_data(request))
             
             return JsonResponse({'status': 'success', 'message': 'File uploaded successfully'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+def manual_data(request):
+    if request.method == 'POST':
+
+        if 'locations_data' in request.session:
+            del request.session['locations_data']
+
+        try:
+            data = json.loads(request.body)
+            table_data = data.get("tableData", [])
+
+            locations_data = []
+            for row_data in table_data:
+ 
+                location = {
+                    'Location Name': row_data.get('location', ""),
+                    'Address': row_data.get('address', ""),
+                    'Direct Employee': row_data.get('direct') ,
+                    'No. of Direct Employees': 0 if row_data.get('noOfDirect') in [None, ''] else int(row_data.get('noOfDirect')),
+                    'Vendors': row_data.get('vendor'),
+                    'No. of Vendors': 0 if row_data.get('noOfVendor') in [None, ''] else int(row_data.get('noOfVendor')),
+                    'Total Number of Indirect Employees': int(row_data.get('total', 0)),
+                }
+                locations_data.append(location)
+
+            update_locations_session(request, locations_data)
+            # print(get_session_data(request))
+
+            return JsonResponse({'status': 'success', 'message': 'Data is uploaded successfully'})
+        
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+def manual_vendor_data(request):
+    if request.method == 'POST':
+
+        if 'vendor_data' in request.session:
+            del request.session['vendor_data']
+
+        try:
+            data = json.loads(request.body)
+            table_data = data.get("tableData", [])
+            # print(table_data)
+
+            vendor_data = []
+            for location_name, vendors in table_data.items():
+                for vendor in vendors:
+                    # Create a dictionary for each vendor with required fields
+                    vendor_entry = {
+                        'Location Name': location_name,
+                        'Vendor Name': vendor.get('vendorName', ""),
+                        'MyPOSH ID': vendor.get('myposhID', ""),
+                        'Commercial Address': vendor.get('commAddress', ""),
+                        'Mobile': vendor.get('mobile', ""),
+                        'Email': vendor.get('email', ""),
+                        'Nature of Service': vendor.get('natureOfService', ""),
+                        'Contact Name': vendor.get('contactName', ""),
+                        'Contact Mobile': vendor.get('contactMobile', ""),
+                        'Contact Email': vendor.get('contactEmail', ""),
+                        'Contract Start Date': vendor.get('contractStart', ""),
+                        'Contract End Date': vendor.get('contractEnd', ""),
+                        'Max Employees': int(vendor.get('maxEmp', 0))
+                    }
+
+                    # Append each vendor entry to the vendor_data list
+                    vendor_data.append(vendor_entry)
+
+            update_vendor_session(request, vendor_data)
+            # print(get_vendor_data(request))
+
+            return JsonResponse({'status': 'success', 'message': 'Data is uploaded successfully'})
+        
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+def upload_vendor_csv(request):
+    if request.method == 'POST' and request.FILES['file']:
+        file = request.FILES['file']
+        try:
+            if file.name.endswith('.csv'):
+                data = pd.read_csv(file, header=None)  
+            elif file.name.endswith('.xlsx'):
+                data = pd.read_excel(file, header=None)
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Unsupported file format'})
+
+            data = data.map(lambda x: str(x).replace('\xa0', ' ') if isinstance(x, str) else x)
+            data = data.fillna('NA') 
+    
+            location_name = None
+            result = {}
+            columns = ["SR.NO", "VENDOR NAME", "VENDOR'S MYPOSH UID", "VENDOR'S COMMUNICATION ADDRESS*", "MOBILE NUMBER*", 
+                    "EMAIL ID*", "NATURE OF SERVICE", "CONTACT PERSON NAME*", "CONTACT PERSON MOBILE NO*", 
+                    "CONTACT PERSON EMAIL ID*", "CONTRACT COMMENCEMENT DATE", "CONTRACT EXPIRY DATE", 
+                    "MAX NUMBER OF EMPLOYEES DEPLOYED"]
+
+            for index, row in data.iterrows():
+                if row.iloc[0] == "LOCATION":
+                    location_name = row.iloc[1]
+                    print(location_name)
+                    # Initialize a list for the location if it doesn't exist
+                    if location_name not in result:
+                        result[location_name] = []
+                    continue
+                elif row.iloc[0] == "SR.NO" or row.iloc[0] == "NA":
+                    continue
+                else:
+                    # Ensure location_name is not None before accessing result[location_name]
+                    if location_name:
+                        # Create a dictionary for the row based on column mappings
+                        row_data = {columns[i]: row.iloc[i] for i in range(1, len(columns))}
+                        result[location_name].append(row_data)
+
+            vendor_data = []
+            for location_name, vendors in result.items():
+                for vendor in vendors:
+                    # Create a dictionary for each vendor with required fields
+                    vendor_entry = {
+                        'Location Name': location_name,
+                        'Vendor Name': vendor.get(columns[1], ""),
+                        'MyPOSH ID': vendor.get(columns[2], ""),
+                        'Commercial Address': vendor.get(columns[3], ""),
+                        'Mobile': vendor.get(columns[4], ""),
+                        'Email': vendor.get(columns[5], ""),
+                        'Nature of Service': vendor.get(columns[6], ""),
+                        'Contact Name': vendor.get(columns[7], ""),
+                        'Contact Mobile': vendor.get(columns[8], ""),
+                        'Contact Email': vendor.get(columns[9], ""),
+                        'Contract Start Date': vendor.get(columns[10], ""),
+                        'Contract End Date': vendor.get(columns[11], ""),
+                        'Max Employees': int(vendor.get(columns[12], 0))
+                    }
+
+                    # Append each vendor entry to the vendor_data list
+                    vendor_data.append(vendor_entry)
+
+            update_vendor_session(request, vendor_data)
+            print(get_vendor_data(request))
+            
+            return JsonResponse({'status': 'success', 'message': 'File uploaded successfully'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})   
+#MANUAL
+# location = Location.objects.create(
+#     est_id = user,
+#     name = row.get('location'),
+#     address = row.get('address'),
+#     choiceOfDirect = row.get('direct'),
+#     noOFDirect = 0 if row.get('noOfDirect') == '' else row.get('noOfDirect'),
+#     choiceOfVendor = row.get('vendor'),
+#     noOFVendor = 0 if row.get('noOfVendor') == '' else row.get('noOfVendor'),
+#     totalno = row.get('total'),
+# )
+
+#EXCEL
+# location = {
+#     'est_id': user,
+#     'name': row_data.get('Location Name', '').strip(),
+#     'address': row_data.get('Address', '').strip(),
+#     'choiceOfDirect': row_data.get('Direct Employee', '').strip(),
+#     'noOFDirect': 0 if row_data.get('No. of Direct Employees') in [None, ''] else row_data.get('No. of Direct Employees'),
+#     'choiceOfVendor': row_data.get('Vendors', '').strip(),
+#     'noOFVendor': 0 if row_data.get('No. of Vendors') in [None, ''] else row_data.get('No. of Vendors'),
+#     'totalno': row_data.get('Total Number of Indirect Employees', 0),
+# }

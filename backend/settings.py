@@ -166,4 +166,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'myposh.help@gmail.com'
 EMAIL_HOST_PASSWORD = 'gggqtxfwmijfmmyp'
- 
+
+# Set session cookie age to 3 hours (in seconds)
+SESSION_COOKIE_AGE = 10800  # 3 hours
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Keeps session active even after browser close

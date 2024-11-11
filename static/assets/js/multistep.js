@@ -52,6 +52,7 @@ submit_click.forEach(function(submit_click_form){
 
  
 
+
 function updateform(){
     main_form.forEach(function(mainform_number){
         mainform_number.classList.remove('active');
@@ -116,6 +117,7 @@ function closeModal() {
 function closeManual(){
     manualModal.style.display = "none";
 }
+
 
 function checkInput() {
     const countLoc = document.getElementById('countloc').value;
@@ -203,10 +205,16 @@ document.addEventListener("DOMContentLoaded", function() {
 const excelBtn = document.getElementById("excelBtn");
 const excelModal = document.getElementById("excelModal");
 const closeBtnnn = document.getElementsByClassName("close-excel")[0];
+
 const uploadArea = document.getElementById("uploadArea");
 const fileInput = document.getElementById("fileInput");
 const previewContainer = document.getElementById("previewContainer");
 const filePreview = document.getElementById("filePreview");
+
+const uploadVendorArea = document.getElementById("uploadVendorArea");
+const VendorfileInput = document.getElementById("VendorfileInput");
+const previewVendorContainer = document.getElementById("previewVendorContainer");
+const fileVendorPreview = document.getElementById("fileVendorPreview");
 
 window.onclick = (e) => { if (e.target === excelModal) closeExcel(); };
 
@@ -229,6 +237,11 @@ function clearPreview() {
     // previewContainer.style.display = "none";
 }
 
+function clearVendorPreview() {
+    fileVendorPreview.innerHTML = "";
+    // previewContainer.style.display = "none";
+}
+
 // Drag and Drop functionality
 uploadArea.addEventListener("click", () => fileInput.click());
 uploadArea.addEventListener("dragover", (e) => e.preventDefault());
@@ -238,11 +251,27 @@ uploadArea.addEventListener("drop", (e) => {
     handleFile(file);
 });
 
+// Drag and Drop functionality
+uploadVendorArea.addEventListener("click", () => VendorfileInput.click());
+uploadVendorArea.addEventListener("dragover", (e) => e.preventDefault());
+uploadVendorArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleVendorFile(file);
+});
+
 fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
     const fileName = fileInput.files[0].name;
     document.getElementById("mytext").value = "Uploaded Filename :- " + fileName;
     handleFile(file);
+});
+
+VendorfileInput.addEventListener("change", () => {
+    const file = VendorfileInput.files[0];
+    const fileName = VendorfileInput.files[0].name;
+    document.getElementById("myVendortext").value = "Uploaded Filename :- " + fileName;
+    handleVendorFile(file);
 });
 
 function handleFile(file) {
@@ -252,6 +281,19 @@ function handleFile(file) {
             readCSVFile(file);
         } else if (file.name.endsWith(".xlsx")) {
             readXLSXFile(file);
+        }
+    } else {
+        alert("Please upload a valid CSV or XLSX file.");
+    }
+}
+
+function handleVendorFile(file) {
+    if (file && (file.name.endsWith(".csv") || file.name.endsWith(".xlsx"))) {
+        previewVendorContainer.style.display = "block";
+        if (file.name.endsWith(".csv")) {
+            readVendorCSVFile(file);
+        } else if (file.name.endsWith(".xlsx")) {
+            readVendorXLSXFile(file);
         }
     } else {
         alert("Please upload a valid CSV or XLSX file.");
@@ -283,6 +325,30 @@ function readCSVFile(file) {
     reader.readAsText(file);
 }
 
+function readVendorCSVFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const rawRows = e.target.result.split("\n");
+
+        // Calculate the maximum number of columns in advance
+        const maxCols = Math.max(...rawRows.map(row => row.split(",").length));
+
+        const rows = rawRows.map(row => {
+            // Split by comma and trim whitespace
+            let cells = row.split(",").map(cell => cell.trim());
+
+            // Normalize row length to match the longest row
+            while (cells.length < maxCols) {
+                cells.push(""); // Fill with empty strings if fewer columns
+            }
+
+            return cells;
+        });
+
+        displayVendorPreview(rows);
+    };
+    reader.readAsText(file);
+}
 
 function readXLSXFile(file) {
     const reader = new FileReader();
@@ -308,6 +374,29 @@ function readXLSXFile(file) {
     reader.readAsArrayBuffer(file);
 }
 
+function readVendorXLSXFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        
+        // Convert sheet to 2D array with empty cells included
+        let rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+
+        // Ensure each row has the same length by padding with empty strings
+        const maxCols = Math.max(...rows.map(row => row.length));
+        rows = rows.map(row => {
+            while (row.length < maxCols) {
+                row.push(""); // Fill with empty strings if fewer columns
+            }
+            return row;
+        });
+
+        displayVendorPreview(rows);
+    };
+    reader.readAsArrayBuffer(file);
+}
 
 function displayPreview(rows) {
     clearPreview();
@@ -336,6 +425,28 @@ function displayPreview(rows) {
     });
 }
 
+function displayVendorPreview(rows) {
+    clearPreview();
+    
+    // Limit preview to the first 10 rows (including header)
+    const previewRows = rows.slice(0, 10);
+
+    previewRows.forEach((row, i) => {
+        const tr = document.createElement("tr");
+        
+        row.forEach(cell => {
+            const cellElem = document.createElement("td");
+            
+            // Set cell content to a non-breaking space if it's empty, ensuring alignment
+            cellElem.innerHTML = cell ? cell : "&nbsp;";
+            
+            tr.appendChild(cellElem);
+        });
+        
+        fileVendorPreview.appendChild(tr);
+    });
+}
+
 
 // Function to enable inline editing for a row
 function editRow(button) {
@@ -347,8 +458,8 @@ function editRow(button) {
         if (cellType === 'checkbox') {
             // Create the dropdown with the correct option selected
             cell.innerHTML = `<select class="form-control form-control-sm">
-                <option value="False" ${currentValue === 'False' ? 'selected' : ''}>False</option>
-                <option value="True" ${currentValue === 'True' ? 'selected' : ''}>True</option>
+                <option value="No" ${currentValue === 'No' ? 'selected' : ''}>No</option>
+                <option value="Yes" ${currentValue === 'Yes' ? 'selected' : ''}>Yes</option>
             </select>`;
 
             // Add onchange listener to enable/disable and clear next cell if toggled to False
@@ -359,7 +470,7 @@ function editRow(button) {
                 let nextCell = cells[index + 1];
                 if (nextCell) {
                     let nextCellInput = nextCell.querySelector("input");
-                    if (checkboxSelect.value === 'True') {
+                    if (checkboxSelect.value === 'Yes') {
                         nextCell.classList.remove("disabled-cell");
                         if (nextCellInput) {
                             nextCellInput.disabled = false;
@@ -377,7 +488,7 @@ function editRow(button) {
             // Trigger the onchange event initially to set the state
             checkboxSelect.onchange();
         } else {
-            cell.innerHTML = `<input type="${cellType}" value="${currentValue}" class="form-control form-control-sm">`;
+            cell.innerHTML = `<input type="${cellType}" value="${currentValue}" class="form-control form-control-sm" required>`;
         }
     });
     
@@ -435,3 +546,266 @@ function collectTableData() {
 document.querySelector('.download-button').addEventListener('click', function() {
     window.location.href = '/download-sample/';
 });
+
+// EXCEL VENDOR DETAILS JS
+
+
+const closeExcelVendore = document.getElementById("close-vendore");
+
+function closeExcelVendor(){
+    excelVendorModal.style.display = "none"
+}
+
+const excelVendorModal = document.getElementById("excelVendorModal")
+const excelVendorBtn = document.getElementById("excelVendorBtn")
+
+excelVendorBtn.onclick = () => {
+    excelVendorModal.style.display = "block";
+    previewVendorContainer.style.display = "none"
+}
+
+closeExcelVendore.onclick = () => {  closeExcelVendor() };
+
+document.querySelector('.download-vendor-button').addEventListener('click', function() {
+    window.location.href = '/download-vendor-sample/';
+});
+
+//MANUAL VENDOR DETAILS JS
+
+function closeVendorModal(){
+    manualVendorModal.style.display = "none";
+    
+}
+
+const manualVendorModal = document.getElementById("manualVendorModal");
+const manualVendorBtn = document.getElementById("manualVendorBtn");
+const closeManualVendor = document.getElementById("close-vendor");
+
+    manualVendorBtn.onclick = () => {
+
+        const tableBodies = document.querySelectorAll(`#bootstrapVendordatatable tbody`);
+        tableBodies.forEach(tbody => tbody.innerHTML = '');    
+
+        var result = "";
+        $.ajax({
+            url: `/info/?_=${new Date().getTime()}`,
+            type: 'GET',
+            async: false,
+            dataType: 'json',  // Expect a JSON response
+            cache: false,      // Prevent caching in production
+            headers: {
+                'x-requested-with-vendor-data': 'vendor-data'
+            },
+            success: function(response) {
+                result = response.locations_with_vendors;
+            },
+            error: function(xhr, errmsg, err) {
+                console.error("Error fetching vendor data:", errmsg);
+            }
+        });
+        
+        // console.log(result);
+    
+        manualVendorModal.style.display = "block";
+        const tablediv = document.querySelector('#table-content') 
+
+        tablediv.innerHTML = ""
+    
+        for (let j = 0; j < result.length; j++) {
+            const location_name = result[j][0];
+            const vendor_details = result[j][1].length;
+
+            if (tablediv){
+                const table = document.createElement("table");
+                table.classList.add("vendor-table");
+                table.classList.add("table");
+                table.classList.add("table-striped");
+                table.classList.add("table-bordered");
+                table.classList.add("text-center");
+
+                // Create the table header section
+                const thead = document.createElement("thead");
+
+                thead.classList.add("thead-dark")
+
+                // First row for location name
+                const locationRow = document.createElement("tr");
+                const locationHeader = document.createElement("th");
+                locationHeader.colSpan = 14;
+                locationHeader.classList.add("location-header");
+                locationHeader.innerText = `LOCATION ${j + 1}: ${location_name}`;
+                locationRow.appendChild(locationHeader);
+
+                // Second row for column headers
+                const headerRow = document.createElement("tr");
+                headerRow.classList.add("header-row");
+
+                const headers = [
+                    "SR. NO", "VENDOR NAME", "VENDOR'S MYPOSH UID",
+                    "VENDOR'S COMMUNICATION ADDRESS<span style='color: red;'>*</span>",
+                    "MOBILE NUMBER<span style='color: red;'>*</span>",
+                    "EMAIL ID<span style='color: red;'>*</span>",
+                    "NATURE OF SERVICE", "CONTACT PERSON NAME<span style='color: red;'>*</span>",
+                    "CONTACT PERSON MOBILE NO<span style='color: red;'>*</span>",
+                    "CONTACT PERSON EMAIL ID<span style='color: red;'>*</span>",
+                    "CONTRACT COMMENCEMENT DATE", "CONTRACT EXPIRY DATE",
+                    "MAX NUMBER OF EMPLOYEES DEPLOYED", "Actions"
+                ];
+
+                // Create each header cell and append to header row
+                headers.forEach(headerText => {
+                    const th = document.createElement("th");
+                    th.innerHTML = headerText;  // Use innerHTML to include HTML tags
+                    headerRow.appendChild(th);
+                });
+
+                // Append the location and header rows to the table head
+                thead.appendChild(locationRow);
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                // Create the table body
+                const tbody = document.createElement("tbody");
+                tbody.classList.add(location_name.replace(/ /g,"_"));  // Set class dynamically based on location
+
+                if (vendor_details > 0){
+    
+                    for (let i = 0; i < vendor_details; i++) {
+        
+                    // Check if tbody exists
+                    if (tbody) {
+                        const row = document.createElement("tr");
+        
+                        row.innerHTML = `
+                            <td>${i + 1}</td>
+                            <td data-type="text" class="editable-vendor-cell"></td>
+                            <td data-type="text" class="editable-vendor-cell"></td>
+                            <td data-type="text" class="editable-vendor-cell"></td>
+                            <td data-type="numeric" class="editable-vendor-cell"></td>
+                            <td data-type="email" class="editable-vendor-cell"></td>
+                            <td data-type="text" class="editable-vendor-cell"></td>
+                            <td data-type="text" class="editable-vendor-cell"></td>
+                            <td data-type="numeric" class="editable-vendor-cell"></td>
+                            <td data-type="email" class="editable-vendor-cell"></td>
+                            <td data-type="date" class="editable-vendor-cell"></td>
+                            <td data-type="date" class="editable-vendor-cell"></td>
+                            <td data-type="number" class="editable-vendor-cell"></td>
+                            <td class="action_buttons">
+                                <button class="btn btn-primary btn-sm save-btn d-none" onclick="saveVendorRow(this)">Save</button>
+                                <button class="btn btn-secondary btn-sm edit-btn" onclick="editVendorRow(this)">Edit</button>
+                            </td>
+                        `;
+        
+                        tbody.appendChild(row);
+
+                        } 
+                    }
+                }else{
+                if (tbody) {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `<td colspan="14" class="text-center">No vendors available for this location</td>`
+                    tbody.appendChild(row);
+                }
+            }
+            // Append the table body to the table
+            table.appendChild(tbody);
+            const br = document.createElement("br");
+            table.appendChild(br)
+            tablediv.appendChild(table);
+        }
+
+    }
+};
+
+// Function to enable inline editing for a vendor row
+function editVendorRow(button) {
+    let row = button.closest("tr");
+    row.querySelectorAll(".editable-vendor-cell").forEach((cell, index, cells) => {
+        let cellType = cell.getAttribute("data-type");
+        let currentValue = cell.textContent.trim();
+
+        if (cellType === "numeric"){
+            cell.innerHTML = `<input type="number" value="${currentValue}" class="form-control form-control-sm numeric">`;
+        }
+        else{
+            cell.innerHTML = `<input type="${cellType}" value="${currentValue}" class="form-control form-control-sm">`;
+        }
+        
+        
+    });
+    
+    row.querySelector(".save-btn").classList.remove("d-none");
+    row.querySelector(".edit-btn").classList.add("d-none");
+}
+
+
+// Function to save edited values
+function saveVendorRow(button) {
+    let row = button.closest("tr");
+    row.querySelectorAll(".editable-vendor-cell").forEach(cell => {
+        let input = cell.querySelector("input");
+        if (input) {
+            cell.textContent = input.value;
+        }
+    });
+    row.querySelector(".save-btn").classList.add("d-none");
+    row.querySelector(".edit-btn").classList.remove("d-none");
+}
+
+
+closeManualVendor.onclick = () => {  closeVendorModal() };
+
+
+
+function collectVendorTableData() {
+    const tableData = {}; // Main object to hold data by location_name
+    const location_headers = document.querySelectorAll(".location-header");
+
+    location_headers.forEach(location => {
+        const location_name = location.textContent.split(":")[1].trim(); // Extract location name
+        const tbodyClass = location_name.replace(/ /g, "_"); // Convert location name to match tbody class
+        
+        // Initialize an array for each location_name to store its rows
+        if (!tableData[location_name]) {
+            tableData[location_name] = [];
+        }
+
+        // Select rows within the current location's tbody
+        const rows = document.querySelectorAll(`tbody.${tbodyClass} tr`);
+        
+        const columns = ['vendorName', 'myposhID', 'commAddress', 
+            'mobile', 'email', 'natureOfService', 'contactName',
+            'contactMobile', 'contactEmail', 'contractStart', 'contractEnd', "maxEmp"];
+
+        rows.forEach(row => {
+            let rowData = {}; // Initialize an object to store cell data for this row
+            let isEmpty = true; // Flag to track if all values are empty
+            let i = 0; // Initialize index for columns
+
+            row.querySelectorAll(".editable-vendor-cell").forEach(cell => {
+                const key = columns[i]; // Use the corresponding key from columns
+                const value = cell.textContent.trim();
+                rowData[key] = value;
+
+                if (value) {
+                    isEmpty = false; // Set flag to false if there's any non-empty value
+                }
+                i++; // Move to the next column
+            });
+
+            // Only add non-empty rowData to the current location's array
+            if (!isEmpty) {
+                tableData[location_name].push(rowData);
+            }
+        });
+
+        // Remove the location from tableData if it has only empty entries
+        if (tableData[location_name].length === 0) {
+            delete tableData[location_name];
+        }
+    });
+
+    // console.log(tableData);
+    return tableData;
+}
+

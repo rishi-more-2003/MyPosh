@@ -2,7 +2,10 @@ import hashlib
 import os
 import time
 import math, random 
-   
+from openpyxl import Workbook
+from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
+from django.conf import settings
+
 def generate_class_code(total_digits,existing_codes) :  
     digits = ''.join([str(i) for i in range(0,10)])
     code = ""  
@@ -90,3 +93,124 @@ def generate_unique_consultancy(phone_number, email):
     
     # Return the first 10 characters of the hash with a prefix
     return 'CON' + hashed_string[:10].upper()
+
+
+# Utility function to update session data
+def update_locations_session(request, locations_data):
+
+    if 'locations_data' in request.session:
+        del request.session['locations_data']
+    
+    request.session['locations_data'] = locations_data
+    # print(request.session.get('locations_data'))
+
+def get_session_data(request):
+    return request.session.get('locations_data')
+
+# Utility function to update session data
+def update_vendor_session(request, vendor_data):
+
+    if 'vendor_data' in request.session:
+        del request.session['vendor_data']
+    
+    request.session['vendor_data'] = vendor_data
+    # print(request.session.get('locations_data'))
+
+def get_vendor_data(request):
+    return request.session.get('vendor_data')
+
+
+def create_vendor_excel(locations):
+
+    # Colors and styles for cell formatting
+    brown_fill = PatternFill(start_color="D9A284", end_color="D9A284", fill_type="solid")
+    yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+    bold_font = Font(bold=True)
+
+    # Border style
+    thin_border = Border(
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin")
+    )
+
+    # Alignment style
+    alignment_left_wrap = Alignment(horizontal="left", vertical="center", wrap_text=True)
+    alignment_center_wrap = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+    # Create workbook and worksheet
+    wb = Workbook()
+    ws = wb.active
+
+    # Set column widths for better readability
+    column_widths = [12, 35, 20, 30, 22, 25, 20, 25, 18, 25, 20, 20, 30]
+    for i, width in enumerate(column_widths, start=1):
+        ws.column_dimensions[chr(64 + i)].width = width 
+
+    headers = [
+        "SR.NO", "VENDOR NAME", "VENDOR'S MYPOSH UID", "VENDOR'S COMMUNICATION ADDRESS*", "MOBILE NUMBER*", "EMAIL ID*", "NATURE OF SERVICE",
+        "CONTACT PERSON NAME*", "CONTACT PERSON MOBILE NO*", "CONTACT PERSON EMAIL ID*", "CONTRACT COMMENCEMENT DATE",
+        "CONTRACT EXPIRY DATE", "MAX NUMBER OF EMPLOYEES DEPLOYED"
+    ]
+
+    row_num = 1
+    for location in locations:
+        # Set "LOCATION" label and location name with border and alignment
+        location_label_cell = ws.cell(row=row_num, column=1, value="LOCATION")
+        location_name_cell = ws.cell(row=row_num, column=2, value=location["location_name"])
+
+        for i in range(3, 14):
+            location_name_color = ws.cell(row=row_num, column=i, value="")
+            location_name_color.fill = brown_fill
+            location_name_color.border = thin_border
+
+        location_label_cell.fill = brown_fill
+        location_name_cell.fill = brown_fill
+        location_label_cell.font = bold_font
+        location_name_cell.font = bold_font
+        location_label_cell.border = thin_border
+        location_name_cell.border = thin_border
+        location_label_cell.alignment = alignment_left_wrap
+        location_name_cell.alignment = alignment_left_wrap
+        
+        # Move to the next row to add headers
+        row_num += 1
+        
+        # Fill header row with brown color, bold font, border, and alignment
+        for col_num, header in enumerate(headers, start=1):
+            cell = ws.cell(row=row_num, column=col_num, value=header)
+            cell.fill = brown_fill
+            cell.font = bold_font
+            cell.border = thin_border
+            cell.alignment = alignment_center_wrap
+
+        # Move to the next row for vendor entries
+        row_num += 1
+        
+        # Add vendors under the location
+        for sr_no in range(1, location["vendors"] + 1):
+            ws.cell(row=row_num, column=1, value=sr_no).fill = brown_fill
+            
+            # Fill all vendor cells with yellow color, border, and alignment
+            for col_num in range(1, 14):
+                cell = ws.cell(row=row_num, column=col_num)
+                cell.fill = yellow_fill
+                cell.border = thin_border
+                cell.alignment = alignment_left_wrap
+                if col_num == 1:
+                    cell.value = sr_no  # Set the serial number
+                    cell.alignment = alignment_center_wrap
+                if col_num == 5 or col_num == 9 or col_num == 13:
+                    cell.number_format = '0'
+                elif col_num == 11 or col_num == 12:
+                    cell.number_format = 'yyyy-mm-dd'
+        
+            # Move to the next row for the next vendor
+            row_num += 1
+        
+        row_num += 1
+
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/')
+    
+    wb.save(f"{file_path}VendorDataTemplate.xlsx")

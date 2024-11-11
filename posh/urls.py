@@ -10,9 +10,14 @@ urlpatterns = [
     path('page/', views.page, name='page'),
     path('visibility/', views.visibility, name='visibility'),
     path('info/', views.multistep_form, name='multistep_form'),
-    path('addnew',views.addnew),  
+  
     path("download-sample/", views.download_sample_file, name="download_sample_file"),
     path('upload-csv/', views.upload_csv, name='upload_csv'),
+    path('manual-data/', views.manual_data, name='manual_data'),
+
+    path("download-vendor-sample/", views.download_vendor_file, name="download_vendor_file"),
+    path('manual-vendor-data/', views.manual_vendor_data, name='manual_vendor_data'),
+    path('upload-vendor-csv/', views.upload_vendor_csv, name='upload_vendor_csv'),
 
     path('register/', views.register, name="register"),
     path('register/ngo/', views.register_ngo, name="register_ngo"),

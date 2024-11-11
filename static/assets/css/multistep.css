@@ -319,6 +319,7 @@ select{
 #readonly-structure,
 #readonly-state,
 #readonly-city,
+#readonly-loc,
 #readonly-phone{
     top:-15px;
     left:6px;
@@ -369,6 +370,7 @@ select{
 }
 
 #manual,
+#excelVendor,
 #excel{
     max-width: 90%;
     max-height: 90%;
@@ -543,9 +545,15 @@ select{
     pointer-events: none;
 }
 
+td.but,
+td.action_buttons{
+    display: flex;
+}
+
 @media (max-width:1250px) {
-    td.but{
-        display: ruby-text;
+    td.but,
+    td.action_buttons{
+        display: flex;
     }
 }
 
@@ -608,6 +616,7 @@ select{
 
 .close,
 .close-loc,
+.close-vendor,
 .close-excel {
     color: var(--text-color-light);
     float: right;
@@ -618,6 +627,7 @@ select{
 
 .close:hover,
 .close-loc:hover,
+.close-vendor:hover,
 .close-excel:hover  {
     color: var(--title-color);
 }
@@ -636,7 +646,9 @@ select{
 }
 
 .upload-button,
-.download-button {
+.upload-vendor-button,
+.download-button,
+.download-vendor-button {
     margin-top: 20px;
     padding: 10px 20px;
     background-color: var(--first-color);
@@ -671,18 +683,21 @@ th, td {
     text-align: left; /* Align text to the left */
 }
 
-#filePreview {
+#filePreview,
+#fileVendorPreview {
     width: 100%; /* Table width adapts to content */
     border-collapse: collapse;
     margin-top: 10px;
     min-width: 600px; /* Adjust as needed for minimum width */
 }
 
-#fileInput{
+#fileInput,
+#VendorfileInput{
     display: none;
 }
 
-#filePreview td, #filePreview th {
+#filePreview td, #filePreview th,
+#fileVendorPreview td, #fileVendorPreview th {
     border: 1px solid var(--text-color-light);
     padding: 8px;
     font-size: 14px;
@@ -693,3 +708,16 @@ th, td {
     margin-bottom: 5px;
 }
 
+#message-success,
+#message-vendor-success {
+    text-align: center;
+    background-color: lightgreen;
+    margin-bottom: 20px;
+    font-size: large;
+    font-style: italic;
+    font-weight: bolder;
+}
+
+input[class="form-control form-control-sm numeric"]::-webkit-inner-spin-button, input[class="form-control form-control-sm numeric"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}

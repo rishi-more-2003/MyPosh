@@ -36,14 +36,14 @@
                         <h3>Step <span class="step-number">1</span></h3>
                         <p class="step-number-content" data-step="1">Verify your establishment information to get closer to complete registration.</p>
                         <p class="step-number-content d-none" data-step="2">Get to know better by adding your establishment's location details.</p>
-                        {% comment %} <p class="step-number-content d-none" data-step="3">Help companies get to know you better by telling then about your past experiences.</p> {% endcomment %}
-                        {% comment %} <p class="step-number-content d-none" data-step="4">Add your profile piccture and let companies find youy fast.</p> {% endcomment %}
+                        <p class="step-number-content d-none" data-step="3">Help us get to know you better by providing us with your vendor details.</p>
+                        <p class="step-number-content d-none" data-step="4">Add your employee details.</p>
                     </div>
                     <ul class="progress-bar">
                         <li class="progress-item" data-step="1">Establishment Information</li>
                         <li class="progress-item" data-step="2">Location Details</li>
-                        {% comment %} <li class="progress-item" data-step="3">Vendor Details</li> {% endcomment %}
-                        {% comment %} <li class="progress-item" data-step="4">Employee Details</li> {% endcomment %}
+                        <li class="progress-item" data-step="3">Vendor Details</li>
+                        <li class="progress-item" data-step="4">Employee Details</li>
                     </ul>                 
                 </div>
                 <div class="right-side">
@@ -133,14 +133,15 @@
                         <div class="input-text">
                             <div class="input-div">
                                 <input type="number" id='countloc' required require> 
-                                <span>Count of Locations</span>
+                                <span id='readonly-loc'>Count of Locations</span>
                             </div>
                             <button id="optionBtn" class="add_button" onclick="checkInput()">Add</button>
                         </div>
-
+                        <div id="message-success" hidden>Success: All Location Details are saved.</div>
                         <div class="buttons button_space">
                             <button class="back_button">Back</button>
-                            {% comment %} <button class="next_button">Submit</button> {% endcomment %}
+                            <button class="next_button" hidden id="nextstep2">Next Step</button>
+                            {% comment %} <button class="next_button" id="nextstep2">Next Step</button> {% endcomment %}
                         </div>
                     </div>
 
@@ -163,7 +164,7 @@
                             <div class="location_space">
                                 <h2>Location Records</h2>
                                 <div class="buttons">
-                                    <button class="save_button" id="manual-submission">Submit</button>
+                                    <button class="save_button" id="manual-submission">Save</button>
                                 </div>
                             </div>
                             <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
@@ -183,7 +184,7 @@
                                 <input type="file" id="fileInput" accept=".csv, .xlsx" hidden>
                             </div>
                             <button class="download-button button-secondary">Download Sample File</button>
-                            <button class="upload-button button-secondary" id="uploadButton">Submit</button>
+                            <button class="upload-button button-secondary" id="uploadButton">Save</button>
                             <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                             <div class="preview-container" id="previewContainer">
                                 <h3>Preview:</h3>
@@ -197,21 +198,66 @@
 
 
                     {% comment %} STEP - 3 {% endcomment %}
-                    {% comment %} <div class="main" data-step="3">
-                        <small><i class="fa fa-smile-o"></i></small>
+                    <div class="main" data-step="3">
                         <div class="text">
-                            <h2>Work Experiences</h2>
-                            <p>Can you talk about your past work experience?</p>
+                            <h2>Vendor Details</h2>
+                            <p>Can you provide us with your vendor details?</p>
+                            <div class="option_space">
+                                <button class="opt_button" id="manualVendorBtn">Manually</button>
+                                <button class="opt_button" id='excelVendorBtn'>Excel</button>
+                            </div>
                         </div>
-                        <div class="input-text">
-                            <div class="input-div">
-                                <input type="text" required require>
-                                <span>Experience 1</span>
+                        <div id="message-vendor-success" hidden>Success: All Vendor Details are saved.</div>
+                        <div class="buttons button_space" style="margin-top: 20px">
+                            <button class="back_button">Back</button>
+                            <button class="next_button" hidden id="nextstep3">Next Step</button>
+                        </div>
+                    </div> 
+
+                    <!-- Modal for Vendor Upload -->
+                    <div id="excelVendorModal" class="modal">
+                        <div class="modal-content" id="excelVendor">
+                            <span class="close-vendor" id="close-vendore" >&times;</span>
+                            <h2>Upload File</h2>
+                            <div class="upload-area" id="uploadVendorArea">
+                                <p>Drag & Drop a file here or click to upload</p>
+                                <input type="file" id="VendorfileInput" accept=".csv, .xlsx" hidden>
                             </div>
-                            <div class="input-div"> 
-                                <input type="text" required require>
-                                <span>Position</span>
+                            <button class="download-vendor-button button-secondary">Download Vendor File</button>
+                            <button class="upload-vendor-button button-secondary" id="uploadVendorButton">Save</button>
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"> 
+                            <div class="preview-container" id="previewVendorContainer">
+                                <h3>Preview:</h3>
+                                <input type="text" id="myVendortext" disabled>
+                                <div class="table-wrapper"> <!-- Add this wrapper for scrolling -->
+                                    <table id="fileVendorPreview"></table>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {% comment %} Modal for Manually Vendor {% endcomment %}
+                    <div id="manualVendorModal" class="modal">
+                        <div class="modal-content"  id="manual">
+                            <span class="close-vendor" id="close-vendor">&times;</span>
+                            <div class="location_space">
+                                <h2>Vendor Records</h2>
+                                <div class="buttons">
+                                    <button class="save_button" id="manual-vendor-submission">Save</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                        
+                            {% include 'manualVendor.html' %}
+
+                        </div>
+                    </div>
+
+                    {% comment %} STEP - 4 {% endcomment %}
+                    <div class="main" data-step="4">
+                        <div class="text">
+                            <h2>User Photo</h2>
+                            <p>Upload your profile picture and share yourself.</p>
                         </div>
                         <div class="input-text">
                             <div class="input-div">
@@ -233,43 +279,13 @@
                                 <span>Position</span>
                             </div>
                         </div>
-                        <div class="buttons button_space">
-                            <button class="back_button">Back</button>
-                            <button class="next_button">Next Step</button>
-                        </div>
-                    </div> {% endcomment %}
 
-                    {% comment %} STEP - 4 {% endcomment %}
-                    {% comment %} <div class="main" data-step="4">
-                        <small><i class="fa fa-smile-o"></i></small>
-                        <div class="text">
-                            <h2>User Photo</h2>
-                            <p>Upload your profile picture and share yourself.</p>
-                        </div>
-                        <div class="user_card">
-                            <span></span>
-                            <div class="circle">
-                                <span><img src="https://i.imgur.com/hnwphgM.jpg"></span>
-                                
-                            </div>
-                            <div class="social">
-                                <span><i class="fa fa-share-alt"></i></span>
-                                <span><i class="fa fa-heart"></i></span>
-                                
-                            </div>
-                            <div class="user_name">
-                                <h3>Peter Hawkins</h3>
-                                <div class="detail">
-                                    <p><a href="#">Izmar,Turkey</a>Hiring</p>
-                                    <p>17 last day . 94Apply</p>
-                                </div>
-                            </div>
-                        </div>
                         <div class="buttons button_space">
                             <button class="back_button">Back</button>
                             <button class="submit_button">Submit</button>
                         </div>
                     </div>
+
                      <div class="main">
                          <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
                              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
@@ -280,7 +296,7 @@
                             <h2>Congratulations!</h2>
                             <p>Thanks Mr./Mrs. <span class="shown_name"></span> your information have been submitted successfully for the future reference we will contact you soon.</p>
                         </div>
-                    </div> {% endcomment %}
+                    </div> 
                 </div>
             </div>
         </div>
@@ -298,7 +314,7 @@
     
         // Send AJAX POST request to update certification details
         $.ajax({
-            url: '/info/',  // Use your endpoint URL here
+            url: '/manual-data/',  // Use your endpoint URL here
             type: 'POST',
             headers: {
                 'X-CSRFToken': csrfToken   // Correct CSRF header
@@ -310,8 +326,13 @@
                 const manualModal = document.getElementById("manualModal");
                 manualModal.style.display = "none";
                 // location.reload();  // Reload the page to see the changes
+                console.log(response)
                 if(response['status'] === 'success'){
-                    window.location = '/';
+                    document.getElementById("message-success").hidden = false;
+                    document.getElementById("nextstep2").hidden = false;
+                    document.getElementById("optionBtn").hidden = true;
+                    document.getElementById("countloc").disabled = true;
+
                 }
             },
             error: function(xhr, errmsg, err) {
@@ -320,48 +341,134 @@
             }
         });
     });
-    $(document).ready(function() {
-        $('#uploadButton').on('click', function(event) {
-            event.preventDefault();
-            
-            // Get the selected file
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0]; // Get the first file
-            const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
-            
-            if (file) {
-                const formData = new FormData();
-                formData.append('file', file); // Append the file to FormData
-    
-                // Send AJAX POST request to upload the CSV file
-                $.ajax({
-                    url: '/upload-csv/', // Your Django URL for handling the file upload
-                    type: 'POST',
-                    processData: false, // Prevent jQuery from automatically processing the data
-                    contentType: false, // Set content type to false to let jQuery set it
-                    headers: {
-                        'X-CSRFToken': csrfToken  // Get CSRF token from cookies
-                    },
-                    data: formData,
-                    success: function(response) {
-                        console.log('File uploaded successfully:', response);
-                        const excelModal = document.getElementById("excelModal");
-                        excelModal.style.display = "none";
-                        if(response['status'] === 'success'){
-                            window.location = '/';
-                        }
-                        // Handle success (e.g., close modal, show success message)
-                    },
-                    error: function(xhr, errmsg, err) {
-                        console.error('Error uploading file:', errmsg);
-                        // Handle error (e.g., show error message)
+
+$(document).ready(function() {
+    $('#uploadButton').on('click', function(event) {
+        event.preventDefault();
+        
+        // Get the selected file
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0]; // Get the first file
+        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
+        
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file); // Append the file to FormData
+
+            // Send AJAX POST request to upload the CSV file
+            $.ajax({
+                url: '/upload-csv/', // Your Django URL for handling the file upload
+                type: 'POST',
+                processData: false, // Prevent jQuery from automatically processing the data
+                contentType: false, // Set content type to false to let jQuery set it
+                headers: {
+                    'X-CSRFToken': csrfToken  // Get CSRF token from cookies
+                },
+                data: formData,
+                success: function(response) {
+                    console.log('File uploaded successfully:', response);
+                    const excelModal = document.getElementById("excelModal");
+                    excelModal.style.display = "none";
+                    if(response['status'] === 'success'){
+                        document.getElementById("message-success").hidden = false
+                        document.getElementById("nextstep2").hidden = false
+                        document.getElementById("optionBtn").hidden = true
+                        document.getElementById("countloc").disabled = true
                     }
-                });
-            }
-        });
+                    // Handle success (e.g., close modal, show success message)
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error('Error uploading file:', errmsg);
+                    // Handle error (e.g., show error message)
+                }
+            });
+        }
     });
-    
-    
+});
+
+$(document).ready(function() {
+    $('#uploadVendorButton').on('click', function(event) {
+        event.preventDefault();
+        
+        // Get the selected file
+        const fileInput = document.getElementById('VendorfileInput');
+        const file = fileInput.files[0]; // Get the first file
+        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
+        
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file); // Append the file to FormData
+
+            // Send AJAX POST request to upload the CSV file
+            $.ajax({
+                url: '/upload-vendor-csv/', // Your Django URL for handling the file upload
+                type: 'POST',
+                processData: false, // Prevent jQuery from automatically processing the data
+                contentType: false, // Set content type to false to let jQuery set it
+                headers: {
+                    'X-CSRFToken': csrfToken  // Get CSRF token from cookies
+                },
+                data: formData,
+                success: function(response) {
+                    console.log('File uploaded successfully:', response);
+                    const excelVendorModal = document.getElementById("excelVendorModal");
+                    excelVendorModal.style.display = "none";
+                    if(response['status'] === 'success'){
+                        document.getElementById("message-vendor-success").hidden = false;
+                        document.getElementById("nextstep3").hidden = false;
+                        document.getElementById("manualVendorBtn").hidden = true;
+                        document.getElementById("excelVendorBtn").hidden= true;
+      
+                      }
+                    // Handle success (e.g., close modal, show success message)
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error('Error uploading file:', errmsg);
+                    // Handle error (e.g., show error message)
+                }
+            });
+        }
+    });
+});
+
+//Manual-Vendor-Submission
+$('#manual-vendor-submission').on('click', function(event) {
+    event.preventDefault();
+
+    const tableData = collectVendorTableData();
+    const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();  // Correct CSRF token selector
+
+    // Send AJAX POST request to update certification details
+    $.ajax({
+        url: '/manual-vendor-data/',  // Use your endpoint URL here
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken   // Correct CSRF header
+        },
+        contentType: 'application/json',  // Set content type for JSON data
+        data: JSON.stringify({ tableData: tableData }),
+        success: function(response) {
+            // Handle success (e.g., close modal, show success message)
+            const manualVendorModal = document.getElementById("manualVendorModal");
+            manualVendorModal.style.display = "none";
+            // location.reload();  // Reload the page to see the changes
+            console.log(response)
+            if(response['status'] === 'success'){
+                document.getElementById("message-vendor-success").hidden = false;
+                document.getElementById("nextstep3").hidden = false;
+                document.getElementById("manualVendorBtn").hidden = true;
+                document.getElementById("excelVendorBtn").hidden= true;
+
+            }
+        },
+        error: function(xhr, errmsg, err) {
+            // Handle error (e.g., show error message)
+            console.log("Error:", errmsg);
+        }
+    });
+});
+
+
 </script>
 <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
