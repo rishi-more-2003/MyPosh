@@ -6,7 +6,7 @@ from django.contrib import messages
 from .models import (IndividualUser, Education, NGOUser, PoshUser, ConsultancyUser, EstablishmentUser, 
                      EstablishmentLocation, PrincipalEmployer, Vendor, PEDetails, VendorDetails,
                      ComitteeCount, CurrentClient, Service, Skill, Certification, Document, Experience, EmployeeCount, 
-                     RecruitUser, Location)
+                     RecruitUser, LocationEst, EmployeeEst, VendorEst)
 import pandas as pd
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
@@ -430,7 +430,7 @@ def experience(request):
         locationInput = request.POST.get('locationInput')
         descriptionInputexp = request.POST.get('descriptionInputexp')
 
-        print(currentlyWorkingInput)
+        # print(currentlyWorkingInput)
 
         # Parse dates
         try:
@@ -489,7 +489,7 @@ def ngo_experience(request):
         locationInput = request.POST.get('locationInput')
         descriptionInputexp = request.POST.get('descriptionInputexp')
 
-        print(currentlyWorkingInput)
+        # print(currentlyWorkingInput)
 
         # Parse dates
         try:
@@ -548,7 +548,7 @@ def consult_experience(request):
         locationInput = request.POST.get('locationInput')
         descriptionInputexp = request.POST.get('descriptionInputexp')
 
-        print(currentlyWorkingInput)
+        # print(currentlyWorkingInput)
 
         # Parse dates
         try:
@@ -1143,7 +1143,7 @@ def ngo_profile(request):
                 
                 for form in member_formset:
                     if form.cleaned_data:  # Ensure the form is not empty
-                        print(member_formset)
+                        # print(member_formset)
                         EmployeeCount.objects.create(
                             user=user,
                             member_uid = form.cleaned_data.get('member_uid'),
@@ -1273,7 +1273,7 @@ def consult_profile(request):
                 
                 for form in member_formset:
                     if form.cleaned_data:  # Ensure the form is not empty
-                        print(member_formset)
+                        # print(member_formset)
                         EmployeeCount.objects.create(
                             user=user,
                             member_uid = form.cleaned_data.get('member_uid'),
@@ -1512,7 +1512,7 @@ def register_establishment(request):
             otp = '222222'
             phone = request.POST.get('phone')
             # send_verification_email(email, otp)
-            print(phone)
+            # print(phone)
             return JsonResponse({'status': 'success'})
         
             # Save user data in session
@@ -1601,7 +1601,7 @@ def register(request):
             otp = '222222'
             phone = request.POST.get('phone')
             # send_verification_email(email, otp)
-            print(phone)
+            # print(phone)
             return JsonResponse({'status': 'success'})
             
             # Save user data in session
@@ -1976,7 +1976,7 @@ def establishment_profile(request):
 
     setdate = user.establishmentuser.setdate
     user = get_object_or_404(EstablishmentUser, username = request.user)
-    locationList = Location.objects.filter(est_id = user) 
+    locationList = LocationEst.objects.filter(est_id = user) 
     paginator = Paginator(locationList, 10)
     page_number = request.GET.get('page', 1)
     locationPage = paginator.get_page(page_number)
@@ -1998,7 +1998,76 @@ def establishment_profile(request):
 def multistep_form(request):
     user = request.user.establishmentuser
     if request.method == 'POST':
-        pass
+        file = request.FILES.get('file')
+        if file:
+            # Process the file if needed
+            pass
+        else:
+            try:
+                data = json.loads(request.body)
+                table_data = data.get("tableData", [])
+
+                # print(table_data)
+                if table_data:
+
+                    locations_data = get_session_data(request)
+                    vendors_data = get_vendor_data(request)
+
+                    for loc in locations_data:
+                        location, created = LocationEst.objects.get_or_create(
+                            est_id = user,
+                            name=loc['Location Name'],
+                            address = loc['Address'],
+                            has_direct_employee = loc['Direct Employee'] == 'Yes',
+                            no_of_direct_employees = loc['No. of Direct Employees'],
+                            has_vendors = loc['Vendors'] == 'Yes',
+                            no_of_vendors = loc['No. of Vendors'],
+                            total_indirect_employees = loc['Total Number of Indirect Employees'],
+                        )
+
+                    for ven in vendors_data:
+                        location = LocationEst.objects.get(name=ven['Location Name'])
+                        vendor = VendorEst.objects.get_or_create(
+                            est_id = user,
+                            location=location,
+                            vendor_name=ven['Vendor Name'],
+                            myposh_id=ven['MyPOSH ID'],
+                            commercial_address=ven['Commercial Address'],
+                            mobile=ven['Mobile'],
+                            email=ven['Email'],
+                            nature_of_service=ven['Nature of Service'],
+                            contact_name=ven['Contact Name'],
+                            contact_mobile=ven['Contact Mobile'],
+                            contact_email=ven['Contact Email'],
+                            contract_start_date=ven['Contract Start Date'],
+                            contract_end_date=ven['Contract End Date'],
+                            max_employees=ven['Max Employees'],
+                        )
+
+                    for emp in table_data:
+                        location = LocationEst.objects.get(name=emp['LOCATION'])
+                        vendor = VendorEst.objects.get(vendor_name=emp['VENDOR'], location=location) if emp['VENDOR'] else None
+                        # print(emp)
+                        employee = EmployeeEst.objects.get_or_create(
+                            est_id=user,
+                            location=location,
+                            vendor=vendor,
+                            employee_name=emp['EMPLOYEE'],
+                            middle_name=emp['MIDDLENAME'],
+                            gender=emp['GENDER'],
+                            nature=emp['NATURE'],
+                            joining_date=emp['JOINING'] if emp['JOINING'] else None,
+                            mobile=emp['MOBILE'],
+                            email=emp['EMAIL'],
+                        )
+                    
+                    user.is_complete = True
+                    user.save()
+
+                    return JsonResponse({'status': 'success', 'message': 'Data saved successfully'})
+
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': str(e)})
 
     # If the request method is GET, display the profile form with current user data
     name = user.name
@@ -2043,6 +2112,32 @@ def multistep_form(request):
         # Return JSON response for AJAX
         return JsonResponse({'locations_with_vendors': locations_with_vendors})
     
+    # Check if this is an AJAX request for employee data
+    if request.headers.get('x-requested-with-employee-data') == 'employee-data':
+    
+        locationD = get_session_data(request)
+        vendorD = get_vendor_data(request)
+        result = {}
+
+        for loc in locationD:
+            location_name = loc['Location Name']
+            result[location_name] = {
+                "Direct Employee": loc["No. of Direct Employees"],
+                "Vendors": []  # Initialize Vendors as a list to hold multiple vendors
+            }
+            
+            # Add vendor information if applicable
+            if loc["Vendors"].lower() == "yes":
+                for ven in vendorD:
+                    if ven["Location Name"].strip() == location_name:
+                        vendor_data = {
+                            'Vendor Name': ven["Vendor Name"],
+                            'Max Employees': ven["Max Employees"]
+                        }
+                        result[location_name]["Vendors"].append(vendor_data)  # Append each vendor
+
+        return JsonResponse({'result': result})
+
     return render(request, 'multi-step-form.html', context)
 
 
@@ -2080,27 +2175,45 @@ def upload_csv(request):
         file = request.FILES['file']
         try:
             if file.name.endswith('.csv'):
-                df = pd.read_csv(file)  
+                # Load the Excel file without headers to inspect rows
+                df_raw = pd.read_csv(file, header=None)
+
+                # Find the first row that isn't completely empty
+                header_row = df_raw.apply(lambda row: not row.isnull().all(), axis=1).idxmax()
+
+                # Now load the Excel file again, using the detected header row
+                df = pd.read_csv(file, header=header_row)
+
             elif file.name.endswith('.xlsx'):
-                df = pd.read_excel(file)
+                # Load the Excel file without headers to inspect rows
+                df_raw = pd.read_excel(file, header=None)
+
+                # Find the first row that isn't completely empty
+                header_row = df_raw.apply(lambda row: not row.isnull().all(), axis=1).idxmax()
+
+                # Now load the Excel file again, using the detected header row
+                df = pd.read_excel(file, header=header_row)
             else:
                 return JsonResponse({'status': 'error', 'message': 'Unsupported file format'})
 
             df = df.map(lambda x: str(x).replace('\xa0', ' ') if isinstance(x, str) else x)
             df = df.fillna("")  
 
+
             locations_data = []
             for index, row in df.iterrows():
+                if row.iloc[0] == "":
+                    continue
                 row_data = row.to_dict()
 
                 location = {
-                        'Location Name': row_data.get('Location Name', '').strip(),
-                        'Address': row_data.get('Address', '').strip(),
-                        'Direct Employee': row_data.get('Direct Employee', '').strip(),
-                        'No. of Direct Employees': 0 if row_data.get('No. of Direct Employees') in [None, ''] else int(row_data.get('No. of Direct Employees')),
-                        'Vendors': row_data.get('Vendors', '').strip(),
-                        'No. of Vendors': 0 if row_data.get('No. of Vendors') in [None, ''] else int(row_data.get('No. of Vendors')),
-                        'Total Number of Indirect Employees': row_data.get('Total Number of Indirect Employees', 0),
+                        'Location Name': row_data.get('NAME', '').strip(),
+                        'Address': row_data.get('ADDRESS', '').strip(),
+                        'Direct Employee': row_data.get('DO YOU HAVE DIRECT EMPLOYEES (YES/NO)', '').strip(),
+                        'No. of Direct Employees': 0 if row_data.get('NUMBER OF DIRECT EMPLOYEES') in [None, ''] else int(row_data.get('NUMBER OF DIRECT EMPLOYEES')),
+                        'Vendors': row_data.get('DO YOU HAVE VENDORS (YES/NO)', '').strip(),
+                        'No. of Vendors': 0 if row_data.get('NUMBER OF VENDORS') in [None, ''] else int(row_data.get('NUMBER OF VENDORS')),
+                        'Total Number of Indirect Employees': row_data.get('TOTAL / MAX NUMBER OF EMPLOYEES DEPLOYED BY VENDORS', 0),
                     }
 
                 locations_data.append(location)
@@ -2155,7 +2268,6 @@ def manual_vendor_data(request):
         try:
             data = json.loads(request.body)
             table_data = data.get("tableData", [])
-            # print(table_data)
 
             vendor_data = []
             for location_name, vendors in table_data.items():
@@ -2211,9 +2323,11 @@ def upload_vendor_csv(request):
                     "MAX NUMBER OF EMPLOYEES DEPLOYED"]
 
             for index, row in data.iterrows():
+                if row.iloc[0] == "":
+                    continue
                 if row.iloc[0] == "LOCATION":
                     location_name = row.iloc[1]
-                    print(location_name)
+                    # print(location_name)
                     # Initialize a list for the location if it doesn't exist
                     if location_name not in result:
                         result[location_name] = []
@@ -2251,13 +2365,14 @@ def upload_vendor_csv(request):
                     vendor_data.append(vendor_entry)
 
             update_vendor_session(request, vendor_data)
-            print(get_vendor_data(request))
+            # print(get_vendor_data(request))
             
             return JsonResponse({'status': 'success', 'message': 'File uploaded successfully'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})   
+
 #MANUAL
 # location = Location.objects.create(
 #     est_id = user,

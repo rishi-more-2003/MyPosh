@@ -239,12 +239,48 @@ class RecruitUser(models.Model):
     status= models.CharField(max_length=20, choices=status_choices)
 
 
-class Location(models.Model):
+#Location Details
+class LocationEst(models.Model):
     est_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    name = models.CharField(max_length=100,null=True, blank=True)
-    address = models.CharField(max_length=255,null=True, blank=True)
-    choiceOfDirect = models.CharField(max_length=15,null=True, blank=True)
-    noOFDirect = models.PositiveIntegerField(null=True, blank=True)
-    choiceOfVendor = models.CharField(max_length=15,null=True, blank=True)
-    noOFVendor = models.PositiveIntegerField(null=True, blank=True)
-    totalno = models.PositiveIntegerField(null=True, blank=True)
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=255)
+    has_direct_employee = models.BooleanField(default=False)  # 'Direct Employee'
+    no_of_direct_employees = models.PositiveIntegerField(default=0)  # 'No. of Direct Employees'
+    has_vendors = models.BooleanField(default=False)  # 'Vendors'
+    no_of_vendors = models.PositiveIntegerField(default=0)  # 'No. of Vendors'
+    total_indirect_employees = models.PositiveIntegerField(default=0)  # 'Total Number of Indirect Employees'
+
+#Vendor Details
+class VendorEst(models.Model):
+    est_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    location = models.ForeignKey(LocationEst, related_name='vendors', on_delete=models.CASCADE)  # 'Location Name'
+    vendor_name = models.CharField(max_length=100)  # 'Vendor Name'
+    myposh_id = models.CharField(max_length=100, null=True, blank=True)  # 'MyPOSH ID'
+    commercial_address = models.CharField(max_length=255, null=True, blank=True)
+    mobile = models.CharField(max_length=20, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    nature_of_service = models.CharField(max_length=100, null=True, blank=True)
+    contact_name = models.CharField(max_length=100, null=True, blank=True)
+    contact_mobile = models.CharField(max_length=20, null=True, blank=True)
+    contact_email = models.EmailField(null=True, blank=True)
+    contract_start_date = models.DateField(null=True, blank=True)
+    contract_end_date = models.DateField(null=True, blank=True)
+    max_employees = models.PositiveIntegerField(default=0)  # 'Max Employees'
+
+#Employee Details
+class EmployeeEst(models.Model):
+    GENDER_CHOICES = [
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
+    ]
+    est_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    location = models.ForeignKey(LocationEst, related_name='employees', on_delete=models.CASCADE)  # 'Location'
+    vendor = models.ForeignKey(VendorEst, related_name='employees', null=True, blank=True, on_delete=models.SET_NULL)  # 'Vendor' for indirect employees
+    nature = models.CharField(max_length=10, choices=[('DIRECT', 'DIRECT'), ('INDIRECT', 'INDIRECT')])
+    employee_name = models.CharField(max_length=100)  # 'EMPLOYEE'
+    middle_name = models.CharField(max_length=100, null=True, blank=True)  # 'MIDDLENAME'
+    gender = models.CharField(max_length=6, choices=GENDER_CHOICES)
+    joining_date = models.DateField(null=True, blank=True)  # 'JOINING'
+    mobile = models.CharField(max_length=20, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)   

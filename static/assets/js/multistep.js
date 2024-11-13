@@ -149,11 +149,7 @@ manualBtn.onclick = () => {
     // Add the specified number of empty rows
     for (let i = 0; i < countloc; i++) {
         const row = document.createElement("tr");
-    
-        // Example boolean values; replace these with your actual boolean values
-        const isEditable1 = false; // Boolean for first condition
-        const isEditable2 = false; // Boolean for second condition
-    
+        
         row.innerHTML = `
             <td>${i + 1}</td>
             <td data-type="text" class="editable-cell"></td>
@@ -426,7 +422,7 @@ function displayPreview(rows) {
 }
 
 function displayVendorPreview(rows) {
-    clearPreview();
+    clearVendorPreview();
     
     // Limit preview to the first 10 rows (including header)
     const previewRows = rows.slice(0, 10);
@@ -525,6 +521,7 @@ function removeRow(button) {
 function collectTableData() {
     const tableData = [];
     const rows = document.querySelectorAll("table tbody tr");
+    // console.log(rows)
     const column = ['location', 'address', 'direct', 'noOfDirect', 'vendor', 'noOfVendor', 'total'];
 
     rows.forEach(row => {
@@ -537,9 +534,12 @@ function collectTableData() {
             i++; // Increment the column index
         });
 
-        tableData.push(rowData); // Add the row data to the table data array
+        if(rowData['location']){
+            tableData.push(rowData); // Add the row data to the table data array
+        }
+        
     });
-
+    
     return tableData;
 }
 
@@ -666,8 +666,10 @@ const closeManualVendor = document.getElementById("close-vendor");
 
                 // Create the table body
                 const tbody = document.createElement("tbody");
-                tbody.classList.add(location_name.replace(/ /g,"_"));  // Set class dynamically based on location
+                const locationNameList = location_name.split(" ")
 
+                tbody.classList.add(locationNameList.join("-"));  // Set class dynamically based on location
+                
                 if (vendor_details > 0){
     
                     for (let i = 0; i < vendor_details; i++) {
@@ -763,7 +765,8 @@ function collectVendorTableData() {
 
     location_headers.forEach(location => {
         const location_name = location.textContent.split(":")[1].trim(); // Extract location name
-        const tbodyClass = location_name.replace(/ /g, "_"); // Convert location name to match tbody class
+        const locationNameList = location_name.split(" ")
+        const tbodyClass = locationNameList.join("-");       
         
         // Initialize an array for each location_name to store its rows
         if (!tableData[location_name]) {
@@ -809,3 +812,403 @@ function collectVendorTableData() {
     return tableData;
 }
 
+//MANUAL EMPLOYEE DETAILS JS
+
+function closeEmployeeModal(){
+    manualEmployeeModal.style.display = "none";
+    
+}
+
+const manualEmployeeModal = document.getElementById("manualEmployeeModal");
+const manualEmployeeBtn = document.getElementById("manualEmployeeBtn");
+const closeManualEmployee = document.getElementById("close-employee");
+
+closeManualEmployee.onclick = () => {  closeEmployeeModal() };
+
+
+manualEmployeeBtn.onclick = () => {
+    manualEmployeeModal.style.display = "block";
+
+    var data = "";
+    $.ajax({
+        url: `/info/?_=${new Date().getTime()}`,
+        type: 'GET',
+        async: false,
+        dataType: 'json',  // Expect a JSON response
+        cache: false,      // Prevent caching in production
+        headers: {
+            'x-requested-with-employee-data': 'employee-data'
+        },
+        success: function(response) {
+            data = response.result;
+        },
+        error: function(xhr, errmsg, err) {
+            console.error("Error fetching vendor data:", errmsg);
+        }
+    });
+
+    // console.log(data)
+    const tbody = document.querySelector("#bootstrapdatatableEmp tbody");
+
+    // Clear any existing rows in the tbody
+    tbody.innerHTML = '';
+    let count = 0;
+
+    // Iterate over each location in the data object
+    for (const locationName in data) {
+        const locationData = data[locationName];
+        
+        // console.log(locationData)
+        // Add rows for Direct Employees if applicable
+        if (locationData['Direct Employee'] > 0) {
+            for (let j = 0; j < locationData['Direct Employee']; j++) {
+                const directEmployeeRow = document.createElement('tr');
+                directEmployeeRow.innerHTML = `
+                    <td>${count + 1}</td>
+                    <td>${locationName}</td>
+                    <td>DIRECT</td>
+                    <td></td>
+                    <td data-type="text" class="editable-employee-cell"></td>
+                    <td data-type="text" class="editable-employee-cell"></td>
+                    <td data-type="select" class="editable-employee-cell"></td>
+                    <td data-type="date" class="editable-employee-cell"></td>
+                    <td data-type="numeric" class="editable-employee-cell"></td>
+                    <td data-type="text" class="editable-employee-cell"></td>
+                    <td class="action_buttons">
+                        <button class="btn btn-primary btn-sm save-btn d-none" onclick="saveEmployeeRow(this)">Save</button>
+                        <button class="btn btn-secondary btn-sm edit-btn" onclick="editEmployeeRow(this)">Edit</button>
+                    </td>
+                `;
+                tbody.appendChild(directEmployeeRow);
+                count++;
+            }
+        }
+    
+        // Add rows for each Vendor with Max Employees
+        if (locationData['Vendors'].length > 0) {
+            locationData['Vendors'].forEach(vendor => {
+                for (let j = 0; j < vendor['Max Employees']; j++) {    
+                    const vendorRow = document.createElement('tr');
+                    vendorRow.innerHTML = `
+                        <td>${count + 1}</td>
+                        <td>${locationName}</td>
+                        <td>INDIRECT</td>
+                        <td>${vendor['Vendor Name']}</td>
+                        <td data-type="text" class="editable-employee-cell"></td>
+                        <td data-type="text" class="editable-employee-cell"></td>
+                        <td data-type="select" class="editable-employee-cell"></td>
+                        <td data-type="date" class="editable-employee-cell"></td>
+                        <td data-type="numeric" class="editable-employee-cell"></td>
+                        <td data-type="text" class="editable-employee-cell"></td>
+                        <td class="action_buttons">
+                            <button class="btn btn-primary btn-sm save-btn d-none" onclick="saveEmployeeRow(this)">Save</button>
+                            <button class="btn btn-secondary btn-sm edit-btn" onclick="editEmployeeRow(this)">Edit</button>
+                        </td>
+                    `;
+                    tbody.appendChild(vendorRow);
+                    count++;
+                }
+            });
+        }
+    }
+    
+};
+
+
+// Function to enable inline editing for a vendor row
+function editEmployeeRow(button) {
+    let row = button.closest("tr");
+    row.querySelectorAll(".editable-employee-cell").forEach((cell, index, cells) => {
+        let cellType = cell.getAttribute("data-type");
+        let currentValue = cell.textContent.trim();
+
+        if (cellType === "numeric"){
+            cell.innerHTML = `<input type="number" value="${currentValue}" class="form-control form-control-sm numeric">`;
+        }
+        else if(cellType === "select"){
+        cell.innerHTML = `<select class="form-control form-control-sm">
+            <option value="Male" ${currentValue === 'Male' ? 'selected' : ''}>Male</option>
+            <option value="Female" ${currentValue === 'Female' ? 'selected' : ''}>Female</option>
+            <option value="Other" ${currentValue === 'Other' ? 'selected' : ''}>Other</option>
+        </select>`;
+        }
+        else{
+            cell.innerHTML = `<input type="${cellType}" value="${currentValue}" class="form-control form-control-sm">`;
+        }
+        
+        
+    });
+    
+    row.querySelector(".save-btn").classList.remove("d-none");
+    row.querySelector(".edit-btn").classList.add("d-none");
+}
+
+function saveEmployeeRow(button) {
+    let row = button.closest("tr");
+    row.querySelectorAll(".editable-employee-cell").forEach(cell => {
+        let input = cell.querySelector("input");
+        let select = cell.querySelector("select");
+        if (select) {
+            cell.textContent = select.value;
+        }
+        if (input) {
+            cell.textContent = input.value;
+        }
+    });
+    row.querySelector(".save-btn").classList.add("d-none");
+    row.querySelector(".edit-btn").classList.remove("d-none");
+}
+
+function collectEmployeeTableData() {
+
+    const tableData = [];
+    const rows = document.querySelectorAll("#bootstrapdatatableEmp tbody tr");
+
+    // Loop through each row in the table
+    rows.forEach(row => {
+        const rowData = {};
+        const cells = row.querySelectorAll('td');
+
+        rowData['LOCATION'] = cells[1].innerText;
+        rowData['NATURE'] = cells[2].innerText; // DIRECT or INDIRECT
+        rowData['VENDOR'] = cells[3].innerText;  // Empty for DIRECT
+
+        rowData['EMPLOYEE'] = cells[4].innerText; // Replace 'Field1' with actual field name
+        rowData['MIDDLENAME'] = cells[5].innerText;
+        rowData['GENDER'] = cells[6].innerText;
+        rowData['JOINING'] = cells[7].innerText;
+        rowData['MOBILE'] = cells[8].innerText;
+        rowData['EMAIL'] = cells[9].innerText;
+
+        // Add the row data to the tableData array
+        tableData.push(rowData);
+    });
+    // console.log(tableData)
+    return tableData;
+}
+
+$('#manual-submission').on('click', function(event) {
+    event.preventDefault();
+
+    const tableData = collectTableData();
+    const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();  // Correct CSRF token selector
+
+    // Send AJAX POST request to update certification details
+    $.ajax({
+        url: '/manual-data/',  // Use your endpoint URL here
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken   // Correct CSRF header
+        },
+        contentType: 'application/json',  // Set content type for JSON data
+        data: JSON.stringify({ tableData: tableData }),
+        success: function(response) {
+            // Handle success (e.g., close modal, show success message)
+            const manualModal = document.getElementById("manualModal");
+            manualModal.style.display = "none";
+            // location.reload();  // Reload the page to see the changes
+            // console.log(response)
+            if(response['status'] === 'success'){
+                document.getElementById("message-success").style.display = "block";
+                document.getElementById("nextstep2").hidden = false;
+                document.getElementById("optionBtn").hidden = true;
+                document.getElementById("countloc").disabled = true;
+
+            }
+        },
+        error: function(xhr, errmsg, err) {
+            // Handle error (e.g., show error message)
+            console.log("Error:", errmsg);
+        }
+    });
+});
+
+$(document).ready(function() {
+    $('#uploadButton').on('click', function(event) {
+        event.preventDefault();
+        
+        // Get the selected file
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0]; // Get the first file
+        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
+        
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file); // Append the file to FormData
+
+            // Send AJAX POST request to upload the CSV file
+            $.ajax({
+                url: '/upload-csv/', // Your Django URL for handling the file upload
+                type: 'POST',
+                processData: false, // Prevent jQuery from automatically processing the data
+                contentType: false, // Set content type to false to let jQuery set it
+                headers: {
+                    'X-CSRFToken': csrfToken  // Get CSRF token from cookies
+                },
+                data: formData,
+                success: function(response) {
+                    // console.log('File uploaded successfully:', response);
+                    const excelModal = document.getElementById("excelModal");
+                    excelModal.style.display = "none";
+                    if(response['status'] === 'success'){
+                        document.getElementById("message-success").style.display = "block";
+                        document.getElementById("nextstep2").hidden = false
+                        document.getElementById("optionBtn").hidden = true
+                        document.getElementById("countloc").disabled = true
+                    }
+                    // Handle success (e.g., close modal, show success message)
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error('Error uploading file:', errmsg);
+                    // Handle error (e.g., show error message)
+                }
+            });
+        }
+    });
+});
+
+$(document).ready(function() {
+    $('#uploadVendorButton').on('click', function(event) {
+        event.preventDefault();
+        
+        // Get the selected file
+        const fileInput = document.getElementById('VendorfileInput');
+        const file = fileInput.files[0]; // Get the first file
+        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
+        
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file); // Append the file to FormData
+
+            // Send AJAX POST request to upload the CSV file
+            $.ajax({
+                url: '/upload-vendor-csv/', // Your Django URL for handling the file upload
+                type: 'POST',
+                processData: false, // Prevent jQuery from automatically processing the data
+                contentType: false, // Set content type to false to let jQuery set it
+                headers: {
+                    'X-CSRFToken': csrfToken  // Get CSRF token from cookies
+                },
+                data: formData,
+                success: function(response) {
+                    // console.log('File uploaded successfully:', response);
+                    const excelVendorModal = document.getElementById("excelVendorModal");
+                    excelVendorModal.style.display = "none";
+                    if(response['status'] === 'success'){
+                        document.getElementById("message-vendor-success").style.display = "block";
+                        document.getElementById("nextstep3").hidden = false;
+                        document.getElementById("manualVendorBtn").hidden = true;
+                        document.getElementById("excelVendorBtn").hidden= true;
+      
+                      }
+                    // Handle success (e.g., close modal, show success message)
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error('Error uploading file:', errmsg);
+                    // Handle error (e.g., show error message)
+                }
+            });
+        }
+    });
+});
+
+//Manual-Vendor-Submission
+$('#manual-vendor-submission').on('click', function(event) {
+    event.preventDefault();
+
+    const tableData = collectVendorTableData();
+    const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();  // Correct CSRF token selector
+
+    // Send AJAX POST request to update certification details
+    $.ajax({
+        url: '/manual-vendor-data/',  // Use your endpoint URL here
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken   // Correct CSRF header
+        },
+        contentType: 'application/json',  // Set content type for JSON data
+        data: JSON.stringify({ tableData: tableData }),
+        success: function(response) {
+            // Handle success (e.g., close modal, show success message)
+            const manualVendorModal = document.getElementById("manualVendorModal");
+            manualVendorModal.style.display = "none";
+            // location.reload();  // Reload the page to see the changes
+            // console.log(response)
+            if(response['status'] === 'success'){
+                document.getElementById("message-vendor-success").style.display = "block";
+                document.getElementById("nextstep3").hidden = false;
+                document.getElementById("manualVendorBtn").hidden = true;
+                document.getElementById("excelVendorBtn").hidden= true;
+
+            }
+        },
+        error: function(xhr, errmsg, err) {
+            // Handle error (e.g., show error message)
+            console.log("Error:", errmsg);
+        }
+    });
+});
+
+//Manual-Employee-Submission
+$('#manual-employee-submission').on('click', function(event) {
+    event.preventDefault();
+
+    const tableData = collectEmployeeTableData();
+    const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();  // Correct CSRF token selector
+
+    // Send AJAX POST request to update certification details
+    $.ajax({
+        url: '/info/',  // Use your endpoint URL here
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken   // Correct CSRF header
+        },
+        contentType: 'application/json',  // Set content type for JSON data
+        data: JSON.stringify({ tableData: tableData }),
+        success: function(response) {
+            if(response['status'] === 'success'){
+                // Handle success (e.g., close modal, show success message)
+                const manualEmployeeModal = document.getElementById("manualEmployeeModal");
+                manualEmployeeModal.style.display = "none";
+                // location.reload();  // Reload the page to see the changes
+                // console.log(response)
+                if(response['status'] === 'success'){
+                    // document.getElementById("message-employee-success").style.display = "block";
+                    document.getElementById("manualEmployeeBtn").hidden = true;
+                    document.getElementById("excelEmployeeBtn").hidden= true;
+                    showVendorSuccessMessage()
+                    // Delay redirect by 3 seconds (adjust if needed)
+                    setTimeout(() => {
+                        window.location = '/';
+                    }, 3000);
+
+                }
+            }
+        },
+        error: function(xhr, errmsg, err) {
+            // Handle error (e.g., show error message)
+            console.log("Error:", errmsg);
+        }
+    });
+});
+
+function showVendorSuccessMessage() {
+    const messageDiv = document.getElementById("message-employee-success");
+    messageDiv.style.display = "block";
+    messageDiv.style.opacity = '1'; // Fade in effect
+    setTimeout(() => {
+        messageDiv.style.opacity = '0'; // Fade out effect after 3 seconds
+        setTimeout(() => {
+            messageDiv.style.display = "none";
+        }, 500); // Adjust delay for fade-out transition
+    }, 3000); // Duration the message is visible
+}
+
+// LOADER
+onload = () => {
+    const load = document.getElementById('load')
+
+    setTimeout(() => {
+        load.style.display = 'none'
+    }, 500)
+}

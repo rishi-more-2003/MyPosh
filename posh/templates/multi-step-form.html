@@ -25,6 +25,10 @@
         <title>MYPOSH</title>
     </head>
 <body>
+    <!-- LOADER -->
+    <div class="load" id="load">
+        <img src="{% static 'assets/img/ZNeT.gif' %}" alt="loader" class="load__gif" >
+    </div>
     <div class="container">
         <div class="card">
             <div class="form">
@@ -54,8 +58,8 @@
                         </div>
                         <div class="input-text">
                             <div class="input-div">
-                                <input type="text" required require id="name" value="{{ user.establishmentuser.name }}">
-                                <span>Establishment Name</span>
+                                <input type="text" required require id="name" value="{{ user.establishmentuser.name }}" disabled>
+                                <span id='readonly-name'>Establishment Name</span>
                             </div>
                         </div>
                         <div class="input-text">
@@ -64,8 +68,8 @@
                                 <span id='readonly-span'>UID</span>
                             </div>
                             <div class="input-div"> 
-                                <input type="date" required require id="setup-date" value="{{ user.establishmentuser.setdate|date:'Y-m-d' }}">
-                                <span disabled>Set-up Date</span>
+                                <input type="date" required require id="setup-date" value="{{ user.establishmentuser.setdate|date:'Y-m-d' }}" disabled>
+                                <span disabled id='readonly-date'>Set-up Date</span>
                             </div>
                         </div>
                         <div class="input-text">
@@ -81,42 +85,42 @@
                         <div class="input-text">
                             <div class="input-div">
                                 <select>
-                                    <option value="principal" {% if user.establishmentuser.nature == "principal" %} selected {% endif %}>Principal Employer</option>
-                                    <option value="vendor" {% if user.establishmentuser.nature == "vendor" %} selected {% endif %}>Vendor</option>
-                                    <option value="both" {% if user.establishmentuser.nature == "both" %} selected {% endif %}>Both</option>
+                                    <option value="principal" {% if user.establishmentuser.nature == "principal" %} selected {% endif %} disabled>Principal Employer</option>
+                                    <option value="vendor" {% if user.establishmentuser.nature == "vendor" %} selected {% endif %} disabled>Vendor</option>
+                                    <option value="both" {% if user.establishmentuser.nature == "both" %} selected {% endif %} disabled>Both</option>
                                 </select>
                                 <span id='readonly-nature'>Nature of Establishment</span>
                             </div>
                             <div class="input-div">
                                 <select>
-                                    <option value="single" {% if user.establishmentuser.structure == "single" %} selected {% endif %}>Single Location</option>
-                                    <option value="multi" {% if user.establishmentuser.structure == "multi" %} selected {% endif %}>Multi Location</option>
+                                    <option value="single" {% if user.establishmentuser.structure == "single" %} selected {% endif %} disabled>Single Location</option>
+                                    <option value="multi" {% if user.establishmentuser.structure == "multi" %} selected {% endif %} disabled>Multi Location</option>
                                 </select>
                                 <span id='readonly-structure'>Structure of Establishment</span>
                             </div>
                         </div>
                         <div class="input-text">
                             <div class="input-div">
-                                <select name='state' onchange="print_selected_city('city', this.selectedIndex, '{{ user.establishmentuser.city }}');" id="states" class="form-control">
+                                <select name='state' onchange="print_selected_city('city', this.selectedIndex, '{{ user.establishmentuser.city }}');" id="states" class="form-control" disabled>
                                 </select>
                                 <span id='readonly-state'>State</span>
                             </div>
                             <div class="input-div">
                                 <select name='city' id ="city" class="form-control" disabled>
-                                    <option value="state" {% if user.establishmentuser.city == "{{ user.establishmentuser.city }}" %} selected {% endif %}>{{ user.establishmentuser.city }}</option>
+                                    <option value="state" {% if user.establishmentuser.city == "{{ user.establishmentuser.city }}" %} selected {% endif %} disabled>{{ user.establishmentuser.city }}</option>
                                 </select>
                                 <script language="javascript">print_selected_state("states", '{{ user.establishmentuser.state }}');</script>
                                 <span id='readonly-city'>City</span>
                             </div>
                             <div class="input-div">
-                                <input type="number" required require id="pincode" value="{{ user.establishmentuser.pincode }}">
-                                <span>Pincode</span>
+                                <input type="number" required require id="pincode" value="{{ user.establishmentuser.pincode }}" disabled>
+                                <span id='readonly-pin'>Pincode</span>
                             </div>
                         </div>
                         <div class="input-text">
                             <div class="input-div">
-                                <input type="textarea" wrap="hard" required require id="address" value="{{ user.establishmentuser.address }}">
-                                <span>Address</span>
+                                <input type="textarea" wrap="hard" required require id="address" value="{{ user.establishmentuser.address }}" disabled>
+                                <span id='readonly-add'>Address</span>
                             </div>
                         </div>
                         <div class="buttons">
@@ -137,7 +141,11 @@
                             </div>
                             <button id="optionBtn" class="add_button" onclick="checkInput()">Add</button>
                         </div>
-                        <div id="message-success" hidden>Success: All Location Details are saved.</div>
+                        <!-- Success Message HTML -->
+                        <div id="message-success" class="success-message" hidden>
+                            <strong>Success:</strong> All Location Details have been successfully saved.
+                        </div>
+
                         <div class="buttons button_space">
                             <button class="back_button">Back</button>
                             <button class="next_button" hidden id="nextstep2">Next Step</button>
@@ -207,7 +215,11 @@
                                 <button class="opt_button" id='excelVendorBtn'>Excel</button>
                             </div>
                         </div>
-                        <div id="message-vendor-success" hidden>Success: All Vendor Details are saved.</div>
+                        <!-- Success Message HTML -->
+                        <div id="message-vendor-success" class="success-message" hidden>
+                            <strong>Success:</strong> All Vendor Details have been successfully saved.
+                        </div>
+
                         <div class="buttons button_space" style="margin-top: 20px">
                             <button class="back_button">Back</button>
                             <button class="next_button" hidden id="nextstep3">Next Step</button>
@@ -238,7 +250,7 @@
 
                     {% comment %} Modal for Manually Vendor {% endcomment %}
                     <div id="manualVendorModal" class="modal">
-                        <div class="modal-content"  id="manual">
+                        <div class="modal-content"  id="manualVendor">
                             <span class="close-vendor" id="close-vendor">&times;</span>
                             <div class="location_space">
                                 <h2>Vendor Records</h2>
@@ -256,47 +268,44 @@
                     {% comment %} STEP - 4 {% endcomment %}
                     <div class="main" data-step="4">
                         <div class="text">
-                            <h2>User Photo</h2>
-                            <p>Upload your profile picture and share yourself.</p>
-                        </div>
-                        <div class="input-text">
-                            <div class="input-div">
-                                <input type="text" required>
-                                <span>Experience 2</span>
-                            </div>
-                            <div class="input-div">
-                                <input type="text" required>
-                                <span>Position</span>
+                            <h2>Employee List</h2>
+                            <p>Upload your employee details with us.</p>
+                            <div class="option_space">
+                                <button class="opt_button" id="manualEmployeeBtn">Manually</button>
+                                <button class="opt_button" id='excelEmployeeBtn'>Excel</button>
                             </div>
                         </div>
-                        <div class="input-text">
-                            <div class="input-div">
-                                <input type="text" required>
-                                <span>Experience 3</span>
-                            </div>
-                            <div class="input-div">
-                                <input type="text" required>
-                                <span>Position</span>
-                            </div>
+                        <!-- Success Message HTML -->
+                        <div id="message-employee-success" class="success-message" hidden>
+                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                               <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                           </svg>
+                            <strong>Success:</strong> All Employee Details have been successfully saved.
                         </div>
 
-                        <div class="buttons button_space">
+                        <div class="buttons button_space" style="margin-top: 20px">
                             <button class="back_button">Back</button>
-                            <button class="submit_button">Submit</button>
                         </div>
                     </div>
 
-                     <div class="main">
-                         <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                             <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                        </svg>
-                         
-                        <div class="text congrats">
-                            <h2>Congratulations!</h2>
-                            <p>Thanks Mr./Mrs. <span class="shown_name"></span> your information have been submitted successfully for the future reference we will contact you soon.</p>
+                    {% comment %} Modal for Manually Employee {% endcomment %}
+                    <div id="manualEmployeeModal" class="modal">
+                        <div class="modal-content"  id="manualEmployee">
+                            <span class="close-employee" id="close-employee">&times;</span>
+                            <div class="location_space">
+                                <h2>Employee Records</h2>
+                                <div class="buttons">
+                                    <button class="save_button" id="manual-employee-submission">Save</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                        
+                            {% include 'manualEmployee.html' %}
+
                         </div>
-                    </div> 
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -305,171 +314,6 @@
 <script src="{% static 'assets/js/scrollreveal.min.js' %}"></script>
 <!-- MAIN JS -->
 <script src="{% static 'assets/js/multistep.js' %}"></script>
-<script>
-    $('#manual-submission').on('click', function(event) {
-        event.preventDefault();
-    
-        const tableData = collectTableData();
-        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();  // Correct CSRF token selector
-    
-        // Send AJAX POST request to update certification details
-        $.ajax({
-            url: '/manual-data/',  // Use your endpoint URL here
-            type: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken   // Correct CSRF header
-            },
-            contentType: 'application/json',  // Set content type for JSON data
-            data: JSON.stringify({ tableData: tableData }),
-            success: function(response) {
-                // Handle success (e.g., close modal, show success message)
-                const manualModal = document.getElementById("manualModal");
-                manualModal.style.display = "none";
-                // location.reload();  // Reload the page to see the changes
-                console.log(response)
-                if(response['status'] === 'success'){
-                    document.getElementById("message-success").hidden = false;
-                    document.getElementById("nextstep2").hidden = false;
-                    document.getElementById("optionBtn").hidden = true;
-                    document.getElementById("countloc").disabled = true;
-
-                }
-            },
-            error: function(xhr, errmsg, err) {
-                // Handle error (e.g., show error message)
-                console.log("Error:", errmsg);
-            }
-        });
-    });
-
-$(document).ready(function() {
-    $('#uploadButton').on('click', function(event) {
-        event.preventDefault();
-        
-        // Get the selected file
-        const fileInput = document.getElementById('fileInput');
-        const file = fileInput.files[0]; // Get the first file
-        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
-        
-        if (file) {
-            const formData = new FormData();
-            formData.append('file', file); // Append the file to FormData
-
-            // Send AJAX POST request to upload the CSV file
-            $.ajax({
-                url: '/upload-csv/', // Your Django URL for handling the file upload
-                type: 'POST',
-                processData: false, // Prevent jQuery from automatically processing the data
-                contentType: false, // Set content type to false to let jQuery set it
-                headers: {
-                    'X-CSRFToken': csrfToken  // Get CSRF token from cookies
-                },
-                data: formData,
-                success: function(response) {
-                    console.log('File uploaded successfully:', response);
-                    const excelModal = document.getElementById("excelModal");
-                    excelModal.style.display = "none";
-                    if(response['status'] === 'success'){
-                        document.getElementById("message-success").hidden = false
-                        document.getElementById("nextstep2").hidden = false
-                        document.getElementById("optionBtn").hidden = true
-                        document.getElementById("countloc").disabled = true
-                    }
-                    // Handle success (e.g., close modal, show success message)
-                },
-                error: function(xhr, errmsg, err) {
-                    console.error('Error uploading file:', errmsg);
-                    // Handle error (e.g., show error message)
-                }
-            });
-        }
-    });
-});
-
-$(document).ready(function() {
-    $('#uploadVendorButton').on('click', function(event) {
-        event.preventDefault();
-        
-        // Get the selected file
-        const fileInput = document.getElementById('VendorfileInput');
-        const file = fileInput.files[0]; // Get the first file
-        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
-        
-        if (file) {
-            const formData = new FormData();
-            formData.append('file', file); // Append the file to FormData
-
-            // Send AJAX POST request to upload the CSV file
-            $.ajax({
-                url: '/upload-vendor-csv/', // Your Django URL for handling the file upload
-                type: 'POST',
-                processData: false, // Prevent jQuery from automatically processing the data
-                contentType: false, // Set content type to false to let jQuery set it
-                headers: {
-                    'X-CSRFToken': csrfToken  // Get CSRF token from cookies
-                },
-                data: formData,
-                success: function(response) {
-                    console.log('File uploaded successfully:', response);
-                    const excelVendorModal = document.getElementById("excelVendorModal");
-                    excelVendorModal.style.display = "none";
-                    if(response['status'] === 'success'){
-                        document.getElementById("message-vendor-success").hidden = false;
-                        document.getElementById("nextstep3").hidden = false;
-                        document.getElementById("manualVendorBtn").hidden = true;
-                        document.getElementById("excelVendorBtn").hidden= true;
-      
-                      }
-                    // Handle success (e.g., close modal, show success message)
-                },
-                error: function(xhr, errmsg, err) {
-                    console.error('Error uploading file:', errmsg);
-                    // Handle error (e.g., show error message)
-                }
-            });
-        }
-    });
-});
-
-//Manual-Vendor-Submission
-$('#manual-vendor-submission').on('click', function(event) {
-    event.preventDefault();
-
-    const tableData = collectVendorTableData();
-    const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();  // Correct CSRF token selector
-
-    // Send AJAX POST request to update certification details
-    $.ajax({
-        url: '/manual-vendor-data/',  // Use your endpoint URL here
-        type: 'POST',
-        headers: {
-            'X-CSRFToken': csrfToken   // Correct CSRF header
-        },
-        contentType: 'application/json',  // Set content type for JSON data
-        data: JSON.stringify({ tableData: tableData }),
-        success: function(response) {
-            // Handle success (e.g., close modal, show success message)
-            const manualVendorModal = document.getElementById("manualVendorModal");
-            manualVendorModal.style.display = "none";
-            // location.reload();  // Reload the page to see the changes
-            console.log(response)
-            if(response['status'] === 'success'){
-                document.getElementById("message-vendor-success").hidden = false;
-                document.getElementById("nextstep3").hidden = false;
-                document.getElementById("manualVendorBtn").hidden = true;
-                document.getElementById("excelVendorBtn").hidden= true;
-
-            }
-        },
-        error: function(xhr, errmsg, err) {
-            // Handle error (e.g., show error message)
-            console.log("Error:", errmsg);
-        }
-    });
-});
-
-
-</script>
 <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 

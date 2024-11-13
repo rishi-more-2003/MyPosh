@@ -9,6 +9,8 @@ body {
     color: var(--text-color);
 }
 
+
+
 .button-primary {
     padding: 12px 24px;
     background-color: var(--first-color);
@@ -314,12 +316,16 @@ select{
 }
 
 #readonly-span,
+#readonly-name,
+#readonly-date,
 #readonly-email,
 #readonly-nature,
 #readonly-structure,
 #readonly-state,
 #readonly-city,
 #readonly-loc,
+#readonly-pin,
+#readonly-add,
 #readonly-phone{
     top:-15px;
     left:6px;
@@ -370,7 +376,9 @@ select{
 }
 
 #manual,
+#manualEmployee,
 #excelVendor,
+#manualVendor,
 #excel{
     max-width: 90%;
     max-height: 90%;
@@ -617,6 +625,7 @@ td.action_buttons{
 .close,
 .close-loc,
 .close-vendor,
+.close-employee,
 .close-excel {
     color: var(--text-color-light);
     float: right;
@@ -628,6 +637,7 @@ td.action_buttons{
 .close:hover,
 .close-loc:hover,
 .close-vendor:hover,
+.close-employee:hover,
 .close-excel:hover  {
     color: var(--title-color);
 }
@@ -708,16 +718,50 @@ th, td {
     margin-bottom: 5px;
 }
 
-#message-success,
-#message-vendor-success {
-    text-align: center;
-    background-color: lightgreen;
-    margin-bottom: 20px;
-    font-size: large;
-    font-style: italic;
-    font-weight: bolder;
+/* Success Message Styling */
+.success-message,
+#message-employee-success {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    max-width: 500px;
+    padding: 15px;
+    margin: 20px auto;
+    background-color: #e6f7e6; /* Light green background */
+    border: 1px solid #4CAF50; /* Green border */
+    border-radius: 8px;
+    color: #2e7d32; /* Darker green text */
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.5s ease;
 }
+
+.success-message strong,
+#message-employee-success strong {
+    margin-right: 5px;
+    color: #388e3c; /* Slightly darker for emphasis */
+}
+
 
 input[class="form-control form-control-sm numeric"]::-webkit-inner-spin-button, input[class="form-control form-control-sm numeric"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
+}
+
+/* loader */
+.load{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: hsl(0, 0, 99%);
+    display: grid;
+    place-items: center;
+    z-index: 1000;
+}
+
+.load__gif{
+    width: 210px;
 }

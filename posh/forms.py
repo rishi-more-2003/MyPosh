@@ -1,5 +1,5 @@
 from django import forms
-from .models import Education, EstablishmentLocation, PEDetails, VendorDetails, ComitteeCount, CurrentClient, EmployeeCount, Location
+from .models import Education, EstablishmentLocation, PEDetails, VendorDetails, ComitteeCount, CurrentClient, EmployeeCount, LocationEst, VendorEst, EmployeeEst
 from group.models import Notice
 import datetime
 
@@ -54,5 +54,15 @@ class CreateAssignmentForm(forms.ModelForm):
 
 class LocationForm(forms.ModelForm):
     class Meta:
-        model = Location
+        model = LocationEst
         exclude = ['est_id']
+
+class VendorForm(forms.ModelForm):
+    class Meta:
+        model = VendorEst
+        exclude = ['est_id', 'location']
+
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeEst
+        exclude = ['est_id', 'location', 'vendor']
