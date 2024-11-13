@@ -377,6 +377,7 @@ select{
 
 #manual,
 #manualEmployee,
+#excelEmployee,
 #excelVendor,
 #manualVendor,
 #excel{
@@ -657,7 +658,9 @@ td.action_buttons{
 
 .upload-button,
 .upload-vendor-button,
+.upload-employee-button,
 .download-button,
+.download-employee-button,
 .download-vendor-button {
     margin-top: 20px;
     padding: 10px 20px;
@@ -694,7 +697,8 @@ th, td {
 }
 
 #filePreview,
-#fileVendorPreview {
+#fileVendorPreview,
+#fileEmployeePreview {
     width: 100%; /* Table width adapts to content */
     border-collapse: collapse;
     margin-top: 10px;
@@ -702,12 +706,14 @@ th, td {
 }
 
 #fileInput,
-#VendorfileInput{
+#VendorfileInput,
+#EmployeefileInput{
     display: none;
 }
 
 #filePreview td, #filePreview th,
-#fileVendorPreview td, #fileVendorPreview th {
+#fileVendorPreview td, #fileVendorPreview th,
+#fileEmployeePreview td, #fileEmployeePreview th {
     border: 1px solid var(--text-color-light);
     padding: 8px;
     font-size: 14px;

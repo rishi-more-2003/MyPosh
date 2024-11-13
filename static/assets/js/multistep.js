@@ -212,6 +212,11 @@ const VendorfileInput = document.getElementById("VendorfileInput");
 const previewVendorContainer = document.getElementById("previewVendorContainer");
 const fileVendorPreview = document.getElementById("fileVendorPreview");
 
+const uploadEmployeeArea = document.getElementById("uploadEmployeeArea");
+const EmployeefileInput = document.getElementById("EmployeefileInput");
+const previewEmployeeContainer = document.getElementById("previewEmployeeContainer");
+const fileEmployeePreview = document.getElementById("fileEmployeePreview");
+
 window.onclick = (e) => { if (e.target === excelModal) closeExcel(); };
 
 excelBtn.onclick = () => {
@@ -238,6 +243,11 @@ function clearVendorPreview() {
     // previewContainer.style.display = "none";
 }
 
+function clearEmployeePreview() {
+    fileEmployeePreview.innerHTML = "";
+    // previewContainer.style.display = "none";
+}
+
 // Drag and Drop functionality
 uploadArea.addEventListener("click", () => fileInput.click());
 uploadArea.addEventListener("dragover", (e) => e.preventDefault());
@@ -256,6 +266,14 @@ uploadVendorArea.addEventListener("drop", (e) => {
     handleVendorFile(file);
 });
 
+uploadEmployeeArea.addEventListener("click", () => EmployeefileInput.click());
+uploadEmployeeArea.addEventListener("dragover", (e) => e.preventDefault());
+uploadEmployeeArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleEmployeeFile(file);
+});
+
 fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
     const fileName = fileInput.files[0].name;
@@ -268,6 +286,13 @@ VendorfileInput.addEventListener("change", () => {
     const fileName = VendorfileInput.files[0].name;
     document.getElementById("myVendortext").value = "Uploaded Filename :- " + fileName;
     handleVendorFile(file);
+});
+
+EmployeefileInput.addEventListener("change", () => {
+    const file = EmployeefileInput.files[0];
+    const fileName = EmployeefileInput.files[0].name;
+    document.getElementById("myEmployeetext").value = "Uploaded Filename :- " + fileName;
+    handleEmployeeFile(file);
 });
 
 function handleFile(file) {
@@ -290,6 +315,19 @@ function handleVendorFile(file) {
             readVendorCSVFile(file);
         } else if (file.name.endsWith(".xlsx")) {
             readVendorXLSXFile(file);
+        }
+    } else {
+        alert("Please upload a valid CSV or XLSX file.");
+    }
+}
+
+function handleEmployeeFile(file) {
+    if (file && (file.name.endsWith(".csv") || file.name.endsWith(".xlsx"))) {
+        previewEmployeeContainer.style.display = "block";
+        if (file.name.endsWith(".csv")) {
+            readEmployeeCSVFile(file);
+        } else if (file.name.endsWith(".xlsx")) {
+            readEmployeeXLSXFile(file);
         }
     } else {
         alert("Please upload a valid CSV or XLSX file.");
@@ -346,6 +384,31 @@ function readVendorCSVFile(file) {
     reader.readAsText(file);
 }
 
+function readEmployeeCSVFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const rawRows = e.target.result.split("\n");
+
+        // Calculate the maximum number of columns in advance
+        const maxCols = Math.max(...rawRows.map(row => row.split(",").length));
+
+        const rows = rawRows.map(row => {
+            // Split by comma and trim whitespace
+            let cells = row.split(",").map(cell => cell.trim());
+
+            // Normalize row length to match the longest row
+            while (cells.length < maxCols) {
+                cells.push(""); // Fill with empty strings if fewer columns
+            }
+
+            return cells;
+        });
+
+        displayEmployeePreview(rows);
+    };
+    reader.readAsText(file);
+}
+
 function readXLSXFile(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -390,6 +453,30 @@ function readVendorXLSXFile(file) {
         });
 
         displayVendorPreview(rows);
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function readEmployeeXLSXFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        
+        // Convert sheet to 2D array with empty cells included
+        let rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+
+        // Ensure each row has the same length by padding with empty strings
+        const maxCols = Math.max(...rows.map(row => row.length));
+        rows = rows.map(row => {
+            while (row.length < maxCols) {
+                row.push(""); // Fill with empty strings if fewer columns
+            }
+            return row;
+        });
+
+        displayEmployeePreview(rows);
     };
     reader.readAsArrayBuffer(file);
 }
@@ -440,6 +527,28 @@ function displayVendorPreview(rows) {
         });
         
         fileVendorPreview.appendChild(tr);
+    });
+}
+
+function displayEmployeePreview(rows) {
+    clearEmployeePreview();
+    
+    // Limit preview to the first 10 rows (including header)
+    const previewRows = rows.slice(0, 10);
+
+    previewRows.forEach((row, i) => {
+        const tr = document.createElement("tr");
+        
+        row.forEach(cell => {
+            const cellElem = document.createElement("td");
+            
+            // Set cell content to a non-breaking space if it's empty, ensuring alignment
+            cellElem.innerHTML = cell ? cell : "&nbsp;";
+            
+            tr.appendChild(cellElem);
+        });
+        
+        fileEmployeePreview.appendChild(tr);
     });
 }
 
@@ -551,23 +660,42 @@ document.querySelector('.download-button').addEventListener('click', function() 
 
 
 const closeExcelVendore = document.getElementById("close-vendore");
+const closeExcelEmployeee = document.getElementById("close-employeee");
 
 function closeExcelVendor(){
     excelVendorModal.style.display = "none"
 }
 
+function closeExcelEmployeer(){
+    excelEmployeeModal.style.display = "none"
+}
+
 const excelVendorModal = document.getElementById("excelVendorModal")
 const excelVendorBtn = document.getElementById("excelVendorBtn")
+
+const excelEmployeeModal = document.getElementById("excelEmployeeModal")
+const excelEmployeeBtn = document.getElementById("excelEmployeeBtn")
 
 excelVendorBtn.onclick = () => {
     excelVendorModal.style.display = "block";
     previewVendorContainer.style.display = "none"
 }
 
+excelEmployeeBtn.onclick = () => {
+    excelEmployeeModal.style.display = "block";
+    previewEmployeeContainer.style.display = "none"
+}
+
 closeExcelVendore.onclick = () => {  closeExcelVendor() };
+
+closeExcelEmployeee.onclick = () => {  closeExcelEmployeer() };
 
 document.querySelector('.download-vendor-button').addEventListener('click', function() {
     window.location.href = '/download-vendor-sample/';
+});
+
+document.querySelector('.download-employee-button').addEventListener('click', function() {
+    window.location.href = '/download-employee-sample/';
 });
 
 //MANUAL VENDOR DETAILS JS
@@ -1023,94 +1151,142 @@ $('#manual-submission').on('click', function(event) {
     });
 });
 
-$(document).ready(function() {
-    $('#uploadButton').on('click', function(event) {
-        event.preventDefault();
-        
-        // Get the selected file
-        const fileInput = document.getElementById('fileInput');
-        const file = fileInput.files[0]; // Get the first file
-        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
-        
-        if (file) {
-            const formData = new FormData();
-            formData.append('file', file); // Append the file to FormData
 
-            // Send AJAX POST request to upload the CSV file
-            $.ajax({
-                url: '/upload-csv/', // Your Django URL for handling the file upload
-                type: 'POST',
-                processData: false, // Prevent jQuery from automatically processing the data
-                contentType: false, // Set content type to false to let jQuery set it
-                headers: {
-                    'X-CSRFToken': csrfToken  // Get CSRF token from cookies
-                },
-                data: formData,
-                success: function(response) {
-                    // console.log('File uploaded successfully:', response);
-                    const excelModal = document.getElementById("excelModal");
-                    excelModal.style.display = "none";
-                    if(response['status'] === 'success'){
-                        document.getElementById("message-success").style.display = "block";
-                        document.getElementById("nextstep2").hidden = false
-                        document.getElementById("optionBtn").hidden = true
-                        document.getElementById("countloc").disabled = true
+$('#uploadButton').on('click', function(event) {
+    event.preventDefault();
+    
+    // Get the selected file
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0]; // Get the first file
+    const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
+    
+    if (file) {
+        const formData = new FormData();
+        formData.append('file', file); // Append the file to FormData
+
+        // Send AJAX POST request to upload the CSV file
+        $.ajax({
+            url: '/upload-csv/', // Your Django URL for handling the file upload
+            type: 'POST',
+            processData: false, // Prevent jQuery from automatically processing the data
+            contentType: false, // Set content type to false to let jQuery set it
+            headers: {
+                'X-CSRFToken': csrfToken  // Get CSRF token from cookies
+            },
+            data: formData,
+            success: function(response) {
+                // console.log('File uploaded successfully:', response);
+                const excelModal = document.getElementById("excelModal");
+                excelModal.style.display = "none";
+                if(response['status'] === 'success'){
+                    document.getElementById("message-success").style.display = "block";
+                    document.getElementById("nextstep2").hidden = false
+                    document.getElementById("optionBtn").hidden = true
+                    document.getElementById("countloc").disabled = true
+                }
+                // Handle success (e.g., close modal, show success message)
+            },
+            error: function(xhr, errmsg, err) {
+                console.error('Error uploading file:', errmsg);
+                // Handle error (e.g., show error message)
+            }
+        });
+    }
+});
+
+$('#uploadVendorButton').on('click', function(event) {
+    event.preventDefault();
+    
+    // Get the selected file
+    const fileInput = document.getElementById('VendorfileInput');
+    const file = fileInput.files[0]; // Get the first file
+    const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
+    
+    if (file) {
+        const formData = new FormData();
+        formData.append('file', file); // Append the file to FormData
+
+        // Send AJAX POST request to upload the CSV file
+        $.ajax({
+            url: '/upload-vendor-csv/', // Your Django URL for handling the file upload
+            type: 'POST',
+            processData: false, // Prevent jQuery from automatically processing the data
+            contentType: false, // Set content type to false to let jQuery set it
+            headers: {
+                'X-CSRFToken': csrfToken  // Get CSRF token from cookies
+            },
+            data: formData,
+            success: function(response) {
+                // console.log('File uploaded successfully:', response);
+                const excelVendorModal = document.getElementById("excelVendorModal");
+                excelVendorModal.style.display = "none";
+                if(response['status'] === 'success'){
+                    document.getElementById("message-vendor-success").style.display = "block";
+                    document.getElementById("nextstep3").hidden = false;
+                    document.getElementById("manualVendorBtn").hidden = true;
+                    document.getElementById("excelVendorBtn").hidden= true;
+    
                     }
-                    // Handle success (e.g., close modal, show success message)
-                },
-                error: function(xhr, errmsg, err) {
-                    console.error('Error uploading file:', errmsg);
-                    // Handle error (e.g., show error message)
-                }
-            });
-        }
-    });
+                // Handle success (e.g., close modal, show success message)
+            },
+            error: function(xhr, errmsg, err) {
+                console.error('Error uploading file:', errmsg);
+                // Handle error (e.g., show error message)
+            }
+        });
+    }
 });
 
-$(document).ready(function() {
-    $('#uploadVendorButton').on('click', function(event) {
-        event.preventDefault();
-        
-        // Get the selected file
-        const fileInput = document.getElementById('VendorfileInput');
-        const file = fileInput.files[0]; // Get the first file
-        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
-        
-        if (file) {
-            const formData = new FormData();
-            formData.append('file', file); // Append the file to FormData
 
-            // Send AJAX POST request to upload the CSV file
-            $.ajax({
-                url: '/upload-vendor-csv/', // Your Django URL for handling the file upload
-                type: 'POST',
-                processData: false, // Prevent jQuery from automatically processing the data
-                contentType: false, // Set content type to false to let jQuery set it
-                headers: {
-                    'X-CSRFToken': csrfToken  // Get CSRF token from cookies
-                },
-                data: formData,
-                success: function(response) {
-                    // console.log('File uploaded successfully:', response);
-                    const excelVendorModal = document.getElementById("excelVendorModal");
-                    excelVendorModal.style.display = "none";
+$('#uploadEmployeeButton').on('click', function(event) {
+    event.preventDefault();
+    // Get the selected file
+    const fileInput = document.getElementById('EmployeefileInput');
+    const file = fileInput.files[0]; // Get the first file
+    const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
+    
+    if (file) {
+        const formData = new FormData();
+        formData.append('file', file); // Append the file to FormData
+
+        // Send AJAX POST request to upload the CSV file
+        $.ajax({
+            url: '/info/', // Your Django URL for handling the file upload
+            type: 'POST',
+            processData: false, // Prevent jQuery from automatically processing the data
+            contentType: false, // Set content type to false to let jQuery set it
+            headers: {
+                'X-CSRFToken': csrfToken  // Get CSRF token from cookies
+            },
+            data: formData,
+            success: function(response) {
+                if(response['status'] === 'success'){
+                    // Handle success (e.g., close modal, show success message)
+                    const manualEmployeeModal = document.getElementById("manualEmployeeModal");
+                    manualEmployeeModal.style.display = "none";
+                    // location.reload();  // Reload the page to see the changes
+                    // console.log(response)
                     if(response['status'] === 'success'){
-                        document.getElementById("message-vendor-success").style.display = "block";
-                        document.getElementById("nextstep3").hidden = false;
-                        document.getElementById("manualVendorBtn").hidden = true;
-                        document.getElementById("excelVendorBtn").hidden= true;
-      
-                      }
-                    // Handle success (e.g., close modal, show success message)
-                },
-                error: function(xhr, errmsg, err) {
-                    console.error('Error uploading file:', errmsg);
-                    // Handle error (e.g., show error message)
+                        // document.getElementById("message-employee-success").style.display = "block";
+                        document.getElementById("manualEmployeeBtn").hidden = true;
+                        document.getElementById("excelEmployeeBtn").hidden= true;
+                        showVendorSuccessMessage()
+                        // Delay redirect by 3 seconds (adjust if needed)
+                        setTimeout(() => {
+                            window.location = '/';
+                        }, 3000);
+    
+                    }
                 }
-            });
-        }
-    });
+            },
+            error: function(xhr, errmsg, err) {
+                console.error('Error uploading file:', errmsg);
+                // Handle error (e.g., show error message)
+            }
+        });
+    }
 });
+
 
 //Manual-Vendor-Submission
 $('#manual-vendor-submission').on('click', function(event) {

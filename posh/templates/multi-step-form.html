@@ -289,6 +289,28 @@
                         </div>
                     </div>
 
+                    <!-- Modal for Employee Upload -->
+                    <div id="excelEmployeeModal" class="modal">
+                        <div class="modal-content" id="excelEmployee">
+                            <span class="close-employee" id="close-employeee" >&times;</span>
+                            <h2>Upload File</h2>
+                            <div class="upload-area" id="uploadEmployeeArea">
+                                <p>Drag & Drop a file here or click to upload</p>
+                                <input type="file" id="EmployeefileInput" accept=".csv, .xlsx" hidden>
+                            </div>
+                            <button class="download-employee-button button-secondary">Download Employee File</button>
+                            <button class="upload-employee-button button-secondary" id="uploadEmployeeButton">Save</button>
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"> 
+                            <div class="preview-container" id="previewEmployeeContainer">
+                                <h3>Preview:</h3>
+                                <input type="text" id="myEmployeetext" disabled>
+                                <div class="table-wrapper"> <!-- Add this wrapper for scrolling -->
+                                    <table id="fileEmployeePreview"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {% comment %} Modal for Manually Employee {% endcomment %}
                     <div id="manualEmployeeModal" class="modal">
                         <div class="modal-content"  id="manualEmployee">

@@ -16,7 +16,7 @@ import random
 from django.conf import settings
 from .utils import (generate_unique_id, generate_unique_consultancy, generate_unique_establishment, 
                     generate_unique_ngo, get_session_data, update_locations_session, 
-                    create_vendor_excel, get_vendor_data, update_vendor_session)
+                    create_vendor_excel, get_vendor_data, update_vendor_session, create_employee_table)
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
@@ -1998,16 +1998,99 @@ def establishment_profile(request):
 def multistep_form(request):
     user = request.user.establishmentuser
     if request.method == 'POST':
-        file = request.FILES.get('file')
+
+        file = request.FILES['file']
         if file:
-            # Process the file if needed
-            pass
+            
+            file_path = os.path.join(settings.BASE_DIR, 'static/posh/EmployeeDataTemplate.xlsx')  
+            # Check if the file exists before attempting to delete it
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            
+            try:
+                if file.name.endswith('.csv'):
+                    data = pd.read_csv(file)  
+                elif file.name.endswith('.xlsx'):
+                    data = pd.read_excel(file)
+                else:
+                    return JsonResponse({'status': 'error', 'message': 'Unsupported file format'})
+
+                data = data.map(lambda x: str(x).replace('\xa0', ' ') if isinstance(x, str) else x)
+                data = data.fillna('NA') 
+                
+                if not data.empty:
+                    
+                    locations_data = get_session_data(request)
+                    vendors_data = get_vendor_data(request)
+
+                    for loc in locations_data:
+                        # print(loc)
+                        location, created = LocationEst.objects.get_or_create(
+                            est_id = user,
+                            name=loc['Location Name'],
+                            address = loc['Address'],
+                            has_direct_employee = loc['Direct Employee'] == 'Yes',
+                            no_of_direct_employees = loc['No. of Direct Employees'],
+                            has_vendors = loc['Vendors'] == 'Yes',
+                            no_of_vendors = loc['No. of Vendors'],
+                            total_indirect_employees = loc['Total Number of Indirect Employees'],
+                        )
+                    # contact_mobile=ven['Contact Mobile'],
+                    # mobile=ven['Mobile'],
+                    # print(vendors_data)
+                    for ven in vendors_data:
+                        location = LocationEst.objects.get(name=ven['Location Name'].strip())
+                        vendor = VendorEst.objects.get_or_create(
+                            est_id = user,
+                            location=location,
+                            vendor_name=ven['Vendor Name'],
+                            myposh_id=ven['MyPOSH ID'],
+                            commercial_address=ven['Commercial Address'],
+                            mobile=123,
+                            email=ven['Email'],
+                            nature_of_service=ven['Nature of Service'],
+                            contact_name=ven['Contact Name'],
+                            contact_mobile=1234,
+                            contact_email=ven['Contact Email'],
+                            contract_start_date=ven['Contract Start Date'] if ven["Contract Start Date"] else None,
+                            contract_end_date=ven['Contract End Date'] if ven['Contract End Date'] else None,
+                            max_employees=ven['Max Employees'],
+                        )
+
+                    for _, emp in data.iterrows():
+                        # Retrieve location based on the 'LOCATION' column
+                        location, _ = LocationEst.objects.get_or_create(name=emp['LOCATION'])
+                        
+                        # If there's a vendor, retrieve or create it based on 'VENDOR' and location
+                        vendor = VendorEst.objects.get_or_create(vendor_name=emp['VENDOR'], location=location)[0] if emp['VENDOR'] else None
+                        
+                        # Create or retrieve the employee instance
+                        EmployeeEst.objects.get_or_create(
+                            est_id=user,  # Assuming `user` is the employee ID or related user instance
+                            location=location,
+                            vendor=vendor,
+                            employee_name=emp['NAME OF EMPLOYEE'],
+                            middle_name=emp['MIDDLE NAME'],
+                            gender=emp['GENDER'],
+                            nature=emp['NATURE OF EMPLOYMENT (DIRECT / INDIRECT)'],
+                            joining_date=pd.to_datetime(emp['DATE OF JOINING']) if pd.notnull(emp['DATE OF JOINING']) else None,
+                            mobile=str(emp['MOBILE NUMBER']),
+                            email=emp['EMAIL ID'],
+                        )
+
+                    user.is_complete = True
+                    user.save()
+
+                    return JsonResponse({'status': 'success', 'message': 'Data saved successfully'})
+
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': str(e)})
+
         else:
             try:
                 data = json.loads(request.body)
                 table_data = data.get("tableData", [])
 
-                # print(table_data)
                 if table_data:
 
                     locations_data = get_session_data(request)
@@ -2168,6 +2251,37 @@ def download_vendor_file(request):
         response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         response["Content-Disposition"] = 'attachment; filename="VendorDataTemplate.xlsx"'
         return response
+    
+def download_employee_file(request):
+    locationD = get_session_data(request)
+    vendorD = get_vendor_data(request)
+    result = {}
+
+    for loc in locationD:
+        location_name = loc['Location Name']
+        result[location_name] = {
+            "Direct Employee": loc["No. of Direct Employees"],
+            "Vendors": []  # Initialize Vendors as a list to hold multiple vendors
+        }
+        
+        # Add vendor information if applicable
+        if loc["Vendors"].lower() == "yes":
+            for ven in vendorD:
+                if ven["Location Name"].strip() == location_name:
+                    vendor_data = {
+                        'Vendor Name': ven["Vendor Name"],
+                        'Max Employees': ven["Max Employees"]
+                    }
+                    result[location_name]["Vendors"].append(vendor_data)  # Append each vendor
+    
+    file = create_employee_table(result)
+
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/EmployeeDataTemplate.xlsx')
+    
+    with open(file_path, 'rb') as file:
+        response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response["Content-Disposition"] = 'attachment; filename="VendorDataTemplate.xlsx"'
+        return response
 
 
 def upload_csv(request):
@@ -2302,6 +2416,11 @@ def manual_vendor_data(request):
 
 
 def upload_vendor_csv(request):
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/VendorDataTemplate.xlsx')  
+    # Check if the file exists before attempting to delete it
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
     if request.method == 'POST' and request.FILES['file']:
         file = request.FILES['file']
         try:
@@ -2373,26 +2492,3 @@ def upload_vendor_csv(request):
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})   
 
-#MANUAL
-# location = Location.objects.create(
-#     est_id = user,
-#     name = row.get('location'),
-#     address = row.get('address'),
-#     choiceOfDirect = row.get('direct'),
-#     noOFDirect = 0 if row.get('noOfDirect') == '' else row.get('noOfDirect'),
-#     choiceOfVendor = row.get('vendor'),
-#     noOFVendor = 0 if row.get('noOfVendor') == '' else row.get('noOfVendor'),
-#     totalno = row.get('total'),
-# )
-
-#EXCEL
-# location = {
-#     'est_id': user,
-#     'name': row_data.get('Location Name', '').strip(),
-#     'address': row_data.get('Address', '').strip(),
-#     'choiceOfDirect': row_data.get('Direct Employee', '').strip(),
-#     'noOFDirect': 0 if row_data.get('No. of Direct Employees') in [None, ''] else row_data.get('No. of Direct Employees'),
-#     'choiceOfVendor': row_data.get('Vendors', '').strip(),
-#     'noOFVendor': 0 if row_data.get('No. of Vendors') in [None, ''] else row_data.get('No. of Vendors'),
-#     'totalno': row_data.get('Total Number of Indirect Employees', 0),
-# }

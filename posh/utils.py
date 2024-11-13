@@ -2,7 +2,7 @@ import hashlib
 import os
 import time
 import math, random 
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
 from django.conf import settings
 
@@ -123,9 +123,8 @@ def get_vendor_data(request):
 def create_vendor_excel(locations):
 
     # Colors and styles for cell formatting
-    brown_fill = PatternFill(start_color="D9A284", end_color="D9A284", fill_type="solid")
+    brown_fill = PatternFill(start_color="FABF8F", end_color="FABF8F", fill_type="solid")
     yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
-    bold_font = Font(bold=True)
 
     # Border style
     thin_border = Border(
@@ -167,8 +166,6 @@ def create_vendor_excel(locations):
 
         location_label_cell.fill = brown_fill
         location_name_cell.fill = brown_fill
-        location_label_cell.font = bold_font
-        location_name_cell.font = bold_font
         location_label_cell.border = thin_border
         location_name_cell.border = thin_border
         location_label_cell.alignment = alignment_left_wrap
@@ -177,11 +174,10 @@ def create_vendor_excel(locations):
         # Move to the next row to add headers
         row_num += 1
         
-        # Fill header row with brown color, bold font, border, and alignment
+        # Fill header row with brown color, border, and alignment
         for col_num, header in enumerate(headers, start=1):
             cell = ws.cell(row=row_num, column=col_num, value=header)
             cell.fill = brown_fill
-            cell.font = bold_font
             cell.border = thin_border
             cell.alignment = alignment_center_wrap
 
@@ -214,3 +210,78 @@ def create_vendor_excel(locations):
     file_path = os.path.join(settings.BASE_DIR, 'static/posh/')
     
     wb.save(f"{file_path}VendorDataTemplate.xlsx")
+
+
+def create_employee_table(data):
+
+    brown_fill = PatternFill(start_color="FABF8F", end_color="FABF8F", fill_type="solid")
+
+    # Border style
+    thin_border = Border(
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin")
+    )
+
+    # Alignment style
+    alignment_center_wrap = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+    # Load your workbook and select the sheet
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/Employee Templete.xlsx')  # Replace with the actual file path
+    workbook = load_workbook(filename=file_path)
+    sheet = workbook.active  # Select the active sheet, or use workbook['SheetName'] if you know the sheet name
+
+    # Starting row for data entry (assuming headers are on the first row)
+    start_row = 2
+
+    # Iterate over each location in the data dictionary
+    for location_name, details in data.items():
+        # Fill rows for Direct Employees
+        direct_employee_count = details.get("Direct Employee", 0)
+        for _ in range(direct_employee_count):
+            # SR.NO
+            cell_sr_no = sheet.cell(row=start_row, column=1, value=start_row - 1)
+            # Location Name
+            cell_location = sheet.cell(row=start_row, column=2, value=location_name)
+            # Nature of Employment
+            cell_employment = sheet.cell(row=start_row, column=3, value="Direct")
+            # Vendor (empty for direct employees)
+            cell_vendor = sheet.cell(row=start_row, column=4, value="")
+
+            # Apply styles to each cell
+            for cell in [cell_sr_no, cell_location, cell_employment, cell_vendor]:
+                cell.fill = brown_fill
+                cell.border = thin_border
+                cell.alignment = alignment_center_wrap
+
+            start_row += 1
+
+        # Fill rows for each Vendor
+        for vendor in details.get("Vendors", []):
+            vendor_name = vendor.get("Vendor Name", "")
+            max_employees = vendor.get("Max Employees", 0)
+
+            # Repeat for the number of Max Employees for each vendor
+            for _ in range(max_employees):
+                # SR.NO
+                cell_sr_no = sheet.cell(row=start_row, column=1, value=start_row - 1)
+                # Location Name
+                cell_location = sheet.cell(row=start_row, column=2, value=location_name)
+                # Nature of Employment
+                cell_employment = sheet.cell(row=start_row, column=3, value="Indirect")
+                # Vendor Name
+                cell_vendor = sheet.cell(row=start_row, column=4, value=vendor_name)
+
+                # Apply styles to each cell
+                for cell in [cell_sr_no, cell_location, cell_employment, cell_vendor]:
+                    cell.fill = brown_fill
+                    cell.border = thin_border
+                    cell.alignment = alignment_center_wrap
+
+                start_row += 1
+
+    # Save the workbook after filling data
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/')
+    
+    workbook.save(f"{file_path}EmployeeDataTemplate.xlsx")

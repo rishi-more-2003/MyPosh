@@ -16,6 +16,7 @@ urlpatterns = [
     path('manual-data/', views.manual_data, name='manual_data'),
 
     path("download-vendor-sample/", views.download_vendor_file, name="download_vendor_file"),
+    path("download-employee-sample/", views.download_employee_file, name="download_employee_file"),
     path('manual-vendor-data/', views.manual_vendor_data, name='manual_vendor_data'),
     path('upload-vendor-csv/', views.upload_vendor_csv, name='upload_vendor_csv'),
 
