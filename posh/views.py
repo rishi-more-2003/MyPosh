@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views import View
@@ -16,7 +17,7 @@ import random
 from django.conf import settings
 from .utils import (generate_unique_id, generate_unique_consultancy, generate_unique_establishment, 
                     generate_unique_ngo, get_session_data, update_locations_session, 
-                    create_vendor_excel, get_vendor_data, update_vendor_session, create_employee_table)
+                    create_vendor_excel, get_vendor_data, update_vendor_session, create_employee_table, generate_unique_employeeid)
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
@@ -25,7 +26,7 @@ import datetime
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from .decorators import unauthenticated_user, allowed_users
-from .forms import EstablishmentLocationForm, PEDetailsForm, VendorDetailsForm, CurrentClientForm, ComitteeCountForm, MemberCountForm, LocationForm
+from .forms import EstablishmentLocationForm, PEDetailsForm, VendorDetailsForm, CurrentClientForm, ComitteeCountForm, MemberCountForm
 from django.forms import formset_factory
 from .models import Document
 from .filter import IndividualUserFilter, NGOUserFilter, ConsultancyUserFilter
@@ -1648,6 +1649,7 @@ def register(request):
             state=state,
             city=city,
             pincode=pincode,
+            is_activated = True,
             type='Individual')
 
             user.is_active = True
@@ -1684,7 +1686,7 @@ def signin(request):
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
-
+        print(user)
         if user is not None:
             login(request, user)
             return redirect('/')
@@ -1998,8 +2000,7 @@ def establishment_profile(request):
 def multistep_form(request):
     user = request.user.establishmentuser
     if request.method == 'POST':
-
-        file = request.FILES['file']
+        file = request.FILES.get('file')  
         if file:
             
             file_path = os.path.join(settings.BASE_DIR, 'static/posh/EmployeeDataTemplate.xlsx')  
@@ -2033,49 +2034,72 @@ def multistep_form(request):
                             no_of_direct_employees = loc['No. of Direct Employees'],
                             has_vendors = loc['Vendors'] == 'Yes',
                             no_of_vendors = loc['No. of Vendors'],
-                            total_indirect_employees = loc['Total Number of Indirect Employees'],
-                        )
-                    # contact_mobile=ven['Contact Mobile'],
-                    # mobile=ven['Mobile'],
-                    # print(vendors_data)
-                    for ven in vendors_data:
-                        location = LocationEst.objects.get(name=ven['Location Name'].strip())
-                        vendor = VendorEst.objects.get_or_create(
-                            est_id = user,
-                            location=location,
-                            vendor_name=ven['Vendor Name'],
-                            myposh_id=ven['MyPOSH ID'],
-                            commercial_address=ven['Commercial Address'],
-                            mobile=123,
-                            email=ven['Email'],
-                            nature_of_service=ven['Nature of Service'],
-                            contact_name=ven['Contact Name'],
-                            contact_mobile=1234,
-                            contact_email=ven['Contact Email'],
-                            contract_start_date=ven['Contract Start Date'] if ven["Contract Start Date"] else None,
-                            contract_end_date=ven['Contract End Date'] if ven['Contract End Date'] else None,
-                            max_employees=ven['Max Employees'],
+                            total_indirect_employees = loc['Total Number of Indirect Employees'] if loc['Total Number of Indirect Employees'] else 0,
                         )
 
+                    for ven in vendors_data:
+                        if ven['Vendor Name'] != "NA":
+                            location = LocationEst.objects.get(name=ven['Location Name'].strip())
+                            vendor = VendorEst.objects.get_or_create(
+                                est_id = user,
+                                location=location,
+                                vendor_name=ven['Vendor Name'],
+                                myposh_id=ven['MyPOSH ID'],
+                                commercial_address=ven['Commercial Address'],
+                                mobile=ven['Mobile'],
+                                email=ven['Email'],
+                                nature_of_service=ven['Nature of Service'],
+                                contact_name=ven['Contact Name'],
+                                contact_mobile=ven['Contact Mobile'],
+                                contact_email=ven['Contact Email'],
+                                contract_start_date=ven['Contract Start Date'] if ven["Contract Start Date"] else None,
+                                contract_end_date=ven['Contract End Date'] if ven['Contract End Date'] else None,
+                                max_employees=ven['Max Employees'],
+                            )
+
                     for _, emp in data.iterrows():
-                        # Retrieve location based on the 'LOCATION' column
-                        location, _ = LocationEst.objects.get_or_create(name=emp['LOCATION'])
                         
-                        # If there's a vendor, retrieve or create it based on 'VENDOR' and location
-                        vendor = VendorEst.objects.get_or_create(vendor_name=emp['VENDOR'], location=location)[0] if emp['VENDOR'] else None
-                        
-                        # Create or retrieve the employee instance
-                        EmployeeEst.objects.get_or_create(
-                            est_id=user,  # Assuming `user` is the employee ID or related user instance
+                        location = LocationEst.objects.get(name=emp['LOCATION'])
+                        try:
+                            vendor = VendorEst.objects.get(vendor_name=emp['VENDOR'], location=location) 
+                        except:
+                            vendor = None
+                        username = generate_unique_employeeid(emp['MOBILE NUMBER'], emp['EMAIL ID'])   
+
+                        # Create the employee
+                        employee = EmployeeEst.objects.create_user(
+                            username=username,
+                            password=str(emp['MOBILE NUMBER']),
+                            establishment_id=user,
                             location=location,
-                            vendor=vendor,
+                            vendor_name=vendor,
                             employee_name=emp['NAME OF EMPLOYEE'],
                             middle_name=emp['MIDDLE NAME'],
                             gender=emp['GENDER'],
                             nature=emp['NATURE OF EMPLOYMENT (DIRECT / INDIRECT)'],
-                            joining_date=pd.to_datetime(emp['DATE OF JOINING']) if pd.notnull(emp['DATE OF JOINING']) else None,
-                            mobile=str(emp['MOBILE NUMBER']),
+                            joining_date=str(emp['DATE OF JOINING']).split()[0] if emp['DATE OF JOINING'] else None,
+                            phone=str(emp['MOBILE NUMBER']),
                             email=emp['EMAIL ID'],
+                            is_activated=False,
+                            type='Employee',
+                        )
+                        
+                        # Additional processing after creating the employee
+                        employee.is_active = True
+                        group, _ = Group.objects.get_or_create(name="EMPL")
+                        employee.groups.add(group)
+                        employee.save()
+
+                        # Send welcome email
+                        subject = 'Welcome to MyPosh'
+                        message = f'Your username is {username} and password is YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
+                        email_from = settings.EMAIL_HOST
+                        send_mail(
+                            subject,
+                            message,
+                            email_from,
+                            [emp['EMAIL ID']],
+                            fail_silently=False,
                         )
 
                     user.is_complete = True
@@ -2089,8 +2113,9 @@ def multistep_form(request):
         else:
             try:
                 data = json.loads(request.body)
+                # print(data)
                 table_data = data.get("tableData", [])
-
+                # print(table_data)
                 if table_data:
 
                     locations_data = get_session_data(request)
@@ -2109,41 +2134,70 @@ def multistep_form(request):
                         )
 
                     for ven in vendors_data:
-                        location = LocationEst.objects.get(name=ven['Location Name'])
-                        vendor = VendorEst.objects.get_or_create(
-                            est_id = user,
-                            location=location,
-                            vendor_name=ven['Vendor Name'],
-                            myposh_id=ven['MyPOSH ID'],
-                            commercial_address=ven['Commercial Address'],
-                            mobile=ven['Mobile'],
-                            email=ven['Email'],
-                            nature_of_service=ven['Nature of Service'],
-                            contact_name=ven['Contact Name'],
-                            contact_mobile=ven['Contact Mobile'],
-                            contact_email=ven['Contact Email'],
-                            contract_start_date=ven['Contract Start Date'],
-                            contract_end_date=ven['Contract End Date'],
-                            max_employees=ven['Max Employees'],
-                        )
+                        if ven['Vendor Name'] != "NA":
+                            location = LocationEst.objects.get(name=ven['Location Name'])
+                            vendor = VendorEst.objects.get_or_create(
+                                est_id = user,
+                                location=location,
+                                vendor_name=ven['Vendor Name'],
+                                myposh_id=ven['MyPOSH ID'],
+                                commercial_address=ven['Commercial Address'],
+                                mobile=ven['Mobile'],
+                                email=ven['Email'],
+                                nature_of_service=ven['Nature of Service'],
+                                contact_name=ven['Contact Name'],
+                                contact_mobile=ven['Contact Mobile'],
+                                contact_email=ven['Contact Email'],
+                                contract_start_date=ven['Contract Start Date'],
+                                contract_end_date=ven['Contract End Date'],
+                                max_employees=ven['Max Employees'],
+                            )
 
                     for emp in table_data:
+                        print(emp)
                         location = LocationEst.objects.get(name=emp['LOCATION'])
-                        vendor = VendorEst.objects.get(vendor_name=emp['VENDOR'], location=location) if emp['VENDOR'] else None
-                        # print(emp)
-                        employee = EmployeeEst.objects.get_or_create(
-                            est_id=user,
+                        try:
+                            vendor = VendorEst.objects.get(vendor_name=emp['VENDOR'], location=location) 
+                        except:
+                            vendor = None
+                        username = generate_unique_employeeid(emp['MOBILE NUMBER'], emp['EMAIL ID']) 
+                        # print(username)  
+                        # print(user)  
+                        employee = EmployeeEst.objects.create_user(
+                            username=username,
+                            password=str(emp['MOBILE NUMBER']),
+                            establishment_id=user,
                             location=location,
-                            vendor=vendor,
-                            employee_name=emp['EMPLOYEE'],
-                            middle_name=emp['MIDDLENAME'],
+                            nature=emp['NATURE OF EMPLOYMENT (DIRECT / INDIRECT)'],
+                            vendor_name=vendor,
+                            employee_name=emp['NAME OF EMPLOYEE'],
+                            middle_name=emp['MIDDLE NAME'],
                             gender=emp['GENDER'],
-                            nature=emp['NATURE'],
-                            joining_date=emp['JOINING'] if emp['JOINING'] else None,
-                            mobile=emp['MOBILE'],
-                            email=emp['EMAIL'],
+                            joining_date=str(emp['DATE OF JOINING']).split()[0] if emp['DATE OF JOINING'] else None,
+                            phone=emp['MOBILE NUMBER'],
+                            email=emp['EMAIL ID'],
+                            is_activated = False,
+                            type='Employee'
                         )
-                    
+
+                        # Additional processing after creating the employee
+                        employee.is_active = True
+                        group, _ = Group.objects.get_or_create(name="EMPL")
+                        employee.groups.add(group)
+                        employee.save()
+
+                        # Send welcome email
+                        subject = 'Welcome to MyPosh'
+                        message = f'Your username is {username} and password is YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
+                        email_from = settings.EMAIL_HOST
+                        send_mail(
+                            subject,
+                            message,
+                            email_from,
+                            [emp['EMAIL ID']],
+                            fail_silently=False,
+                        )
+
                     user.is_complete = True
                     user.save()
 
@@ -2280,7 +2334,7 @@ def download_employee_file(request):
     
     with open(file_path, 'rb') as file:
         response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        response["Content-Disposition"] = 'attachment; filename="VendorDataTemplate.xlsx"'
+        response["Content-Disposition"] = 'attachment; filename="EmployeeDataTemplate.xlsx"'
         return response
 
 
@@ -2361,7 +2415,7 @@ def manual_data(request):
                     'No. of Direct Employees': 0 if row_data.get('noOfDirect') in [None, ''] else int(row_data.get('noOfDirect')),
                     'Vendors': row_data.get('vendor'),
                     'No. of Vendors': 0 if row_data.get('noOfVendor') in [None, ''] else int(row_data.get('noOfVendor')),
-                    'Total Number of Indirect Employees': int(row_data.get('total', 0)),
+                    'Total Number of Indirect Employees': row_data.get('total', 0),
                 }
                 locations_data.append(location)
 
@@ -2400,7 +2454,7 @@ def manual_vendor_data(request):
                         'Contact Email': vendor.get('contactEmail', ""),
                         'Contract Start Date': vendor.get('contractStart', ""),
                         'Contract End Date': vendor.get('contractEnd', ""),
-                        'Max Employees': int(vendor.get('maxEmp', 0))
+                        'Max Employees': vendor.get('maxEmp', 0)
                     }
 
                     # Append each vendor entry to the vendor_data list
@@ -2433,7 +2487,7 @@ def upload_vendor_csv(request):
 
             data = data.map(lambda x: str(x).replace('\xa0', ' ') if isinstance(x, str) else x)
             data = data.fillna('NA') 
-    
+            # print(data)
             location_name = None
             result = {}
             columns = ["SR.NO", "VENDOR NAME", "VENDOR'S MYPOSH UID", "VENDOR'S COMMUNICATION ADDRESS*", "MOBILE NUMBER*", 
@@ -2446,8 +2500,6 @@ def upload_vendor_csv(request):
                     continue
                 if row.iloc[0] == "LOCATION":
                     location_name = row.iloc[1]
-                    # print(location_name)
-                    # Initialize a list for the location if it doesn't exist
                     if location_name not in result:
                         result[location_name] = []
                     continue
@@ -2458,11 +2510,17 @@ def upload_vendor_csv(request):
                     if location_name:
                         # Create a dictionary for the row based on column mappings
                         row_data = {columns[i]: row.iloc[i] for i in range(1, len(columns))}
+                        if type(row_data["CONTRACT COMMENCEMENT DATE"]) == datetime.datetime:
+                            row_data["CONTRACT COMMENCEMENT DATE"] = row_data["CONTRACT COMMENCEMENT DATE"].strftime('%Y-%m-%d')
+                        if type(row_data["CONTRACT EXPIRY DATE"]) == datetime.datetime:
+                            row_data["CONTRACT EXPIRY DATE"] = row_data["CONTRACT EXPIRY DATE"].strftime('%Y-%m-%d')
                         result[location_name].append(row_data)
 
             vendor_data = []
             for location_name, vendors in result.items():
                 for vendor in vendors:
+                    if vendor.get(columns[1]) == "NA":
+                        continue
                     # Create a dictionary for each vendor with required fields
                     vendor_entry = {
                         'Location Name': location_name,

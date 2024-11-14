@@ -107,7 +107,7 @@
                             </div>
                             <div class="input-div">
                                 <select name='city' id ="city" class="form-control" disabled>
-                                    <option value="state" {% if user.establishmentuser.city == "{{ user.establishmentuser.city }}" %} selected {% endif %} disabled>{{ user.establishmentuser.city }}</option>
+                                    <option value="state" {% if user.establishmentuser.city == "{{ user.establishmentuser.city }}" %} selected {% endif %}>{{ user.establishmentuser.city }}</option>
                                 </select>
                                 <script language="javascript">print_selected_state("states", '{{ user.establishmentuser.state }}');</script>
                                 <span id='readonly-city'>City</span>
@@ -285,12 +285,17 @@
                         </div>
 
                         <div class="buttons button_space" style="margin-top: 20px">
-                            <button class="back_button">Back</button>
+                            <button class="back_button" id="lastbackbutton">Back</button>
                         </div>
                     </div>
 
                     <!-- Modal for Employee Upload -->
                     <div id="excelEmployeeModal" class="modal">
+                        <div id="loading-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: 1000; text-align: center;">
+                            <div style="position: relative; top: 50%; transform: translateY(-50%); font-size: 1.5em;">
+                                <img src="{% static 'assets/img/ZNeT.gif' %}" alt="loader" class="load__gif" >
+                            </div>
+                        </div>
                         <div class="modal-content" id="excelEmployee">
                             <span class="close-employee" id="close-employeee" >&times;</span>
                             <h2>Upload File</h2>
@@ -313,6 +318,11 @@
 
                     {% comment %} Modal for Manually Employee {% endcomment %}
                     <div id="manualEmployeeModal" class="modal">
+                        <div id="loading-screen-manual" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: 1000; text-align: center;">
+                            <div style="position: relative; top: 50%; transform: translateY(-50%); font-size: 1.5em;">
+                                <img src="{% static 'assets/img/ZNeT.gif' %}" alt="loader" class="load__gif" >
+                            </div>
+                        </div>
                         <div class="modal-content"  id="manualEmployee">
                             <span class="close-employee" id="close-employee">&times;</span>
                             <div class="location_space">

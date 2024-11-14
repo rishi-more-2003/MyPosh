@@ -263,24 +263,25 @@ class VendorEst(models.Model):
     contact_name = models.CharField(max_length=100, null=True, blank=True)
     contact_mobile = models.CharField(max_length=20, null=True, blank=True)
     contact_email = models.EmailField(null=True, blank=True)
-    contract_start_date = models.DateField(null=True, blank=True)
-    contract_end_date = models.DateField(null=True, blank=True)
+    contract_start_date =  models.CharField(max_length=100, null=True, blank=True)
+    contract_end_date = models.CharField(max_length=100, null=True, blank=True)
     max_employees = models.PositiveIntegerField(default=0)  # 'Max Employees'
 
 #Employee Details
-class EmployeeEst(models.Model):
+class EmployeeEst(PoshUser):
     GENDER_CHOICES = [
         ('Male', 'Male'),
         ('Female', 'Female'),
         ('Other', 'Other'),
     ]
-    est_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    location = models.ForeignKey(LocationEst, related_name='employees', on_delete=models.CASCADE)  # 'Location'
-    vendor = models.ForeignKey(VendorEst, related_name='employees', null=True, blank=True, on_delete=models.SET_NULL)  # 'Vendor' for indirect employees
+    establishment_id = models.ForeignKey(EstablishmentUser, on_delete=models.CASCADE, null=True, blank=True, related_name="establisment_id")
+    location = models.ForeignKey(LocationEst, related_name='locations_est', on_delete=models.CASCADE)  # 'Location'
+    vendor_name = models.ForeignKey(VendorEst, related_name='employees_est', null=True, blank=True, on_delete=models.SET_NULL)  # 'Vendor' for indirect employees
     nature = models.CharField(max_length=10, choices=[('DIRECT', 'DIRECT'), ('INDIRECT', 'INDIRECT')])
     employee_name = models.CharField(max_length=100)  # 'EMPLOYEE'
     middle_name = models.CharField(max_length=100, null=True, blank=True)  # 'MIDDLENAME'
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES)
-    joining_date = models.DateField(null=True, blank=True)  # 'JOINING'
-    mobile = models.CharField(max_length=20, null=True, blank=True)
-    email = models.EmailField(null=True, blank=True)   
+    is_activated = models.BooleanField(default=False)
+    joining_date = models.CharField(max_length=100, null=True, blank=True)
+
+

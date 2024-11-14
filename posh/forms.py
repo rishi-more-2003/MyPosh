@@ -51,18 +51,3 @@ class CreateAssignmentForm(forms.ModelForm):
     due_date = forms.DateField(initial=datetime.date.today, label='Due Date', widget=forms.DateInput(attrs={'type': 'date'}))
     due_time = forms.TimeField(initial=datetime.time(10, 10), label='Due Time', widget=forms.TimeInput(attrs={'type': 'time'}))
     instructions = forms.CharField(label='Instructions', widget=forms.Textarea)
-
-class LocationForm(forms.ModelForm):
-    class Meta:
-        model = LocationEst
-        exclude = ['est_id']
-
-class VendorForm(forms.ModelForm):
-    class Meta:
-        model = VendorEst
-        exclude = ['est_id', 'location']
-
-class EmployeeForm(forms.ModelForm):
-    class Meta:
-        model = EmployeeEst
-        exclude = ['est_id', 'location', 'vendor']

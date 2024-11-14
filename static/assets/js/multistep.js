@@ -154,9 +154,9 @@ manualBtn.onclick = () => {
             <td>${i + 1}</td>
             <td data-type="text" class="editable-cell"></td>
             <td data-type="text" class="editable-cell"></td>
-            <td data-type="checkbox" class="editable-cell"></td>
+            <td data-type="checkbox1" class="editable-cell"></td>
             <td data-type="number" class="editable-cell"></td>
-            <td data-type="checkbox" class="editable-cell"></td>
+            <td data-type="checkbox2" class="editable-cell"></td>
             <td data-type="number" class="editable-cell"></td>
             <td data-type="number" class="editable-cell"></td>
             <td class="but">
@@ -560,7 +560,7 @@ function editRow(button) {
         let cellType = cell.getAttribute("data-type");
         let currentValue = cell.textContent.trim();
         
-        if (cellType === 'checkbox') {
+        if (cellType === 'checkbox1') {
             // Create the dropdown with the correct option selected
             cell.innerHTML = `<select class="form-control form-control-sm">
                 <option value="No" ${currentValue === 'No' ? 'selected' : ''}>No</option>
@@ -592,7 +592,48 @@ function editRow(button) {
 
             // Trigger the onchange event initially to set the state
             checkboxSelect.onchange();
-        } else {
+        } 
+        else if(cellType === 'checkbox2') {
+            // Create the dropdown with the correct option selected
+            cell.innerHTML = `<select class="form-control form-control-sm">
+                <option value="No" ${currentValue === 'No' ? 'selected' : ''}>No</option>
+                <option value="Yes" ${currentValue === 'Yes' ? 'selected' : ''}>Yes</option>
+            </select>`;
+
+            // Add onchange listener to enable/disable and clear next cell if toggled to False
+            const checkboxSelect = cell.querySelector("select");
+
+            checkboxSelect.onchange = function () {
+                // Get the cell right after the checkbox cell
+                let nextCell = cells[index + 1];
+                let nexttonextCell = cells[index + 2];
+                if (nextCell) {
+                    let nextCellInput = nextCell.querySelector("input");
+                    let nexttonextCellInput = nexttonextCell.querySelector("input");
+                    if (checkboxSelect.value === 'Yes') {
+                        nextCell.classList.remove("disabled-cell");
+                        nexttonextCell.classList.remove("disabled-cell");
+                        if (nextCellInput) {
+                            nextCellInput.disabled = false;
+                            nexttonextCellInput.disabled = false;
+                        }
+                    } else {
+                        nextCell.classList.add("disabled-cell");
+                        nexttonextCell.classList.add("disabled-cell");
+                        if (nextCellInput) {
+                            nextCellInput.value = ''; // Clear the value
+                            nexttonextCellInput.value = ''; // Clear the value
+                            nextCellInput.disabled = true;
+                            nexttonextCellInput.disabled = true;
+                        }
+                    }
+                }
+            };
+
+            // Trigger the onchange event initially to set the state
+            checkboxSelect.onchange();
+        }
+        else {
             cell.innerHTML = `<input type="${cellType}" value="${currentValue}" class="form-control form-control-sm" required>`;
         }
     });
@@ -1098,15 +1139,15 @@ function collectEmployeeTableData() {
         const cells = row.querySelectorAll('td');
 
         rowData['LOCATION'] = cells[1].innerText;
-        rowData['NATURE'] = cells[2].innerText; // DIRECT or INDIRECT
+        rowData['NATURE OF EMPLOYMENT (DIRECT / INDIRECT)'] = cells[2].innerText; // DIRECT or INDIRECT
         rowData['VENDOR'] = cells[3].innerText;  // Empty for DIRECT
 
-        rowData['EMPLOYEE'] = cells[4].innerText; // Replace 'Field1' with actual field name
-        rowData['MIDDLENAME'] = cells[5].innerText;
+        rowData['NAME OF EMPLOYEE'] = cells[4].innerText; // Replace 'Field1' with actual field name
+        rowData['MIDDLE NAME'] = cells[5].innerText;
         rowData['GENDER'] = cells[6].innerText;
-        rowData['JOINING'] = cells[7].innerText;
-        rowData['MOBILE'] = cells[8].innerText;
-        rowData['EMAIL'] = cells[9].innerText;
+        rowData['DATE OF JOINING'] = cells[7].innerText;
+        rowData['MOBILE NUMBER'] = cells[8].innerText;
+        rowData['EMAIL ID'] = cells[9].innerText;
 
         // Add the row data to the tableData array
         tableData.push(rowData);
@@ -1217,7 +1258,7 @@ $('#uploadVendorButton').on('click', function(event) {
             },
             data: formData,
             success: function(response) {
-                // console.log('File uploaded successfully:', response);
+                console.log('File uploaded successfully:', response);
                 const excelVendorModal = document.getElementById("excelVendorModal");
                 excelVendorModal.style.display = "none";
                 if(response['status'] === 'success'){
@@ -1240,11 +1281,14 @@ $('#uploadVendorButton').on('click', function(event) {
 
 $('#uploadEmployeeButton').on('click', function(event) {
     event.preventDefault();
+
+    $('#loading-screen').show();
+
     // Get the selected file
     const fileInput = document.getElementById('EmployeefileInput');
     const file = fileInput.files[0]; // Get the first file
     const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
-    
+
     if (file) {
         const formData = new FormData();
         formData.append('file', file); // Append the file to FormData
@@ -1261,15 +1305,17 @@ $('#uploadEmployeeButton').on('click', function(event) {
             data: formData,
             success: function(response) {
                 if(response['status'] === 'success'){
+                    $('#loading-screen').hide();
                     // Handle success (e.g., close modal, show success message)
-                    const manualEmployeeModal = document.getElementById("manualEmployeeModal");
-                    manualEmployeeModal.style.display = "none";
+                    const excelEmployeeModal = document.getElementById("excelEmployeeModal");
+                    excelEmployeeModal.style.display = "none";
                     // location.reload();  // Reload the page to see the changes
                     // console.log(response)
                     if(response['status'] === 'success'){
                         // document.getElementById("message-employee-success").style.display = "block";
                         document.getElementById("manualEmployeeBtn").hidden = true;
                         document.getElementById("excelEmployeeBtn").hidden= true;
+                        document.getElementById("lastbackbutton").hidden= true;
                         showVendorSuccessMessage()
                         // Delay redirect by 3 seconds (adjust if needed)
                         setTimeout(() => {
@@ -1280,6 +1326,7 @@ $('#uploadEmployeeButton').on('click', function(event) {
                 }
             },
             error: function(xhr, errmsg, err) {
+                $('#loading-screen').hide();
                 console.error('Error uploading file:', errmsg);
                 // Handle error (e.g., show error message)
             }
@@ -1329,6 +1376,8 @@ $('#manual-vendor-submission').on('click', function(event) {
 $('#manual-employee-submission').on('click', function(event) {
     event.preventDefault();
 
+    $('#loading-screen-manual').show();
+
     const tableData = collectEmployeeTableData();
     const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();  // Correct CSRF token selector
 
@@ -1344,6 +1393,7 @@ $('#manual-employee-submission').on('click', function(event) {
         success: function(response) {
             if(response['status'] === 'success'){
                 // Handle success (e.g., close modal, show success message)
+                $('#loading-screen-manual').hide();
                 const manualEmployeeModal = document.getElementById("manualEmployeeModal");
                 manualEmployeeModal.style.display = "none";
                 // location.reload();  // Reload the page to see the changes
@@ -1352,6 +1402,7 @@ $('#manual-employee-submission').on('click', function(event) {
                     // document.getElementById("message-employee-success").style.display = "block";
                     document.getElementById("manualEmployeeBtn").hidden = true;
                     document.getElementById("excelEmployeeBtn").hidden= true;
+                    document.getElementById("lastbackbutton").hidden= true;
                     showVendorSuccessMessage()
                     // Delay redirect by 3 seconds (adjust if needed)
                     setTimeout(() => {
@@ -1362,6 +1413,7 @@ $('#manual-employee-submission').on('click', function(event) {
             }
         },
         error: function(xhr, errmsg, err) {
+            $('#loading-screen-manual').hide();
             // Handle error (e.g., show error message)
             console.log("Error:", errmsg);
         }
