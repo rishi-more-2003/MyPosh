@@ -174,32 +174,76 @@ $('#ajaxSubmitButton').on('click', function(event) {
     });
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+    // Get Elements
+    const openPopupC = document.getElementById('openPopup-committee');
+    const closePopupC = document.getElementById('closePopup-committee');
+    const popupC = document.getElementById('popup-committee');
 
-// Get Elements
-const openPopupC = document.getElementById('openPopup-committee');
-const closePopupC = document.getElementById('closePopup-committee');
-const popupC = document.getElementById('popup-committee');
-
-// Open Popup
-openPopupC.addEventListener('click', () => {
-    popupC.classList.remove('hidden-committee');
-});
-
-// Close Popup
-closePopupC.addEventListener('click', () => {
-    popupC.classList.add('hidden-committee');
-});
-
-// Close on Clicking Outside
-window.addEventListener('click', (event) => {
-    if (event.target === popupC) {
-        popupC.classList.add('hidden-committee');
-    }
-});
-
-document.querySelectorAll('.info-btn').forEach((infoBtn) => {
-    infoBtn.addEventListener('mouseenter', () => {
-      const infoText = infoBtn.getAttribute('data-info');
-      infoBtn.setAttribute('title', infoText);
+    // Open Popup
+    openPopupC.addEventListener('click', async () => {
+        popupC.classList.remove('hidden-committee');
+        try {
+            const response = await fetch("/api/get-location-count/");
+            if (response.ok) {
+              const data = await response.json();
+              const count = data.count; // Assuming the backend sends { count: <number> }
+              updateButtonStates(count);
+            } else {
+              console.error("Failed to fetch data");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
     });
-  });
+
+    // Close Popup
+    closePopupC.addEventListener('click', () => {
+        popupC.classList.add('hidden-committee');
+    });
+
+    // Close on Clicking Outside
+    window.addEventListener('click', (event) => {
+        if (event.target === popupC) {
+            popupC.classList.add('hidden-committee');
+        }
+    });
+
+    document.querySelectorAll('.info-btn').forEach((infoBtn) => {
+        infoBtn.addEventListener('mouseenter', () => {
+        const infoText = infoBtn.getAttribute('data-info');
+        infoBtn.setAttribute('title', infoText);
+        });
+    });
+
+    // Function to disable and style buttons
+  const updateButtonStates = (count) => {
+    const buttons = document.querySelectorAll(".option-committee");
+
+    buttons.forEach((button) => {
+      const optionId = button.getAttribute("data-option-id");
+      const link = button.closest(".option-committee-link");
+
+      button.disabled = false; // Reset all buttons
+      button.style.backgroundColor = ""; // Reset styles
+      if (link) link.classList.remove("disabled");
+
+      if (count === 1 && optionId !== "single") {
+        button.disabled = true;
+        button.style.backgroundColor = "var(--first-color-alt)";
+        button.style.color = "var(--text-color-light)";
+        button.style.cursor = "not-allowed";
+        if (link) link.classList.add("disabled");
+
+      } else if (count > 1 && optionId === "single") {
+        button.disabled = true;
+        button.style.backgroundColor = "var(--first-color-alt)";
+        button.style.color = "var(--text-color-light)";
+        button.style.cursor = "not-allowed";
+        if (link) link.classList.add("disabled");
+
+      }
+    });
+  };
+
+});

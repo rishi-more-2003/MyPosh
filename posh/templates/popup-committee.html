@@ -9,27 +9,27 @@
         <div class="popup-committee-body">
           <div class="option-grid-committee"> 
               <a href="{% url 'group:group' %}" class="option-committee-link">
-                <button class="option-committee-1" > 
+                <button class="option-committee" data-option-id="single"> 
                   Single Committee Set-up
                   <i class="fas fa-info-circle info-btn" data-info="Set up a single committee for streamlined management."></i>
                 </button>
               </a> 
               <a href="{% url 'group:group' %}" class="option-committee-link">
-                <button class="option-committee-2"> 
+                <button class="option-committee" data-option-id="multi"> 
                   Multi Committee Set-up
-                  <i class="fas fa-info-circle info-btn" data-info="Set up a single committee for streamlined management."></i>
+                  <i class="fas fa-info-circle info-btn" data-info="Set up multiple committees for enhanced collaboration."></i>
                 </button>
               </a> 
               <a href="{% url 'group:group' %}" class="option-committee-link">
-                <button class="option-committee-3"> 
+                <button class="option-committee" data-option-id="core-multi"> 
                   Core Committee & Multi Committee Set-up
-                  <i class="fas fa-info-circle info-btn" data-info="Set up a single committee for streamlined management."></i>
+                  <i class="fas fa-info-circle info-btn" data-info="Combine core and multiple committees for complex setups."></i>
                 </button>
               </a> 
               <a href="{% url 'group:group' %}" class="option-committee-link">
-                <button class="option-committee-4"> 
+                <button class="option-committee" data-option-id="multi-core"> 
                   Multi Core Committee & Multi Committee Set-up
-                  <i class="fas fa-info-circle info-btn" data-info="Set up a single committee for streamlined management."></i>
+                  <i class="fas fa-info-circle info-btn" data-info="Combine multiple core and multiple committees for advanced setups."></i>
                 </button>
               </a> 
           </div>

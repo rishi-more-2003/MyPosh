@@ -89,6 +89,18 @@ html{
     display: none;
 }
 
+.option-committee:disabled {
+    background-color: var(--first-color-alt);
+    color: var(--text-color-light);
+    cursor: not-allowed;
+    pointer-events: none; /* Prevent clicking */
+  }
+
+  .option-committee-link.disabled {
+    pointer-events: none; /* Prevent anchor clicks */
+    cursor: not-allowed;
+  }
+
 /* Popup Dialog */
 .popup-committee-dialog {
     width: 120%;
@@ -128,10 +140,7 @@ html{
 }
 
 /* Option Buttons */
-.option-committee-1,
-.option-committee-2,
-.option-committee-3,
-.option-committee-4 {
+.option-committee {
     padding: 40px;
     font-size: var(--h3-font-size);
     font-weight: var(--font-semi-bold);
@@ -155,10 +164,7 @@ html{
     transform: scale(1.05);
 }
 
-.option-committee-1:hover ,
-.option-committee-2:hover ,
-.option-committee-3:hover ,
-.option-committee-4:hover {
+.option-committee:hover {
     background-color: var(--first-color);
     color: var(--body-color);
     transform: scale(1.05);

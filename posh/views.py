@@ -41,6 +41,15 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from django.db.models import Q
 
+@allowed_users(allowed_roles=['EST'])
+def get_location_count(request):
+    if request.user.is_authenticated:
+        if hasattr(request.user, 'establishmentuser'):
+             user = request.user.establishmentuser
+             count = LocationEst.objects.filter(est_id = user).order_by("name")
+             return JsonResponse({"count": len(count)})
+
+
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
     user_visible = False
