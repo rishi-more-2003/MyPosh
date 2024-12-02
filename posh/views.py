@@ -17,7 +17,8 @@ import random
 from django.conf import settings
 from .utils import (generate_unique_id, generate_unique_consultancy, generate_unique_establishment, 
                     generate_unique_ngo, get_session_data, update_locations_session, 
-                    create_vendor_excel, get_vendor_data, update_vendor_session, create_employee_table, generate_unique_employeeid)
+                    create_vendor_excel, get_vendor_data, update_vendor_session, create_employee_table, generate_unique_employeeid,
+                    generate_unique_locationUID)
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
@@ -35,7 +36,10 @@ from itertools import chain
 from conversation.models import Conversation
 import json
 import os
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import threading
+from concurrent.futures import ThreadPoolExecutor
+from django.db.models import Q
 
 # @allowed_users(allowed_roles=['admin', 'IND', 'EST', 'NGO', 'CON'])
 def home(request):
@@ -1978,24 +1982,94 @@ def establishment_profile(request):
 
     setdate = user.establishmentuser.setdate
     user = get_object_or_404(EstablishmentUser, username = request.user)
-    locationList = LocationEst.objects.filter(est_id = user) 
-    paginator = Paginator(locationList, 10)
-    page_number = request.GET.get('page', 1)
-    locationPage = paginator.get_page(page_number)
-    totalPage = locationPage.paginator.num_pages
-    
-    # Calculate the starting row number for the current page
-    row_start = (locationPage.number - 1) * paginator.per_page
-
     context ={
         "user": user,
         'setdate': setdate,
-        "locationList": locationPage,
-        "lastpage": totalPage,
-        'totalPageList': [n+1 for n in range(totalPage)],
-        'row_start': row_start,
     }
     return render(request, 'establishment-profile.html', context)
+
+def save_location_data(locations_data, user):
+    # print("save_location_data started")
+    for loc in locations_data:
+        LocationEst.objects.get_or_create(
+            est_id = user,
+            name=loc['Location Name'],
+            address = loc['Address'],
+            location_uid =  generate_unique_locationUID(user, loc['Location Name']),
+            has_direct_employee = loc['Direct Employee'] == 'Yes',
+            no_of_direct_employees = loc['No. of Direct Employees'],
+            has_vendors = loc['Vendors'] == 'Yes',
+            no_of_vendors = loc['No. of Vendors'],
+            total_indirect_employees = loc['Total Number of Indirect Employees'] if loc['Total Number of Indirect Employees'] else 0,
+        )
+    return
+
+def save_vendor_data(vendors_data, user):
+    
+    for ven in vendors_data:
+        # print("save_vendor_data started")
+        if ven['Vendor Name'] != "NA":
+            # print("save_vendor_data started")
+            location = LocationEst.objects.get(name=ven['Location Name'].strip())
+            # print(location)
+            VendorEst.objects.get_or_create(
+                est_id = user,
+                location=location,
+                vendor_name=ven['Vendor Name'],
+                myposh_id=ven['MyPOSH ID'],
+                commercial_address=ven['Commercial Address'],
+                mobile=ven['Mobile'],
+                email=ven['Email'],
+                nature_of_service=ven['Nature of Service'],
+                contact_name=ven['Contact Name'],
+                contact_mobile=ven['Contact Mobile'],
+                contact_email=ven['Contact Email'],
+                contract_start_date=ven['Contract Start Date'] if ven["Contract Start Date"] else None,
+                contract_end_date=ven['Contract End Date'] if ven['Contract End Date'] else None,
+                max_employees=ven['Max Employees'],
+            )
+    return
+
+def save_employee_data(emp, user):
+
+    location = LocationEst.objects.get(name=emp['LOCATION'].strip())
+    
+    try:
+        vendor = VendorEst.objects.get(vendor_name=emp['VENDOR'].strip(), location=location) 
+    except:
+        vendor = None
+    username = generate_unique_employeeid(emp['MOBILE NUMBER'], emp['EMAIL ID'])   
+
+    # Create the employee
+    employee = EmployeeEst.objects.create_user(
+        username=username,
+        password=str(emp['MOBILE NUMBER']),
+        establishment_id=user,
+        location=location,
+        vendor_name=vendor,
+        employee_name=emp['NAME OF EMPLOYEE'],
+        middle_name=emp['MIDDLE NAME'],
+        gender=emp['GENDER'],
+        nature=emp['NATURE OF EMPLOYMENT (DIRECT / INDIRECT)'],
+        joining_date=str(emp['DATE OF JOINING']).split()[0] if emp['DATE OF JOINING'] else None,
+        phone=str(emp['MOBILE NUMBER']),
+        email=emp['EMAIL ID'],
+        is_activated=False,
+        type='Employee',
+    )
+
+    # Post-creation actions
+    employee.is_active = True
+    group, _ = Group.objects.get_or_create(name="EMPL")
+    employee.groups.add(group)
+    employee.save()
+
+    # Send welcome email
+    subject = 'Welcome to MyPosh'
+    message = f'Your username is {username} and password is YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
+    email_from = settings.EMAIL_HOST
+    send_mail(subject, message, email_from, [emp['EMAIL ID']], fail_silently=False)
+
 
 def multistep_form(request):
     user = request.user.establishmentuser
@@ -2018,90 +2092,27 @@ def multistep_form(request):
 
                 data = data.map(lambda x: str(x).replace('\xa0', ' ') if isinstance(x, str) else x)
                 data = data.fillna('NA') 
-                
+
                 if not data.empty:
-                    
                     locations_data = get_session_data(request)
                     vendors_data = get_vendor_data(request)
 
-                    for loc in locations_data:
-                        # print(loc)
-                        location, created = LocationEst.objects.get_or_create(
-                            est_id = user,
-                            name=loc['Location Name'],
-                            address = loc['Address'],
-                            has_direct_employee = loc['Direct Employee'] == 'Yes',
-                            no_of_direct_employees = loc['No. of Direct Employees'],
-                            has_vendors = loc['Vendors'] == 'Yes',
-                            no_of_vendors = loc['No. of Vendors'],
-                            total_indirect_employees = loc['Total Number of Indirect Employees'] if loc['Total Number of Indirect Employees'] else 0,
-                        )
+                    save_location_data(locations_data, user)
+                    save_vendor_data(vendors_data, user)
 
-                    for ven in vendors_data:
-                        if ven['Vendor Name'] != "NA":
-                            location = LocationEst.objects.get(name=ven['Location Name'].strip())
-                            vendor = VendorEst.objects.get_or_create(
-                                est_id = user,
-                                location=location,
-                                vendor_name=ven['Vendor Name'],
-                                myposh_id=ven['MyPOSH ID'],
-                                commercial_address=ven['Commercial Address'],
-                                mobile=ven['Mobile'],
-                                email=ven['Email'],
-                                nature_of_service=ven['Nature of Service'],
-                                contact_name=ven['Contact Name'],
-                                contact_mobile=ven['Contact Mobile'],
-                                contact_email=ven['Contact Email'],
-                                contract_start_date=ven['Contract Start Date'] if ven["Contract Start Date"] else None,
-                                contract_end_date=ven['Contract End Date'] if ven['Contract End Date'] else None,
-                                max_employees=ven['Max Employees'],
-                            )
+                    with ThreadPoolExecutor(max_workers=min(10, data.shape[0])) as executor:
+                        employee_futures = [
+                            executor.submit(save_employee_data, emp_row, user)
+                            for _, emp_row in data.iterrows()
+                        ]
 
-                    for _, emp in data.iterrows():
-                        
-                        location = LocationEst.objects.get(name=emp['LOCATION'])
-                        try:
-                            vendor = VendorEst.objects.get(vendor_name=emp['VENDOR'], location=location) 
-                        except:
-                            vendor = None
-                        username = generate_unique_employeeid(emp['MOBILE NUMBER'], emp['EMAIL ID'])   
+                        for future in employee_futures:
+                            try:
+                                future.result()  # Wait for thread completion and handle exceptions
+                            except Exception as e:
+                                print(f"Error in thread: {e}")
 
-                        # Create the employee
-                        employee = EmployeeEst.objects.create_user(
-                            username=username,
-                            password=str(emp['MOBILE NUMBER']),
-                            establishment_id=user,
-                            location=location,
-                            vendor_name=vendor,
-                            employee_name=emp['NAME OF EMPLOYEE'],
-                            middle_name=emp['MIDDLE NAME'],
-                            gender=emp['GENDER'],
-                            nature=emp['NATURE OF EMPLOYMENT (DIRECT / INDIRECT)'],
-                            joining_date=str(emp['DATE OF JOINING']).split()[0] if emp['DATE OF JOINING'] else None,
-                            phone=str(emp['MOBILE NUMBER']),
-                            email=emp['EMAIL ID'],
-                            is_activated=False,
-                            type='Employee',
-                        )
-                        
-                        # Additional processing after creating the employee
-                        employee.is_active = True
-                        group, _ = Group.objects.get_or_create(name="EMPL")
-                        employee.groups.add(group)
-                        employee.save()
-
-                        # Send welcome email
-                        subject = 'Welcome to MyPosh'
-                        message = f'Your username is {username} and password is YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
-                        email_from = settings.EMAIL_HOST
-                        send_mail(
-                            subject,
-                            message,
-                            email_from,
-                            [emp['EMAIL ID']],
-                            fail_silently=False,
-                        )
-
+                    # print("OK", user.is_complete)  # Should now execute
                     user.is_complete = True
                     user.save()
 
@@ -2550,3 +2561,260 @@ def upload_vendor_csv(request):
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})   
 
+
+def location_view(request):
+
+    user = get_object_or_404(EstablishmentUser, username = request.user)
+    locationList = LocationEst.objects.filter(est_id = user).order_by("name")
+
+    query = request.GET.get('q', '').strip()
+
+    locationPage, totalPage, row_start = 0, 0, 0
+
+    try:
+        # Filter by name or address if query exists
+        if query:
+            locationList = locationList.filter(
+                name__icontains=query
+            ) | locationList.filter(
+                address__icontains=query
+            )
+    
+
+        if len(locationList)>10:
+            paginator = Paginator(locationList, 10)
+        else:
+            paginator = Paginator(locationList, len(locationList))
+
+        page_number = request.GET.get('page', 1)
+        locationPage = paginator.get_page(page_number)
+        totalPage = locationPage.paginator.num_pages
+    
+        # Calculate the starting row number for the current page
+        row_start = (locationPage.number - 1) * paginator.per_page
+
+    except PageNotAnInteger:
+        locationList = paginator.page(1)
+    except EmptyPage:
+        locationList = paginator.page(paginator.num_pages)
+    except Exception as e:
+        locationList = []
+
+    context ={
+        "user": user,
+        "locationList": locationPage,
+        "lastpage": totalPage,
+        'totalPageList': [n+1 for n in range(totalPage)],
+        'row_start': row_start if locationList else 0,
+    }
+    return render(request, 'establishment-profile-location.html', context)
+
+def vendor_view(request):
+    user = get_object_or_404(EstablishmentUser, username = request.user)
+    vendorList = VendorEst.objects.filter(est_id = user).order_by("location") 
+
+    query = request.GET.get('q', '').strip()
+
+    vendorPage, totalPage, row_start = 0, 0, 0
+
+    try:
+        # Filter by name or address if query exists
+        if query:
+            vendorList = vendorList.filter(
+                vendor_name__icontains=query
+            ) | vendorList.filter(
+                location__name__icontains=query
+            ) | vendorList.filter(
+               commercial_address__icontains=query
+            ) 
+
+        if len(vendorList)>10:
+            paginator = Paginator(vendorList, 10)
+        else:
+            paginator = Paginator(vendorList, len(vendorList))
+
+        page_number = request.GET.get('page', 1)
+        vendorPage = paginator.get_page(page_number)
+        totalPage = vendorPage.paginator.num_pages
+    
+        # Calculate the starting row number for the current page
+        row_start = (vendorPage.number - 1) * paginator.per_page
+
+    except PageNotAnInteger:
+        vendorList = paginator.page(1)
+    except EmptyPage:
+        vendorList = paginator.page(paginator.num_pages)
+    except Exception as e:
+        vendorList = []
+
+    context ={
+        "user": user,
+        "vendorList": vendorPage,
+        "lastpage": totalPage,
+        'totalPageList': [n+1 for n in range(totalPage)],
+        'row_start': row_start if vendorList else 0,
+    }
+    return render(request, 'establishment-profile-vendor.html', context)
+
+def employee_view(request):
+    user = get_object_or_404(EstablishmentUser, username=request.user)
+    employeeList = EmployeeEst.objects.filter(establishment_id=user).order_by("location")
+
+    # Retrieve query parameters
+    query = request.GET.get('q', '').strip()
+    queryfornature = request.GET.get('type', '').strip().upper()  # Convert to uppercase
+    print(queryfornature)
+
+    # Apply filters based on query parameters
+    if query:
+        employeeList = employeeList.filter(
+            Q(location__name__icontains=query) |
+            Q(vendor_name__vendor_name__icontains=query) |
+            Q(employee_name__icontains=query)
+        )
+
+    if queryfornature:
+        employeeList = employeeList.filter(nature__iexact=queryfornature)
+
+    # Pagination
+    paginator = Paginator(employeeList, 10)  # Show 10 results per page
+    page_number = request.GET.get('page', 1)
+
+    try:
+        employeePage = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        employeePage = paginator.page(1)
+    except EmptyPage:
+        employeePage = paginator.page(paginator.num_pages)
+
+    # Total pages and starting row index
+    totalPage = paginator.num_pages
+    row_start = (employeePage.start_index() - 1)  # Calculate starting row for the current page
+
+    # Context for rendering the template
+    context = {
+        "user": user,
+        "employeeList": employeePage,
+        "lastpage": totalPage,
+        "totalPageList": [n + 1 for n in range(totalPage)],  # Generate a list of total pages
+        "row_start": row_start,
+        "query": query,
+        "queryfornature": queryfornature,
+    }
+
+    return render(request, 'establishment-profile-employee.html', context)
+
+
+def update_establishment_location(request):
+    if request.method == "POST":
+        try:
+            # Get data from POST request
+            location_id = request.POST.get("locationId")
+            location_name = request.POST.get("locationName")
+            address = request.POST.get("address")
+            direct_employees = request.POST.get("directEmployees")
+            vendors = request.POST.get("vendors")
+            indirect_employees = request.POST.get("indirectEmployees")
+
+            # print(location_id, location_name, address, direct_employees, vendors, indirect_employees)
+
+            # Fetch the location instance
+            location = get_object_or_404(LocationEst, id=location_id)
+
+            # Update the location
+            location.name = location_name
+            location.address = address
+            location.no_of_direct_employees = direct_employees
+            location.no_of_vendors = vendors
+            location.total_indirect_employees = indirect_employees
+            location.save()
+
+            # Respond with success
+            return JsonResponse({"success": True})
+        except Exception as e:
+            # Respond with an error message
+            return JsonResponse({"success": False, "error": str(e)})
+    else:
+        return JsonResponse({"success": False, "error": "Invalid request method"})
+    
+def update_establishment_vendor(request):
+    if request.method == "POST":
+        try:
+            vendorId = request.POST.get("vendorId")
+            locationNameInput = request.POST.get("locationName")
+            vendorNameInput = request.POST.get("vendorName")
+            myposhIdInput = request.POST.get("myposhId")
+            addressTextarea = request.POST.get("address")
+            mobileInput = request.POST.get("mobile")
+            emailInput = request.POST.get("email")
+            natureOfServiceInput = request.POST.get("natureOfService")
+            contactNameInput = request.POST.get("contactName")
+            contactMobileInput = request.POST.get("contactMobile")
+            contactEmailInput = request.POST.get("contactEmail")
+            startDateInput = request.POST.get("startDate")
+            endDateInput = request.POST.get("endDate")
+            maxEmployeesInput = request.POST.get("maxEmployees")
+
+            vendor = get_object_or_404(VendorEst, id=vendorId)
+
+            vendor.location.name = locationNameInput
+            vendor.vendor_name = vendorNameInput
+            vendor.myposh_id = myposhIdInput
+            vendor.commercial_address = addressTextarea
+            vendor.mobile = mobileInput
+            vendor.email = emailInput
+            vendor.nature_of_service = natureOfServiceInput
+            vendor.contact_name = contactNameInput
+            vendor.contact_mobile = contactMobileInput
+            vendor.contact_email = contactEmailInput
+            vendor.contract_start_date =  startDateInput
+            vendor.contract_end_date = endDateInput
+            vendor.max_employees = maxEmployeesInput
+            
+            vendor.save()
+
+            # Respond with success
+            return JsonResponse({"success": True})
+        except Exception as e:
+            # Respond with an error message
+            return JsonResponse({"success": False, "error": str(e)})
+    else:
+        return JsonResponse({"success": False, "error": "Invalid request method"})
+    
+
+def update_establishment_employee(request):
+    if request.method == "POST":
+        try:
+            # Get data from POST request
+            empId = request.POST.get("empId")
+            locationNameInput = request.POST.get("locationName")
+            vendorNameInput = request.POST.get("vendorName")
+            natureInput = request.POST.get("nature")
+            employeeNameInput = request.POST.get("employeeName")
+            middleNameInput = request.POST.get("middleName")
+            genderInput = request.POST.get("gender")
+            joiningDateInput = request.POST.get("joiningDate")
+
+            # print(empId, locationNameInput, vendorNameInput, natureInput, employeeNameInput, middleNameInput, genderInput, joiningDateInput)
+
+            # Fetch the location instance
+            employee = get_object_or_404(EmployeeEst, poshuser_ptr_id=empId)
+
+            # Update the location
+            employee.location.name = locationNameInput
+            if vendorNameInput != "Not Applicable":
+                employee.vendor_name.vendor_name = vendorNameInput
+            employee.nature = natureInput
+            employee.employee_name = employeeNameInput
+            employee.middle_name = middleNameInput
+            employee.gender = genderInput
+            employee.joining_date = joiningDateInput
+            employee.save()
+
+            # Respond with success
+            return JsonResponse({"success": True})
+        except Exception as e:
+            # Respond with an error message
+            return JsonResponse({"success": False, "error": str(e)})
+    else:
+        return JsonResponse({"success": False, "error": "Invalid request method"})

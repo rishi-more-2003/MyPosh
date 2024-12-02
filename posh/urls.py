@@ -83,7 +83,14 @@ urlpatterns = [
     path('consult-profile/document/<int:pk>', views.consult_delete_document, name="consult_delete_document"),
 
     path('establishment-profile/', views.establishment_profile, name="establishment-profile"),
+    path('establishment-profile/location/', views.location_view, name="establishment-profile-location"),
+    path('establishment-profile/vendor/', views.vendor_view, name="establishment-profile-vendor"),
+    path('establishment-profile/employee/', views.employee_view, name="establishment-profile-employee"),
     # path('ngo-profile/document/<int:pk>', views.delete_document, name="delete_document"),
+
+    path('establishment-profile/location/update-location/', views.update_establishment_location, name='update_establishment_location'),
+    path('establishment-profile/vendor/update-vendor/', views.update_establishment_vendor, name='update_establishment_vendor'),
+    path('establishment-profile/employee/update-employee/', views.update_establishment_employee, name='update_establishment_employee'),
 
 
     path('portal/', views.portal, name="portal"),

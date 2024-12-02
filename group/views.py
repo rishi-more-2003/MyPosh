@@ -17,10 +17,18 @@ def group(request):
     enterprise_mapping = Enterprise.objects.filter(enterprise_id = request.user).select_related('group_id')
     employee_mapping = Employee.objects.filter(employee_id = request.user).select_related('group_id')
     enterprise_all = Enterprise.objects.all()
-    enterprise = EstablishmentUser.objects.filter(username = enterprise_all.first().enterprise_id).values('state', 'city')
+    # print(enterprise_mapping)
+    # print(employee_mapping)
+    # print(enterprise_all)
+    try:
+        enterprise = EstablishmentUser.objects.filter(username = enterprise_all.first().enterprise_id).values('state', 'city')
+    except AttributeError:
+        enterprise = None
+    # print(enterprise)
     is_enterprise = True if str(request.user.username).startswith('ES') else False
     mappings = chain(enterprise_mapping, employee_mapping) 
     # print(mappings, enterprise, enterprise_mapping)
+    # return render(request,'groups.html') 
     return render(request,'groups.html',{'mappings':mappings,'teachers_all':enterprise_all, 'enterprise': enterprise, 'is_enterprise': is_enterprise}) 
 
 def create_class_request(request):

@@ -1,0 +1,571 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block stylescss %}
+{{ block.super }}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    ul{
+        padding-left: 0rem;
+    }
+
+    #location-container {
+        margin-top: 100px;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        min-height: 500px;
+    }
+
+    #location-header {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #333333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .location-table-container {
+        margin-top: 20px;
+        overflow-x: auto;
+    }
+
+    #location-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0 auto;
+    }
+
+    .table th, 
+    .table td {
+        border: 1px solid #e0e0e0;
+        padding: 12px 15px;
+        text-align: left;
+        font-size: 1rem;
+    }
+
+    .table thead {
+        background-color: #f8f9fa;
+        color: #333333;
+        font-weight: 600;
+    }
+
+    .table tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #ffffff;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .table th {
+        text-transform: uppercase;
+    }
+
+    a.page-link{
+        color: orange;
+    }
+    /* Styling for search bar container */
+    .input-group {
+        width: 100%;
+        max-width: 500px; /* Restricting width for aesthetics */
+        margin: 0 auto; /* Center align */
+        border: 1px solid #ffa500; /* Orange border */
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff; /* White background for contrast */
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for elevation */
+    }
+
+    /* Input field styling */
+    .input-group input[type="text"] {
+        border: none;
+        flex: 1;
+        padding: 10px 15px;
+        font-size: 16px;
+        color: #555;
+        outline: none;
+        font-family: "Arial", sans-serif;
+    }
+
+    
+    /* Input placeholder */
+    .input-group input::placeholder {
+        color: #aaa;
+        font-style: italic;
+    }
+    
+    /* Button styling */
+    .input-group .btn {
+        background: #ff8c00; /* Orange */
+        border: none;
+        color: #fff; 
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+    } 
+
+    /* Responsive styling */
+    @media (max-width: 576px) {
+        .input-group {
+            max-width: 100%;
+            margin: 10px;
+        }
+    }
+    .page-item.active .page-link {
+        background-color: orange;
+        border-color: white;
+    }
+    /* Modal Customization */
+    .modal-header {
+        background-color: #FF8C00; /* Darker Orange */
+        color: white;
+        border-bottom: 2px solid #FFD580; /* Soft highlight */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: bold;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+    }
+
+    .modal-body {
+        background-color: #FAFAFA; /* Light background for contrast */
+        padding: 2rem;
+    }
+
+    .modal-footer {
+        background-color: #F4F4F4;
+        border-top: 1px solid #E0E0E0;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .modal-footer button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 5px;
+    }
+
+    /* Form Input Styles */
+    .form-label {
+        font-weight: 600;
+        color: #333333;
+    }
+
+    .form-control {
+        border: 1px solid #CCCCCC;
+        border-radius: 5px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 0.75rem;
+        transition: border-color 0.2s ease-in-out;
+    }
+
+    .form-control:focus {
+        border-color: #FF8C00;
+        box-shadow: 0 0 5px rgba(255, 140, 0, 0.5);
+    }
+
+    /* Textarea Customization */
+    textarea.form-control {
+        resize: none;
+        height: auto;
+    }
+
+    /* Button Styles */
+    .btn-primary {
+        background-color: #FF8C00;
+        border-color: #FF8C00;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #E67E00;
+        border-color: #E67E00;
+    }
+
+    .btn-secondary {
+        background-color: #E0E0E0;
+        border-color: #CCCCCC;
+        color: #555555;
+    }
+
+    .btn-secondary:hover {
+        background-color: #CCCCCC;
+        border-color: #AAAAAA;
+    }
+
+    /* Hide spin buttons for the #contactMobile input of type number */
+    #contactMobile::-webkit-inner-spin-button,
+    #mobile::-webkit-inner-spin-button,
+    #mobile::-webkit-outer-spin-button,
+    #contactMobile::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const editButtons = document.querySelectorAll(".edit-button");
+        const modal = document.querySelector("#editModal");
+
+        editButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const vendorId = modal.querySelector("#vendorId");
+                const locationNameInput = modal.querySelector("#locationName");
+                const vendorNameInput = modal.querySelector("#vendorName");
+                const myposhIdInput = modal.querySelector("#myposhId");
+                const addressTextarea = modal.querySelector("#address");
+                const mobileInput = modal.querySelector("#mobile");
+                const emailInput = modal.querySelector("#email");
+                const natureOfServiceInput = modal.querySelector("#natureOfService");
+                const contactNameInput = modal.querySelector("#contactName");
+                const contactMobileInput = modal.querySelector("#contactMobile");
+                const contactEmailInput = modal.querySelector("#contactEmail");
+                const startDateInput = modal.querySelector("#startDate");
+                const endDateInput = modal.querySelector("#endDate");
+                const maxEmployeesInput = modal.querySelector("#maxEmployees");
+                
+                // Set the values from the button's data attributes
+                vendorId.value = this.dataset.id;
+                locationNameInput.value = this.dataset.locname;
+                vendorNameInput.value = this.dataset.vendorname;
+                myposhIdInput.value = this.dataset.myposhid;
+                addressTextarea.value = this.dataset.address;
+                mobileInput.value = this.dataset.mobile;
+                emailInput.value = this.dataset.email; 
+                natureOfServiceInput.value = this.dataset.nature ;
+                contactNameInput.value = this.dataset.contactname;
+                contactMobileInput.value = this.dataset.contactmobile;
+                contactEmailInput.value = this.dataset.contactemail;
+                startDateInput.value = this.dataset.startdate;
+                endDateInput.value = this.dataset.enddate;
+                maxEmployeesInput.value = this.dataset.maxemp;
+
+            });
+        });
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const editForm = document.querySelector("#editForm");
+
+        editForm.addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Prepare form data
+            const formData = new FormData(editForm);
+
+            // Send data to Django
+            fetch("{% url 'update_establishment_vendor' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+                }
+            })
+
+            .then(response => response.json())
+            .then(data => {
+                const confirmationMessage = document.querySelector("#confirmationMessage");
+                const yesButton = document.querySelector("#confirmationYesButton");
+
+                if (data.success) {
+                    // Success message
+                    confirmationMessage.textContent = "Vendor updated successfully!";
+                    // Optionally, reload or update the page after a delay
+                    yesButton.addEventListener('click', function () {
+                        location.reload(); // Refresh the page or update the table
+                    });
+                } else {
+                    // Failure message
+                    confirmationMessage.textContent = "Failed to update location: " + data.error;
+                    // You can add a different action or alert here if needed
+                }
+                // Show the modal dialog
+                var myModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                myModal.show();
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while updating the location.");
+            });
+        });
+    });
+</script>
+    
+{% endblock %}
+
+{% block content %}
+<div class="container" id="location-container">
+    <h1 id='location-header'>Vendor Information</h1>
+
+    <!-- Search Form -->
+    <form method="GET" action="{% url 'establishment-profile-vendor' %}" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search by location, vendor name or address..." 
+                   value="{{ request.GET.q|default_if_none:'' }}" aria-label="Search">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="Scroll" style="overflow: auto">
+            <table class="location-table-container">
+            <table class="table table-hover" id="location-table">
+                <thead>
+                <tr class="table-warning">
+                    <th scope="col">Sr No.</th>
+                    <th scope="col">Location Name</th>
+                    <th scope="col">Vendor Name</th>
+                    <th scope="col">MyPosh ID</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Email ID</th>
+                    <th scope="col">Nature of Service</th>
+                    <th scope="col">Contact Name</th>
+                    <th scope="col">Contact Mobile</th>
+                    <th scope="col">Contact Email</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Max Employees</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if vendorList %}
+                    {% for vendor in vendorList %}
+                        <tr>
+                            <td>{{ row_start|add:forloop.counter }}</td>
+                            <td>{{ vendor.location.name }}</td>
+                            <td>{{ vendor.vendor_name }}</td>
+                            <td>{{ vendor.myposh_id }}</td>
+                            <td>{{ vendor.commercial_address }}</td>
+                            <td>{{ vendor.mobile }}</td>
+                            <td>{{ vendor.email }}</td>
+                            <td>{{ vendor.nature_of_service }}</td>
+                            <td>{{ vendor.contact_name }}</td>
+                            <td>{{ vendor.contact_mobile }}</td>
+                            <td>{{ vendor.contact_email }}</td>
+                            <td>{{ vendor.contract_start_date }}</td>
+                            <td>{{ vendor.contract_end_date }}</td>
+                            <td>{{ vendor.max_employees }}</td>
+                            <td style="text-align-last: center; align-content: space-around;">
+                                <button class="btn btn-primary edit-button" style="background-color: orange; border-color: white;" type="button" data-bs-toggle="modal" data-bs-target="#editModal"
+                                data-id="{{ vendor.id }}"
+                                data-locname="{{ vendor.location.name }}"
+                                data-vendorname="{{ vendor.vendor_name }}"
+                                data-myposhid="{{ vendor.myposh_id }}"
+                                data-address="{{ vendor.commercial_address }}"
+                                data-mobile="{{ vendor.mobile }}"
+                                data-email="{{ vendor.email }}"
+                                data-nature="{{ vendor.nature_of_service }}"
+                                data-contactname="{{ vendor.contact_name }}"
+                                data-contactmobile="{{  vendor.contact_mobile }}"
+                                data-contactemail="{{ vendor.contact_email }}"
+                                data-startdate="{{ vendor.contract_start_date }}"
+                                data-enddate="{{ vendor.contract_end_date }}"
+                                data-maxemp="{{ vendor.max_employees }}">Edit</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="14">No vendor records found.</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+            </table>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="editModal" aria-modal="true" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Vendor Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <form id="editForm" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" id="vendorId" name="vendorId">
+                            
+                            <!-- Location Name -->
+                            <div class="mb-3">
+                                <label for="locationName" class="form-label">Location Name</label>
+                                <input type="text" class="form-control" id="locationName" name="locationName" placeholder="Enter location name" required readonly>
+                            </div>
+                            
+                            <!-- Vendor Name -->
+                            <div class="mb-3">
+                                <label for="vendorName" class="form-label">Vendor Name</label>
+                                <input type="text" class="form-control" id="vendorName" name="vendorName" placeholder="Enter vendor name" required>
+                            </div>
+                            
+                            <!-- MyPosh ID -->
+                            <div class="mb-3">
+                                <label for="myposhId" class="form-label">MyPosh ID</label>
+                                <input type="text" class="form-control" id="myposhId" name="myposhId" placeholder="Enter MyPosh ID" required>
+                            </div>
+                            
+                            <!-- Address -->
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter full address" required></textarea>
+                            </div>
+                            
+                            <!-- Mobile -->
+                            <div class="mb-3">
+                                <label for="mobile" class="form-label">Mobile</label>
+                                <input type="number" class="form-control" id="mobile" name="mobile" placeholder="Enter mobile number" required>
+                            </div>
+                            
+                            <!-- Email ID -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email ID</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email ID" required>
+                            </div>
+                            
+                            <!-- Nature of Service -->
+                            <div class="mb-3">
+                                <label for="natureOfService" class="form-label">Nature of Service</label>
+                                <input type="text" class="form-control" id="natureOfService" name="natureOfService" placeholder="Enter nature of service" required>
+                            </div>
+                            
+                            <!-- Contact Name -->
+                            <div class="mb-3">
+                                <label for="contactName" class="form-label">Contact Name</label>
+                                <input type="text" class="form-control" id="contactName" name="contactName" placeholder="Enter contact name" required>
+                            </div>
+                            
+                            <!-- Contact Mobile -->
+                            <div class="mb-3">
+                                <label for="contactMobile" class="form-label">Contact Mobile</label>
+                                <input type="number" class="form-control" id="contactMobile" name="contactMobile" placeholder="Enter contact mobile number" required>
+                            </div>
+                            
+                            <!-- Contact Email -->
+                            <div class="mb-3">
+                                <label for="contactEmail" class="form-label">Contact Email</label>
+                                <input type="email" class="form-control" id="contactEmail" name="contactEmail" placeholder="Enter contact email" required>
+                            </div>
+                            
+                            <!-- Start Date -->
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" required>
+                            </div>
+                            
+                            <!-- End Date -->
+                            <div class="mb-3">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" required>
+                            </div>
+                            
+                            <!-- Max Employees -->
+                            <div class="mb-3">
+                                <label for="maxEmployees" class="form-label">Max Employees</label>
+                                <input type="number" class="form-control" id="maxEmployees" name="maxEmployees" placeholder="Enter maximum employees" required>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" form="editForm"   data-bs-dismiss="modal" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Dialog Modal -->
+        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">Vendor Update</h5>
+                    </div>
+                    <!-- Modal Body -->
+                    <div class="modal-body" id="confirmationMessage">
+                        <!-- Message will be inserted dynamically -->
+                    </div>
+                    <!-- Modal Footer -->
+                    <div class="modal-footer"  style="justify-content: space-around;">
+                        <button type="button" class="btn btn-primary" id="confirmationYesButton" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav aria-label="Page navigation example" style="margin-top: 20px;">
+            <ul class="pagination justify-content-center">
+                {% if vendorList.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="{% url 'establishment-profile-vendor' %}?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">First</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{% url 'establishment-profile-vendor' %}?page={{ vendorList.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&lsaquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                {% endif %}
+        
+                {% for i in vendorList.paginator.page_range %}
+                    {% if i == vendorList.number %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+                        </li>
+                    {% elif i > vendorList.number|add:'-5' and i < vendorList.number|add:'5' %}
+                        <li class="page-item">
+                            <a class="page-link" href="{% url 'establishment-profile-vendor' %}?page={{ i }}">{{ i }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+        
+                {% if vendorList.number|add:'4' < vendorList.paginator.num_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{% url 'establishment-profile-vendor' %}?page={{ vendorList.number|add:'5' }}">&hellip;</a>
+                    </li>
+                {% endif %}
+        
+                {% if vendorList.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{% url 'establishment-profile-vendor' %}?page={{ vendorList.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&rsaquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{% url 'establishment-profile-vendor' %}?page={{ vendorList.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Last</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% endblock %}

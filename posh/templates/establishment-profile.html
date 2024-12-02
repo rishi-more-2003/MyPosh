@@ -105,8 +105,12 @@
                     <div class="list-group list-group-flush account-settings-links">
                         <a class="list-group-item list-group-item-action active" data-toggle="list"
                             href="#general">General</a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list"
-                            href="#location-service">Location Services</a>
+                        <a class="list-group-item list-group-item-action" 
+                            href="{% url 'establishment-profile-location' %}">Location Services</a>
+                        <a class="list-group-item list-group-item-action" 
+                            href="{% url 'establishment-profile-vendor' %}">Vendor Information</a>
+                        <a class="list-group-item list-group-item-action" 
+                            href="{% url 'establishment-profile-employee' %}">Employee Details</a>
                         <a class="list-group-item list-group-item-action"  href="{% url 'password_reset' %}">Change password</a>
                     </div>
                 </div>
@@ -208,104 +212,7 @@
                                 </div>
                             </form>
                         </div>
-                        
-                        <div class="tab-pane fade" id="location-service">
-                            <div class="card-body pb-2">
-                                <div class="form-group">
-                                    <div class="add_location">
-                                        <h4>Location Details</h4>
-                                    </div>    
-
-                                    <div class="container-fluid manual" >
-
-                                        <div class="row">
-                                            
-                                            <div class="col-12">
-                                                
-                                                <div class="table-responsive" style="margin-top: 20px">
-                                                    
-                                                    <table id="bootstrapdatatable" class="table table-striped table-bordered text-center">
-                                                        <thead class="thead-light">
-                                                            <tr>
-                                                                <th>No.</th>
-                                                                <th>Location Name</th>
-                                                                <th>Address</th>
-                                                                <th>Direct Employee</th>
-                                                                <th>No. of Direct Employees</th>
-                                                                <th>Vendors</th>
-                                                                <th>No. of Vendors</th>
-                                                                <th>Total Number of Indirect Employees</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                                {% for location in locationList %}
-                                                                    <tr>
-                                                                        <td>{{ row_start|add:forloop.counter }}</td>
-                                                                        <td>{{ location.name }}</td>
-                                                                        <td>{{ location.address }}</td>
-                                                                        <td>{{ location.choiceOfDirect }}</td>
-                                                                        <td>{{ location.noOFDirect }}</td>
-                                                                        <td>{{ location.choiceOfVendor }}</td>
-                                                                        <td>{{ location.noOFVendor }}</td>
-                                                                        <td>{{ location.totalno }}</td>
-                                                                    </tr>
-                                                                {% endfor %}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    <nav aria-label="Page navigation example">
-                                        <ul class="pagination justify-content-center">
-                                            {% if locationList.has_previous %}
-
-                                            <li class="page-item">
-                                                <a class="page-link" href="{% url 'establishment-profile' %}?page=1#location-service" aria-label="Previous">
-                                                  <span aria-hidden="true">&laquo;</span>
-                                                  <span class="sr-only">First</span>
-                                                </a>
-                                            </li>
-
-                                            <li class="page-item">
-                                                <a class="page-link" href="{% url 'establishment-profile' %}?page={{locationList.previous_page_number}}#location-service" aria-label="Previous">
-                                                  <span aria-hidden="true">&lsaquo;</span>
-                                                  <span class="sr-only">Previous</span>
-                                                </a>
-                                            </li>
-
-                                            {% endif %}
-                                              
-                                            {% for n in totalPageList %}
-                                            <li class="page-item"><a class="page-link" href="{% url 'establishment-profile' %}?page={{n}}#location-service">{{n}}</a></li>
-                                            {% endfor %}
-
-                                            {% if locationList.has_next %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{% url 'establishment-profile' %}?page={{locationList.next_page_number}}#location-service" aria-label="Next">
-                                                    <span aria-hidden="true">&rsaquo;</span>
-                                                <span class="sr-only">Next</span>
-                                                </a>
-                                            </li>
-
-                                            <li class="page-item">
-                                                <a class="page-link" href="{% url 'establishment-profile' %}?page={{lastpage}}#location-service" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                                
-                                                <span class="sr-only">Last</span>
-                                                </a>
-                                            </li>
-                                            {% endif %}
-                                        </ul>
-                                    </nav>
-
-                        
-
-                                </div>
-                            </div>
-                        </div>
+                    
                     </div>
                     
                 </div>

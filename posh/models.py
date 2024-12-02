@@ -244,6 +244,7 @@ class LocationEst(models.Model):
     est_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
+    location_uid = models.CharField(max_length=100, null=True, blank=True)
     has_direct_employee = models.BooleanField(default=False)  # 'Direct Employee'
     no_of_direct_employees = models.PositiveIntegerField(default=0)  # 'No. of Direct Employees'
     has_vendors = models.BooleanField(default=False)  # 'Vendors'

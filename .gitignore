@@ -114,5 +114,14 @@ media/
 !**/migrations
 !**/migrations/__init__.py
 
+# Ignore Django migration files
+*/migrations/*
+!*/migrations/__init__.py
+
+
 dsettings.py
 psettings.py
+
+conversation/migrations/
+group/migrations/
+posh/migrations/
