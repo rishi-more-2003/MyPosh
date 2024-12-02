@@ -1,0 +1,39 @@
+  <!-- Popup -->
+  <div id="popup-committee" class="popup-committee hidden-committee">
+    <div class="popup-committee-dialog">
+      <div class="popup-committee-content">
+        <div class="popup-committee-header">
+          <h4 class="popup-committee-title">Choose an Option</h4>
+          <button id="closePopup-committee" class="btn-close-committee"></button>
+        </div>
+        <div class="popup-committee-body">
+          <div class="option-grid-committee"> 
+              <a href="{% url 'group:group' %}" class="option-committee-link">
+                <button class="option-committee-1" > 
+                  Single Committee Set-up
+                  <i class="fas fa-info-circle info-btn" data-info="Set up a single committee for streamlined management."></i>
+                </button>
+              </a> 
+              <a href="{% url 'group:group' %}" class="option-committee-link">
+                <button class="option-committee-2"> 
+                  Multi Committee Set-up
+                  <i class="fas fa-info-circle info-btn" data-info="Set up a single committee for streamlined management."></i>
+                </button>
+              </a> 
+              <a href="{% url 'group:group' %}" class="option-committee-link">
+                <button class="option-committee-3"> 
+                  Core Committee & Multi Committee Set-up
+                  <i class="fas fa-info-circle info-btn" data-info="Set up a single committee for streamlined management."></i>
+                </button>
+              </a> 
+              <a href="{% url 'group:group' %}" class="option-committee-link">
+                <button class="option-committee-4"> 
+                  Multi Core Committee & Multi Committee Set-up
+                  <i class="fas fa-info-circle info-btn" data-info="Set up a single committee for streamlined management."></i>
+                </button>
+              </a> 
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

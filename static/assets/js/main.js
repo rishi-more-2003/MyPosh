@@ -174,3 +174,32 @@ $('#ajaxSubmitButton').on('click', function(event) {
     });
 });
 
+
+// Get Elements
+const openPopupC = document.getElementById('openPopup-committee');
+const closePopupC = document.getElementById('closePopup-committee');
+const popupC = document.getElementById('popup-committee');
+
+// Open Popup
+openPopupC.addEventListener('click', () => {
+    popupC.classList.remove('hidden-committee');
+});
+
+// Close Popup
+closePopupC.addEventListener('click', () => {
+    popupC.classList.add('hidden-committee');
+});
+
+// Close on Clicking Outside
+window.addEventListener('click', (event) => {
+    if (event.target === popupC) {
+        popupC.classList.add('hidden-committee');
+    }
+});
+
+document.querySelectorAll('.info-btn').forEach((infoBtn) => {
+    infoBtn.addEventListener('mouseenter', () => {
+      const infoText = infoBtn.getAttribute('data-info');
+      infoBtn.setAttribute('title', infoText);
+    });
+  });

@@ -209,3 +209,9 @@ li.skill-list-group-item {
     min-width: 100rem;
 }
 
+.option-committee-1,
+.option-committee-2,
+.option-committee-3,
+.option-committee-4 {
+    width: 225px;
+}

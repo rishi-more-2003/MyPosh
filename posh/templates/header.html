@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <title>MYPOSH</title>
 </head>
 <body>
@@ -140,7 +141,10 @@
                                     </a> 
                                 </li> 
                                 <li>
-                                    <a href="{% url 'group:group' %}" class="dropdown__link">
+                                    {% comment %} <a href="{% url 'group:group' %}" class="dropdown__link">
+                                        Create Comittee
+                                    </a>  {% endcomment %}
+                                    <a id="openPopup-committee" class="dropdown__link">
                                         Create Comittee
                                     </a> 
                                 </li> 
@@ -150,6 +154,8 @@
                                             Logout
                                     </a> 
                                 </li>
+
+                            {% include 'popup-committee.html' %}
 
                     {% elif request.user|has_group:"NGO" %}
                         <li class="nav__item dropdown__item">
