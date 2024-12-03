@@ -70,7 +70,7 @@ html{
     scroll-behavior: smooth;
 }
 
-/* Popup Overlay */
+/* General Popup Styles */
 .popup-committee {
     position: fixed;
     top: 0;
@@ -84,26 +84,12 @@ html{
     z-index: var(--z-fixed);
 }
 
-/* Hide by Default */
 .hidden-committee {
     display: none;
 }
 
-.option-committee:disabled {
-    background-color: var(--first-color-alt);
-    color: var(--text-color-light);
-    cursor: not-allowed;
-    pointer-events: none; /* Prevent clicking */
-  }
-
-  .option-committee-link.disabled {
-    pointer-events: none; /* Prevent anchor clicks */
-    cursor: not-allowed;
-  }
-
-/* Popup Dialog */
 .popup-committee-dialog {
-    width: 120%;
+    width: 100%;
     max-width: 500px;
     background-color: var(--container-color);
     border-radius: 18px;
@@ -111,63 +97,123 @@ html{
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Popup Header */
 .popup-committee-header {
     padding: 25px;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .popup-committee-title {
-    margin: 0;
-    font-size: var(--h2-font-size);
+    font-size: 1.5rem;
     margin-bottom: -20px;
 }
 
-/* Popup Body */
-.popup-committee-body{
-    padding: 20px;
-    text-align: center;
+.popup-committee-body {
+    padding: 1rem;
 }
 
-/* Option Grid */
-.option-grid-committee {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-/* Option Buttons */
-.option-committee {
-    padding: 40px;
-    font-size: var(--h3-font-size);
-    font-weight: var(--font-semi-bold);
-    color: var(--title-color);
+/* Option and Info Styles */
+.option-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0.5rem 0;
     background-color: var(--first-color-light);
-    border: none;
-    border-radius: 8px;
-    transition: background-color 0.3s, transform 0.2s;
-    cursor: pointer;
+    border: 1px solid var(--border-color-light);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.option-committee-link{
+/* Hidden state */
+.hidden-info {
+    display: none;
+    margin-left: 10px;
+  }
+
+.option-info:hover {
+    background-color: var(--first-color-lighter);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.option-committee {
+    width: 100%;
+    text-align: left;
+    background-color: var(--first-color-light);
+    color: var(--text-light-color);
+    border: none;
+    padding: 0.75rem 1rem;
+    font-size: var(--normal-font-size);
+    font-family: var(--body-font);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.option-committee-link {
+    flex: 0 0 85%;
     font-size: var(--h3-font-size);
     font-weight: var(--font-semi-bold);
     color: var(--title-color);
+    display: block;
+    text-decoration: none;
 }
 
-.option-committee-link:hover{
-    background-color: var(--first-color);
-    color: var(--body-color);
-    transform: scale(1.05);
+.option-committee-link:hover {
+    background-color: white;
+    color: var(--title-color);
+    transform: scale(1.02);
 }
 
-.option-committee:hover {
-    background-color: var(--first-color);
-    color: var(--body-color);
-    transform: scale(1.05);
+.option-info:hover .option-committee{
+    background-color: white;
+    color: var(--title-color);
+    transform: scale(1.02);
+}
+
+.info-btn {
+    flex: 0 0 15%;
+    color: var(--text-color);
+    text-align: center;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.info-btn:hover {
+    color: var(--accent-color);
+}
+
+/* Info Slide Styles */
+.info-slide {
+    display: none;
+    background-color: var(--first-color-light);
+    color: var(--text-color);
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    font-size: var(--small-font-size);
+    font-family: var(--body-font);
+    line-height: 1.5;
+}
+
+.info-slide.active {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+/* Animation for Sliding Down */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Close Button */
@@ -177,6 +223,7 @@ html{
     font-size: 1.25rem;
     cursor: pointer;
 }
+
 
 body,
 button,

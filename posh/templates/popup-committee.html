@@ -1,39 +1,60 @@
-  <!-- Popup -->
-  <div id="popup-committee" class="popup-committee hidden-committee">
-    <div class="popup-committee-dialog">
-      <div class="popup-committee-content">
-        <div class="popup-committee-header">
-          <h4 class="popup-committee-title">Choose an Option</h4>
-          <button id="closePopup-committee" class="btn-close-committee"></button>
+<div id="popup-committee" class="popup-committee hidden-committee">
+  <div class="popup-committee-dialog">
+    <div class="popup-committee-content">
+      <div class="popup-committee-header">
+        <h4 class="popup-committee-title">Choose an Option</h4>
+        <button id="closePopup-committee" class="btn-close-committee"></button>
+      </div>
+      <div class="popup-committee-body">
+        
+        <div class="option-info">
+          <a href="{% url 'group:group' %}" class="option-committee-link">
+            <button class="option-committee" data-option-id="single">
+              Single Committee Set-up
+            </button>
+          </a>
+          <i class="fas fa-info-circle info-btn" data-info="Set up a single committee for streamlined management." data-target="info-single"></i>
         </div>
-        <div class="popup-committee-body">
-          <div class="option-grid-committee"> 
-              <a href="{% url 'group:group' %}" class="option-committee-link">
-                <button class="option-committee" data-option-id="single"> 
-                  Single Committee Set-up
-                  <i class="fas fa-info-circle info-btn" data-info="Set up a single committee for streamlined management."></i>
-                </button>
-              </a> 
-              <a href="{% url 'group:group' %}" class="option-committee-link">
-                <button class="option-committee" data-option-id="multi"> 
-                  Multi Committee Set-up
-                  <i class="fas fa-info-circle info-btn" data-info="Set up multiple committees for enhanced collaboration."></i>
-                </button>
-              </a> 
-              <a href="{% url 'group:group' %}" class="option-committee-link">
-                <button class="option-committee" data-option-id="core-multi"> 
-                  Core Committee & Multi Committee Set-up
-                  <i class="fas fa-info-circle info-btn" data-info="Combine core and multiple committees for complex setups."></i>
-                </button>
-              </a> 
-              <a href="{% url 'group:group' %}" class="option-committee-link">
-                <button class="option-committee" data-option-id="multi-core"> 
-                  Multi Core Committee & Multi Committee Set-up
-                  <i class="fas fa-info-circle info-btn" data-info="Combine multiple core and multiple committees for advanced setups."></i>
-                </button>
-              </a> 
-          </div>
+        <div id="info-single" class="info-content hidden-info">
+          Set up a single committee for streamlined management.
+        </div>
+
+        <div class="option-info">
+          <a href="{% url 'group:group' %}" class="option-committee-link">
+            <button class="option-committee" data-option-id="multi">
+              Multi Committee Set-up
+            </button>
+          </a>
+          <i class="fas fa-info-circle info-btn" data-info="Set up multiple committees for enhanced collaboration."  data-target="info-multi"></i>
+        </div>
+        <div id="info-multi" class="info-content hidden-info">
+          Set up multiple committees for enhanced collaboration.
+        </div>
+
+        <div class="option-info">
+          <a href="{% url 'group:group' %}" class="option-committee-link">
+            <button class="option-committee" data-option-id="core-multi">
+              Core Committee & Multi Committee Set-up
+            </button>
+          </a>
+          <i class="fas fa-info-circle info-btn" data-info="Combine core and multiple committees for complex setups." data-target="info-core-multi"></i>
+        </div>
+        <div id="info-core-multi" class="info-content hidden-info">
+          Combine core and multiple committees for complex setups.
+        </div>
+
+        <div class="option-info">
+          <a href="{% url 'group:group' %}" class="option-committee-link">
+            <button class="option-committee" data-option-id="multi-core">
+              Multi Core Committee & Multi Committee Set-up
+            </button>
+          </a>
+          <i class="fas fa-info-circle info-btn" data-info="Combine multiple core and multiple committees for advanced setups." data-target="info-multi-core"></i>
+        </div>
+        <div id="info-multi-core" class="info-content hidden-info">
+          Combine multiple core and multiple committees for advanced setups.
         </div>
       </div>
     </div>
   </div>
+</div>

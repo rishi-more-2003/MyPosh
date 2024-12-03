@@ -180,6 +180,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const closePopupC = document.getElementById('closePopup-committee');
     const popupC = document.getElementById('popup-committee');
 
+    const infoIcons = document.querySelectorAll(".info-btn");
+
+    infoIcons.forEach(icon => {
+      icon.addEventListener("click", () => {
+        const targetId = icon.getAttribute("data-target");
+        const infoContent = document.getElementById(targetId);
+  
+        // Toggle the visibility of the info content
+        if (infoContent) {
+          if (infoContent.style.display === "block") {
+            infoContent.style.display = "none";
+          } else {
+            infoContent.style.display = "block";
+          }
+        }
+      });
+    });
+    
     // Open Popup
     openPopupC.addEventListener('click', async () => {
         popupC.classList.remove('hidden-committee');
@@ -223,6 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
     buttons.forEach((button) => {
       const optionId = button.getAttribute("data-option-id");
       const link = button.closest(".option-committee-link");
+      const backcolor = button.closest(".option-info")
 
       button.disabled = false; // Reset all buttons
       button.style.backgroundColor = ""; // Reset styles
@@ -233,6 +252,10 @@ document.addEventListener("DOMContentLoaded", () => {
         button.style.backgroundColor = "var(--first-color-alt)";
         button.style.color = "var(--text-color-light)";
         button.style.cursor = "not-allowed";
+        if (backcolor){
+            backcolor.style.backgroundColor =  "var(--first-color-alt)";
+            backcolor.style.cursor = "not-allowed";
+        }  
         if (link) link.classList.add("disabled");
 
       } else if (count > 1 && optionId === "single") {
@@ -240,6 +263,10 @@ document.addEventListener("DOMContentLoaded", () => {
         button.style.backgroundColor = "var(--first-color-alt)";
         button.style.color = "var(--text-color-light)";
         button.style.cursor = "not-allowed";
+        if (backcolor){
+            backcolor.style.backgroundColor =  "var(--first-color-alt)";
+            backcolor.style.cursor = "not-allowed";
+        }  
         if (link) link.classList.add("disabled");
 
       }
@@ -247,3 +274,4 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
 });
+
