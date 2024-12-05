@@ -45,7 +45,12 @@
                     <a href="{% url 'home' %}#home" class="nav__link active-link">Home</a>
                 </li>
                 <li class="nav__item">
-                    <a href="{% url 'home' %}#about" class="nav__link">About</a>
+                    {% if request.user|has_group:"EST" %}
+                        <a href="{% url 'group:group' %}" class="nav__link">Committee</a>
+                    {% else %}
+                        <a href="{% url 'home' %}#about" class="nav__link">About</a>
+                    {% endif %}
+
                 </li>
                 <li class="nav__item">
                     <a href="{% url 'home' %}#services" class="nav__link">Services</a>

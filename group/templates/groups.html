@@ -206,13 +206,13 @@ div#top {
 <div class="container min-vh-100" id="top">
   <h1>Internal Complaint Committee(ICC)</h1>
   <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
+      {% comment %} <div>
         {% if is_enterprise %}
           <button class="mybtn myinfo mybtn-active" type="button" data-toggle="modal" data-target="#add_class">Create Comittee</button>
         {% endif %}
           <button class="mybtn myinfo mybtn-active" type="button" data-toggle="modal" data-target="#join_class">Join Comittee</button>
           <a href="{% url 'logout' %}" class="mybtn myinfo mybtn-active" style="text-decoration: none;">Logout</a>
-      </div>
+      </div> {% endcomment %}
       {% comment %} <div class="image_cropper">
           <img src="{% get_media_prefix %}{{ user.profile_photo }}" alt="Profile Pic" class="profile_pic_style">
       </div> {% endcomment %}
@@ -303,11 +303,11 @@ div#top {
                 <h2 class="class-name-style">{{ mapping.group_id.group_name|truncatechars:30 }}</h2>
               </a>
               {% comment %} <p class="section-style"><i>{{ state|truncatechars:30 }},{{ city|truncatechars:30 }}</i></p> {% endcomment %}
-              {% for teacher in enterprise %}
+              {% comment %} {% for teacher in enterprise %} {% endcomment %}
                 {% comment %} {% if teacher.group_id == mapping.group_id %} {% endcomment %}
-                  <p class="section-style"><i>{{ teacher.state|truncatechars:30 }},{{ teacher.city|truncatechars:30 }}</i></p>
+                  {% comment %} <p class="section-style"><i>{{ teacher.state|truncatechars:30 }},{{ teacher.city|truncatechars:30 }}</i></p> {% endcomment %}
                 {% comment %} {% endif %} {% endcomment %}
-              {% endfor %} 
+              {% comment %} {% endfor %}  {% endcomment %}
             </div>
             <div class="card-body card-text">
               <i>{{ mapping.group_id.section|truncatechars:30 }}</i>
@@ -317,6 +317,12 @@ div#top {
       {% endif %}
     {% endfor %}
   </div>
+{% else %}
+<div class="col-md-12" style="text-align: center">
+  <h3>
+    No Committee is created
+  </h3>
+</div>
 {% endif %}
 
   

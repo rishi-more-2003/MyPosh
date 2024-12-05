@@ -18,7 +18,7 @@ from django.conf import settings
 from .utils import (generate_unique_id, generate_unique_consultancy, generate_unique_establishment, 
                     generate_unique_ngo, get_session_data, update_locations_session, 
                     create_vendor_excel, get_vendor_data, update_vendor_session, create_employee_table, generate_unique_employeeid,
-                    generate_unique_locationUID)
+                    generate_unique_locationUID, excel_group_formation)
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
@@ -2792,6 +2792,7 @@ def update_establishment_vendor(request):
     
 
 def update_establishment_employee(request):
+
     if request.method == "POST":
         try:
             # Get data from POST request
@@ -2827,3 +2828,29 @@ def update_establishment_employee(request):
             return JsonResponse({"success": False, "error": str(e)})
     else:
         return JsonResponse({"success": False, "error": "Invalid request method"})
+    
+
+def group_formation(request):
+    user = request.user.establishmentuser
+    locationList = LocationEst.objects.filter(est_id=user).values('name', 'location_uid').first()     
+    return render(request, "group-formation.html", {'location': locationList})
+
+def download_group_single_file(request):
+    user = request.user.establishmentuser
+    locationList = LocationEst.objects.filter(est_id=user)
+    data = []
+    for location in locationList:
+        loc = {
+            'Location Name': location.name,
+            'Location UID': location.location_uid
+        }
+        data.append(loc)
+
+    file = excel_group_formation(data)
+    
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/SingleGroupDataTemplate.xlsx')
+    
+    with open(file_path, 'rb') as file:
+        response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response["Content-Disposition"] = 'attachment; filename="SingleGroupDataTemplate.xlsx"'
+        return response

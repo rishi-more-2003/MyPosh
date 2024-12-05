@@ -116,6 +116,8 @@ urlpatterns = [
      name='password_reset_complete'),
 
      path('api/get-location-count/', views.get_location_count, name='get-location-count'),
+     path('group-formation/', views.group_formation, name='group-formation'),
+     path('group-formation/download-group-single-setup/', views.download_group_single_file, name='download-group-single-setup'),
 ]
 
 if settings.DEBUG:
