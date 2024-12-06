@@ -117,7 +117,9 @@ urlpatterns = [
 
      path('api/get-location-count/', views.get_location_count, name='get-location-count'),
      path('group-formation/', views.group_formation, name='group-formation'),
+     path('multi-group-formation/', views.multi_group_formation, name='multi-group-formation'),
      path('group-formation/download-group-single-setup/', views.download_group_single_file, name='download-group-single-setup'),
+     path('group-formation/download-group-multi-setup/', views.download_group_multi_file, name='download-group-multi-file'),
 ]
 
 if settings.DEBUG:

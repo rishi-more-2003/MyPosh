@@ -2835,7 +2835,13 @@ def group_formation(request):
     locationList = LocationEst.objects.filter(est_id=user).values('name', 'location_uid').first()     
     return render(request, "group-formation.html", {'location': locationList})
 
+def multi_group_formation(request):
+    user = request.user.establishmentuser
+    locationList = LocationEst.objects.filter(est_id=user).values('name', 'location_uid')  
+    return render(request, "multi-group-formation.html", {'location': list(locationList)})
+
 def download_group_single_file(request):
+
     user = request.user.establishmentuser
     locationList = LocationEst.objects.filter(est_id=user)
     data = []
@@ -2846,11 +2852,32 @@ def download_group_single_file(request):
         }
         data.append(loc)
 
-    file = excel_group_formation(data)
+    file = excel_group_formation(data, 1)
     
     file_path = os.path.join(settings.BASE_DIR, 'static/posh/SingleGroupDataTemplate.xlsx')
     
     with open(file_path, 'rb') as file:
         response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         response["Content-Disposition"] = 'attachment; filename="SingleGroupDataTemplate.xlsx"'
+        return response
+    
+
+def download_group_multi_file(request):
+    user = request.user.establishmentuser
+    locationList = LocationEst.objects.filter(est_id=user)
+    data = []
+    for location in locationList:
+        loc = {
+            'Location Name': location.name,
+            'Location UID': location.location_uid
+        }
+        data.append(loc)
+
+    file = excel_group_formation(data, 2)
+    
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/MultiGroupDataTemplate.xlsx')
+    
+    with open(file_path, 'rb') as file:
+        response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response["Content-Disposition"] = 'attachment; filename="MultiGroupDataTemplate.xlsx"'
         return response

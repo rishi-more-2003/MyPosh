@@ -19,6 +19,7 @@ urlpatterns = [
     path('mark_request/<int:submission_id>/<str:teacher_id>', views.mark_submission_request, name='mark_submission_request'),
 
     path('group-formation/upload-group-info/', views.upload_group_info, name='upload_group_info'),
+    path('group-formation/upload-multi-group-info/', views.upload_multi_group_info, name='upload_multi_group_info'),
 
 
 ]

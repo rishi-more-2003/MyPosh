@@ -324,8 +324,8 @@ def create_employee_table(data):
     
     workbook.save(f"{file_path}EmployeeDataTemplate.xlsx")
 
-def excel_group_formation(data):
-    template_path = os.path.join(settings.BASE_DIR, 'static/posh/Single-Committee-Setup.xlsx')
+def excel_group_formation(data, opt):
+    template_path = os.path.join(settings.BASE_DIR, 'static/posh/Committee-Setup.xlsx')
 
     # Load the Excel template
     workbook = load_workbook(template_path)
@@ -340,5 +340,8 @@ def excel_group_formation(data):
 
     # Save the workbook after filling data
     file_path = os.path.join(settings.BASE_DIR, 'static/posh/')
-    
-    workbook.save(f"{file_path}SingleGroupDataTemplate.xlsx")
+
+    if opt==1:
+        workbook.save(f"{file_path}SingleGroupDataTemplate.xlsx")
+    elif opt==2:
+        workbook.save(f"{file_path}MultiGroupDataTemplate.xlsx")

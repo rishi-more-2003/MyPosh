@@ -274,30 +274,7 @@ div#top {
     {% for mapping in mappings %}
       {% if forloop.counter|divisibleby:4 %}
         <div class="col-md-3">
-          <div class="card custom_card card-margin">
-            <div class="img-as-background colorme">
-              <a href="{% url 'group:render_class' mapping.group_id.id %}" class="class-link">
-                <h2 class="class-name-style">{{ mapping.group_id.group_name|truncatechars:30 }}</h2>
-              </a>
-              {% comment %} <p class="section-style"><i>{{ state|truncatechars:30 }},{{ city|truncatechars:30 }}</i></p> {% endcomment %}
-              {% for teacher in enterprise %}
-                {% comment %} {% if teacher.group_id == mapping.group_id %} {% endcomment %}
-                  <p class="section-style"><i>{{ teacher.state|truncatechars:30 }},{{ teacher.city|truncatechars:30 }}</i></p>
-                {% comment %} {% endif %} {% endcomment %}
-              {% endfor %} 
-            </div>
-            <div class="card-body card-text">
-              <i>{{ mapping.group_id.section|truncatechars:20 }}</i>
-            </div>
-          </div>
-        </div>
-      {% if not forloop.last %} 
-        <br>
-        <div class="row">
-      {% endif %}
-      {% else %}
-        <div class="col-md-3">
-          <div class="card custom_card card-margin">
+          <div class="card custom_card card-margin" style="height: 200px;">
             <div class="img-as-background colorme">
               <a href="{% url 'group:render_class' mapping.group_id.id %}" class="class-link">
                 <h2 class="class-name-style">{{ mapping.group_id.group_name|truncatechars:30 }}</h2>
@@ -310,7 +287,30 @@ div#top {
               {% comment %} {% endfor %}  {% endcomment %}
             </div>
             <div class="card-body card-text">
-              <i>{{ mapping.group_id.section|truncatechars:30 }}</i>
+              <i>{{ mapping.group_id.section|truncatechars:50 }}</i>
+            </div>
+          </div>
+        </div>
+      {% if not forloop.last %} 
+        <br>
+        <div class="row">
+      {% endif %}
+      {% else %}
+        <div class="col-md-3">
+          <div class="card custom_card card-margin" style="height: 200px;">
+            <div class="img-as-background colorme">
+              <a href="{% url 'group:render_class' mapping.group_id.id %}" class="class-link">
+                <h2 class="class-name-style">{{ mapping.group_id.group_name|truncatechars:30 }}</h2>
+              </a>
+              {% comment %} <p class="section-style"><i>{{ state|truncatechars:30 }},{{ city|truncatechars:30 }}</i></p> {% endcomment %}
+              {% comment %} {% for teacher in enterprise %} {% endcomment %}
+                {% comment %} {% if teacher.group_id == mapping.group_id %} {% endcomment %}
+                  {% comment %} <p class="section-style"><i>{{ teacher.state|truncatechars:30 }},{{ teacher.city|truncatechars:30 }}</i></p> {% endcomment %}
+                {% comment %} {% endif %} {% endcomment %}
+              {% comment %} {% endfor %}  {% endcomment %}
+            </div>
+            <div class="card-body card-text">
+              <i>{{ mapping.group_id.section|truncatechars:50 }}</i>
             </div>
           </div>
         </div>
