@@ -325,23 +325,43 @@ def create_employee_table(data):
     workbook.save(f"{file_path}EmployeeDataTemplate.xlsx")
 
 def excel_group_formation(data, opt):
-    template_path = os.path.join(settings.BASE_DIR, 'static/posh/Committee-Setup.xlsx')
+    if opt == 1 or opt == 2:
+        template_path = os.path.join(settings.BASE_DIR, 'static/posh/Committee-Setup.xlsx')
 
-    # Load the Excel template
-    workbook = load_workbook(template_path)
-    sheet = workbook.active  # Assumes the data goes in the first sheet
+        # Load the Excel template
+        workbook = load_workbook(template_path)
+        sheet = workbook.active  # Assumes the data goes in the first sheet
 
-    # Start populating from the 2nd row (after headers)
-    start_row = 3
-    for idx, row_data in enumerate(data, start=start_row):
-        sheet.cell(row=idx, column=1, value=idx - 2)  # SR.NO
-        sheet.cell(row=idx, column=2, value=row_data["Location Name"])  # LOCATION NAME
-        sheet.cell(row=idx, column=3, value=row_data["Location UID"])  # LOCATION UID
+        # Start populating from the 2nd row (after headers)
+        start_row = 3
+        for idx, row_data in enumerate(data, start=start_row):
+            sheet.cell(row=idx, column=1, value=idx - 2)  # SR.NO
+            sheet.cell(row=idx, column=2, value=row_data["Location Name"])  # LOCATION NAME
+            sheet.cell(row=idx, column=3, value=row_data["Location UID"])  # LOCATION UID
 
-    # Save the workbook after filling data
-    file_path = os.path.join(settings.BASE_DIR, 'static/posh/')
+        # Save the workbook after filling data
+        file_path = os.path.join(settings.BASE_DIR, 'static/posh/')
 
-    if opt==1:
-        workbook.save(f"{file_path}SingleGroupDataTemplate.xlsx")
-    elif opt==2:
-        workbook.save(f"{file_path}MultiGroupDataTemplate.xlsx")
+        if opt==1:
+            workbook.save(f"{file_path}SingleGroupDataTemplate.xlsx")
+        elif opt==2:
+            workbook.save(f"{file_path}MultiGroupDataTemplate.xlsx")
+
+    elif opt==3:
+        template_path = os.path.join(settings.BASE_DIR, 'static/posh/Core-Committee-Setup.xlsx')
+
+        # Load the Excel template
+        workbook = load_workbook(template_path)
+        sheet = workbook.active  # Assumes the data goes in the first sheet
+
+        # Start populating from the 2nd row (after headers)
+        start_row = 3
+        for idx, row_data in enumerate(data, start=start_row):
+            sheet.cell(row=idx, column=1, value=idx - 2)  # SR.NO
+            sheet.cell(row=idx, column=2, value=row_data["Location Name"])  # LOCATION NAME
+            sheet.cell(row=idx, column=3, value=row_data["Location UID"])  # LOCATION UID
+
+        # Save the workbook after filling data
+        file_path = os.path.join(settings.BASE_DIR, 'static/posh/')
+
+        workbook.save(f"{file_path}CoreMultiGroupDataTemplate.xlsx")

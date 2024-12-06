@@ -20,6 +20,7 @@ urlpatterns = [
 
     path('group-formation/upload-group-info/', views.upload_group_info, name='upload_group_info'),
     path('group-formation/upload-multi-group-info/', views.upload_multi_group_info, name='upload_multi_group_info'),
+    path('group-formation/upload-multi-core-group-info/', views.upload_core_multi_group_info, name='upload_core_multi_group_info'),
 
 
 ]

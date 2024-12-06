@@ -1,0 +1,785 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block stylescss %}
+{{ block.super }}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'assets/css/list_item.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/profile.css' %}">
+<style>
+/* General Button Styles */
+.btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Manual Button */
+.btn-manual {
+    background-color: hsl(30, 100%, 52%);
+    color: #ffffff;
+}
+
+.btn-manual:hover {
+    background-color: hsl(30, 100%, 85%);
+    transform: scale(1.05);
+}
+
+/* Excel Button */
+.btn-excel {
+    background-color: hsl(30, 100%, 52%);
+    color: #ffffff;
+}
+
+.btn-excel:hover {
+    background-color: hsl(30, 100%, 85%);
+    transform: scale(1.05);
+}
+
+/* Container for buttons */
+.button-container {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between buttons */
+}
+
+/* Close button */
+.close-group {
+    color: var(--text-color-light);
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    align-self: end;
+}
+
+.close-group:hover,
+.close-group:focus {
+    color: var(--title-color);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: var(--container-color);
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    color: var(--text-color);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+#manualGroup,
+#excelGroup{
+    max-width: 90%;
+    max-height: 100%;
+    min-height: 90%;
+}
+
+.upload-area {
+    border: 2px dashed var(--first-color);
+    padding: 40px;
+    margin-top: 20px;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: var(--first-color-lighten);
+}
+
+.upload-area:hover {
+    border-color: var(--first-color-alt);
+}
+
+#GroupfileInput{
+    display: none;
+}
+
+.download-group-button,
+.upload-group-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: var(--first-color);
+    color: var(--body-color);
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+/* Custom scrollbar for overflow */
+.table-responsive {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 80vh; /* Keep vertical scrolling limit */
+}
+
+.table-responsive::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: hsl(30, 100%, 52%);
+    border-radius: 5px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+td.but,
+td.action_buttons{
+    display: flex;
+}
+
+@media (max-width:1250px) {
+    td.but,
+    td.action_buttons{
+        display: flex;
+    }
+}
+
+/* Adjust for smaller screens */
+@media (max-width: 768px) {
+    .thead th,
+    tbody td {
+        font-size: 0.875rem;
+    }
+    .table-responsive {
+        max-height: 60vh;
+    }
+}
+
+.preview-container {
+    max-width: 100%; /* Ensures the preview fits the modal width */
+}
+
+.table-wrapper {
+    max-height: 400px; /* Set a max height for the preview */
+    overflow-y: auto;  /* Enable vertical scrolling */
+    overflow-x: auto;  /* Enable horizontal scrolling */
+    border: 1px solid #ccc; /* Optional: add a border for visibility */
+    margin-top: 10px; /* Space between input and table */
+}
+
+#fileGroupPreview {
+    width: 100%; /* Table width adapts to content */
+    border-collapse: collapse;
+    margin-top: 10px;
+    min-width: 600px; /* Adjust as needed for minimum width */
+}
+
+#fileGroupPreview td, #fileGroupPreview th{
+    border: 1px solid var(--text-color-light);
+    padding: 8px;
+    font-size: 14px;
+}
+
+.align-items-center-column{
+    align-items: center;
+}
+
+.location_space{
+    display: flex;
+    gap: 20px;
+    justify-content: space-around;
+    flex-direction: row;
+    align-items: center;
+}
+
+table {
+    width: 100%; /* Ensure table takes full width */
+    border-collapse: collapse; /* Optional: for better look */
+}
+
+th, td {
+    padding: 8px; /* Add padding for cells */
+    border: 1px solid #ddd; /* Optional: add borders */
+    text-align: left; /* Align text to the left */
+}
+
+.col-12.d-flex.justify-content-between.align-items-center.my-3{
+    justify-content: left;
+    margin-bottom: 5px;
+}
+
+input[class="form-control form-control-sm numeric"]::-webkit-inner-spin-button, input[class="form-control form-control-sm numeric"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+.container.manual{
+    min-height: fit-content;
+}
+
+td{
+    min-width: 200px;
+    max-width: fit-content;
+}
+
+.editable-cell{
+    vertical-align: middle; 
+    text-align: left;
+    
+}
+
+td.but {
+    min-width: fit-content;
+}
+
+button.btn.btn-secondary.btn-sm.edit-btn,
+button.btn.btn-primary.btn-sm.save-btn {
+    width: auto;
+}
+
+td.editable-cell {
+    align-content: center;
+}
+
+.save_button{
+    background-color: hsl(30, 100%, 52%);
+}
+
+</style>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+{% comment %} <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script> {% endcomment %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'assets/js/list_item.js' %}"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const excelBtn = document.getElementById("excelBtn");
+        const excelModal = document.getElementById("excelGroupModal");
+        const closeGroup = document.getElementById("close-group");
+
+        const uploadArea = document.getElementById("uploadGroupArea");
+        const fileInput = document.getElementById("GroupfileInput");
+        const previewContainer = document.getElementById("previewGroupContainer");
+        const filePreview = document.getElementById("fileGroupPreview");
+
+    
+        // Show the modal when clicking the Excel button
+        excelBtn.addEventListener("click", function () {
+            excelModal.style.display = "flex"; // Display the modal as a flexbox
+            previewContainer.style.display = "none"
+        });
+    
+        // Close the modal when clicking the close button
+        closeGroup.addEventListener("click", function () {
+            excelModal.style.display = "none";
+        });
+    
+        // Close the modal when clicking outside the modal content
+        window.addEventListener("click", function (event) {
+            if (event.target === excelModal) {
+                excelModal.style.display = "none";
+            }
+        });
+
+        function clearPreview() {
+            filePreview.innerHTML = "";
+            // previewContainer.style.display = "none";
+        }
+
+        // Drag and Drop functionality
+        uploadArea.addEventListener("click", () => fileInput.click());
+        uploadArea.addEventListener("dragover", (e) => e.preventDefault());
+        uploadArea.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            handleFile(file);
+        });
+
+        fileInput.addEventListener("change", () => {
+            const file = fileInput.files[0];
+            const fileName = fileInput.files[0].name;
+            document.getElementById("myGrouptext").value = "Uploaded Filename :- " + fileName;
+            handleFile(file);
+        });
+
+        function handleFile(file) {
+            if (file && (file.name.endsWith(".csv") || file.name.endsWith(".xlsx"))) {
+                previewContainer.style.display = "block";
+                if (file.name.endsWith(".csv")) {
+                    readCSVFile(file);
+                } else if (file.name.endsWith(".xlsx")) {
+                    readXLSXFile(file);
+                }
+            } else {
+                alert("Please upload a valid CSV or XLSX file.");
+            }
+        }
+        function readCSVFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const rawRows = e.target.result.split("\n");
+        
+                // Calculate the maximum number of columns in advance
+                const maxCols = Math.max(...rawRows.map(row => row.split(",").length));
+        
+                const rows = rawRows.map(row => {
+                    // Split by comma and trim whitespace
+                    let cells = row.split(",").map(cell => cell.trim());
+        
+                    // Normalize row length to match the longest row
+                    while (cells.length < maxCols) {
+                        cells.push(""); // Fill with empty strings if fewer columns
+                    }
+        
+                    return cells;
+                });
+        
+                displayPreview(rows);
+            };
+            reader.readAsText(file);
+        }
+        function readXLSXFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: "array" });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                
+                // Convert sheet to 2D array with empty cells included
+                let rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+        
+                // Ensure each row has the same length by padding with empty strings
+                const maxCols = Math.max(...rows.map(row => row.length));
+                rows = rows.map(row => {
+                    while (row.length < maxCols) {
+                        row.push(""); // Fill with empty strings if fewer columns
+                    }
+                    return row;
+                });
+        
+                displayPreview(rows);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function displayPreview(rows) {
+            clearPreview();
+            
+            // Limit preview to the first 10 rows (including header)
+            const previewRows = rows.slice(0, 10);
+        
+            previewRows.forEach((row, i) => {
+                const tr = document.createElement("tr");
+                
+                row.forEach(cell => {
+                    const cellElem = (i === 0 | i === 1) ? document.createElement("th") : document.createElement("td");
+                    
+                    // Set cell content to a non-breaking space if it's empty, ensuring alignment
+                    cellElem.innerHTML = cell ? cell : "&nbsp;";
+                    
+                    tr.appendChild(cellElem);
+                });
+                
+                filePreview.appendChild(tr);
+            });
+        }        
+    });
+
+    document.querySelector('.download-group-button').addEventListener('click', function() {
+        window.location.href = '/group-formation/download-group-core-multi-setup/';
+    });
+
+    const uploadGroupInfoUrl = "{% url 'group:upload_group_info' %}";
+
+    $('#uploadButton').on('click', function(event) {
+        event.preventDefault();
+        
+        // Get the selected file
+        const fileInput = document.getElementById('GroupfileInput');
+        const file = fileInput.files[0]; // Get the first file
+        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); 
+        
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file); // Append the file to FormData
+    
+            // Send AJAX POST request to upload the CSV file
+            $.ajax({
+                url: '/group/group-formation/upload-multi-core-group-info/',// Your Django URL for handling the file upload
+                type: 'POST',
+                processData: false, // Prevent jQuery from automatically processing the data
+                contentType: false, // Set content type to false to let jQuery set it
+                headers: {
+                    'X-CSRFToken': csrfToken  // Get CSRF token from cookies
+                },
+                data: formData,
+                success: function(response) {
+                    //console.log('File uploaded successfully:', response);
+                    if(response['status'] === 'success'){
+                        window.location = '/group/';
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error('Error uploading file:', errmsg);
+                    // Handle error (e.g., show error message)
+                }
+            });
+        }
+    });
+
+    //MANUAL JS
+    const manualBtn = document.getElementById("manualBtn");
+    const manualModal = document.getElementById("manualGroupModal");
+    const closeBtnn = document.getElementById("close-mgroup");
+
+    closeBtnn.onclick = () => { closeManual(); };
+
+    function closeManual(){
+        manualModal.style.display = "none";
+    }
+
+    const locationList = {{ location|safe }};
+
+    manualBtn.onclick = () => {
+        manualModal.style.display = "block";
+    
+        const tbody = document.querySelector("#bootstrapdatatable tbody");
+        const thead = document.querySelector("thead");
+
+        thead.innerHTML = ``
+
+        // Create a single row for all headers
+        const singleHeaderRow = document.createElement("tr");
+        
+        // Add Location and Chairperson details
+        singleHeaderRow.innerHTML = `
+            <th>Actions</th>
+            <th>Location Details</th>
+            <th></th>
+            <th></th>
+            <th>Chairperson Details</th>
+            <th></th>
+        `;
+        
+        // Add 100 Committee Member headers
+        for (let i = 0; i < 100; i++) {
+            singleHeaderRow.innerHTML += `
+                <th>Committee Member</th>
+                <th></th>
+                <th></th>
+            `;
+        }
+        
+        // Append the single row to the thead
+        thead.appendChild(singleHeaderRow);
+        
+        // Create a second row for all headers
+        const secondHeaderRow = document.createElement("tr");
+        secondHeaderRow.innerHTML = `
+            <th></th>
+            <th>Sr. No.</th>
+            <th>Location Name</th>
+            <th>Location UID</th>
+            <th>Chairperson Name</th>
+            <th>Chairperson UID</th>
+        `;
+
+        // Add 100 Committee Member headers
+        for (let i = 0; i < 100; i++) {
+            secondHeaderRow.innerHTML += `
+                <th>Name</th>
+                <th>Designation</th>
+                <th>UID</th>
+            `;
+        }
+
+        // Append the single row to the thead
+        thead.appendChild(secondHeaderRow);
+
+        // Clear any existing rows in the tbody
+        tbody.innerHTML = '';
+    
+        // Populate the modal with table rows based on locationList
+        locationList.forEach((location, index) => {
+            const row = document.createElement("tr");
+        
+            row.innerHTML = `
+                <td class="but">
+                    <button class="btn btn-primary btn-sm save-btn d-none" onclick="saveRow(this)">Save</button>
+                    <button class="btn btn-secondary btn-sm edit-btn" onclick="editRow(this)">Edit</button>
+                </td> 
+                <td style="min-width: 20px; vertical-align: middle; text-align: center;">${index + 1}</td>
+                <td data-type="readonly" class="editable-cell fixed">${location.name}</td>
+                <td data-type="readonly" class="editable-cell fixed">${location.location_uid}</td>
+                <td data-type="text" class="editable-cell fixed"></td>
+                <td data-type="text" class="editable-cell fixed"></td>
+            `;
+
+            // Add 100 Committee Member headers
+            for (let i = 0; i < 100; i++) {
+                row.innerHTML += `
+                <td data-type="text" class="editable-cell repeated"></td>
+                <td data-type="dropdown" class="editable-cell repeated"></td>
+                <td data-type="text" class="editable-cell repeated"></td>
+                `;
+            }
+               
+            // Append the new row to the tbody
+            tbody.appendChild(row);
+        });
+    }
+// Function to enable inline editing for a row
+function editRow(button) {
+    let row = button.closest("tr");
+    row.querySelectorAll(".editable-cell").forEach((cell, index, cells) => {
+        let cellType = cell.getAttribute("data-type");
+        let currentValue = cell.textContent.trim();
+        
+        if (cellType === 'dropdown') {
+            // Create the dropdown with the correct option selected
+            cell.innerHTML = `<select class="form-control form-control">
+                <option value="" ${currentValue === '' ? 'selected' : ''}>Not Selected</option>
+                <option value="Chairperson" ${currentValue === 'Chairperson' ? 'selected' : ''}>Chairperson</option>
+                <option value="External Member" ${currentValue === 'External Member' ? 'selected' : ''}>External Member</option>
+                <option value="Core External Member" ${currentValue === 'Core External Member' ? 'selected' : ''}>Core External Member</option>
+                <option value="Internal Member" ${currentValue === 'Internal Member' ? 'selected' : ''}>Internal Member</option>
+                <option value="Core Internal Member" ${currentValue === 'Core Internal Member' ? 'selected' : ''}>Core Internal Member</option>
+            </select>`;
+
+            // Add onchange listener to enable/disable the "Not Selected" option
+            const dropdown = cell.querySelector("select");
+
+            dropdown.addEventListener("change", function () {
+                const notSelectedOption = dropdown.querySelector('option[value=""]');
+
+                if (dropdown.value !== "") {
+                    // Disable the "Not Selected" option once a change is made
+                    notSelectedOption.disabled = true;
+                } else {
+                    // Re-enable "Not Selected" if dropdown is cleared
+                    notSelectedOption.disabled = false;
+                }
+            });
+
+            // Trigger the onchange event initially to set the state
+            dropdown.dispatchEvent(new Event("change"));
+        } 
+        else if(cellType === 'readonly'){
+            cell.innerHTML = `<input type="${cellType}" value="${currentValue}" class="form-control form-control" readonly>`;
+        }
+        else {
+            cell.innerHTML = `<input type="${cellType}" value="${currentValue}" class="form-control form-control" required>`;
+        }
+    });
+    
+    row.querySelector(".save-btn").classList.remove("d-none");
+    row.querySelector(".edit-btn").classList.add("d-none");
+}
+
+// Function to save edited values
+function saveRow(button) {
+    let row = button.closest("tr");
+    row.querySelectorAll(".editable-cell").forEach(cell => {
+        let input = cell.querySelector("input");
+        let select = cell.querySelector("select");
+        if (input) {
+            cell.textContent = input.value;
+        }
+        if (select) {
+            cell.textContent = select.value;
+        }
+    });
+    row.querySelector(".save-btn").classList.add("d-none");
+    row.querySelector(".edit-btn").classList.remove("d-none");
+}
+    
+function collectTableData() {
+    const tableData = [];
+    const rows = document.querySelectorAll("table tbody tr");
+
+    // Fixed column headers
+    const fixedColumns = ['Location Name', 'Location UID', 'Chairperson Name', 'Chairperson UID'];
+    // Repeated group headers
+    const repeatedColumns = ['Name', 'Designation', 'UID'];
+
+    rows.forEach(row => {
+        const rowData = {};
+
+        // Process fixed columns
+        const fixedCells = row.querySelectorAll(".editable-cell.fixed");
+        fixedCells.forEach((cell, index) => {
+            rowData[fixedColumns[index]] = cell.textContent.trim() || null;
+        });
+
+        // Process repeated groups of Name, Designation, UID
+        const repeatedCells = row.querySelectorAll(".editable-cell.repeated");
+        const groupCount = repeatedCells.length / repeatedColumns.length; // Determine the number of groups
+
+        rowData['Committee Members'] = []; // Initialize array for groups
+
+        outerLoop:
+        for (let i = 0; i < groupCount; i++) {
+            const groupData = {};
+        
+            for (let j = 0; j < repeatedColumns.length; j++) {
+                const key = repeatedColumns[j];
+                const cellIndex = i * repeatedColumns.length + j; // Calculate the cell index
+                const value = repeatedCells[cellIndex].textContent.trim() || null;
+        
+                if (value === null) {
+                    break outerLoop; // Exit the outer loop entirely if a null value is found
+                }
+        
+                groupData[key] = value;
+            }
+        
+            rowData['Committee Members'].push(groupData);
+        }
+        
+        // Only include rows with valid Location Name or similar key
+        if (rowData['Location Name']) {
+            tableData.push(rowData);
+        }
+    });
+    //console.log(tableData)
+    return tableData;
+}
+
+$('#manual-submission').on('click', function(event) {
+    event.preventDefault();
+
+    const tableData = collectTableData();
+    const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();  // Correct CSRF token selector
+
+    // Send AJAX POST request to update certification details
+    $.ajax({
+        url: '/group/group-formation/upload-multi-core-group-info/',  // Use your endpoint URL here
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken   // Correct CSRF header
+        },
+        contentType: 'application/json',  // Set content type for JSON data
+        data: JSON.stringify({ tableData: tableData }),
+        success: function(response) {
+            // Handle success (e.g., close modal, show success message)
+            if(response['status'] === 'success'){
+                window.location = '/group/';
+            }
+        },
+        error: function(xhr, errmsg, err) {
+            // Handle error (e.g., show error message)
+            console.log("Error:", errmsg);
+        }
+    });
+});
+
+</script>
+    
+{% endblock %}
+
+{% block content %}
+<div class="container light-style flex-grow-1 container-p-y">
+    <div class="card overflow-hidden">
+        <h4 class="font-weight-bold py-3 mb-4 text-center">
+            Enter Group Information
+        </h4>
+        <!-- Buttons Row -->
+        <div class="button-container d-flex flex-column align-items-center p-3">
+            <!-- Manual Button -->
+            <button class="btn btn-manual" type="button"  id="manualBtn" >Manual</button>
+
+            <!-- Excel Button -->
+            <button class="btn btn-excel mt-3" type="button" id="excelBtn">Excel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Excel GROUP -->
+<div id="excelGroupModal" class="modal">
+    <div class="modal-content" id="excelGroup">
+        <span class="close-group" id="close-group" >&times;</span>
+        <h2>Upload File</h2>
+        <div class="upload-area" id="uploadGroupArea">
+            <p>Drag & Drop a file here or click to upload</p>
+            <input type="file" id="GroupfileInput" accept=".csv, .xlsx" hidden>
+        </div>
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"> 
+        <div class="align-items-center-column">
+            <button class="download-group-button button-secondary">Download</button>
+            <button class="upload-group-button button-secondary" id="uploadButton">Upload</button>
+        </div>
+        <div class="preview-container" id="previewGroupContainer" style="margin-top: 20px;">
+            <h3>Preview:</h3>
+            <input type="text" id="myGrouptext" style="width: 100%;" disabled>
+            <div class="table-wrapper"> <!-- Add this wrapper for scrolling -->
+                <table id="fileGroupPreview"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="manualGroupModal" class="modal">
+    {% comment %} <div id="loading-screen-manual" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: 1000; text-align: center;">
+        <div style="position: relative; top: 50%; transform: translateY(-50%); font-size: 1.5em;">
+            <img src="{% static 'assets/img/ZNeT.gif' %}" alt="loader" class="load__gif" >
+        </div>
+    </div> {% endcomment %}
+    <div class="modal-content"  id="manualGroup">
+        <span class="close-group" id="close-mgroup">&times;</span>
+        <div class="location_space">
+            <h2>Committee Details</h2>
+            <div class="buttons">
+                <button class="save_button" id="manual-submission">Save</button>
+            </div>
+        </div>
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    
+            <div class="container-fluid manual" style="margin-top: 20px;">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive">
+                            <table id="bootstrapdatatable" class="table table-striped table-bordered text-center">
+                                <thead class="thead" style="background-color: hsl(30, 100%, 95%); text-align-last: center;">
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <div id="hello"></div>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+</div>
+
+{% endblock %}

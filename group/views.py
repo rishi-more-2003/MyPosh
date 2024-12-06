@@ -412,3 +412,175 @@ def upload_multi_group_info(request):
                 return JsonResponse({'status': 'error', 'message': str(e)})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+
+def upload_core_multi_group_info(request):
+    user = request.user.establishmentuser
+    if request.method == 'POST':
+        file = request.FILES.get('file')  
+        if file:
+            file_path = os.path.join(settings.BASE_DIR, 'static/posh/CoreMultiGroupDataTemplate.xlsx')  
+            # Check if the file exists before attempting to delete it
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            
+            try:
+                if file.name.endswith('.csv'):
+                    data = pd.read_csv(file, header=1)  
+                elif file.name.endswith('.xlsx'):
+                    data = pd.read_excel(file, header=1)
+                else:
+                    return JsonResponse({'status': 'error', 'message': 'Unsupported file format'})
+
+                data = data.map(lambda x: str(x).replace('\xa0', ' ') if isinstance(x, str) else x)
+                data = data.fillna('NA') 
+
+                if not data.empty:
+                    core_employees = []  # List to store core employee details temporarily
+
+                    for _,row in data.iterrows():
+
+                        if str(row.iloc[0]).isnumeric():
+                            group, created = Groups.objects.get_or_create(
+                                group_name = row.iloc[1],
+                                section = LocationEst.objects.filter(location_uid = str(row.iloc[2]).strip()).first().address,
+                                group_code = row.iloc[2],
+                            )
+                            
+                            Enterprise.objects.get_or_create(
+                                enterprise_id = user,
+                                group_id = group,
+                            )
+
+                            c = 3
+                            designationList = ["Chairperson", "Internal Member", "Core Internal Member", "External Member", "Core External Member"]
+                            while row.iloc[c] != "NA":
+                                employee_name = row.iloc[c]
+                                if row.iloc[c+1] not in designationList:
+                                    designation = "Chairperson"
+                                    employee_id = row.iloc[c+1]
+                                    c = c + 2
+                                else:
+                                    designation = row.iloc[c+1]
+                                    employee_id = row.iloc[c+2]
+                                    c = c + 3
+                                
+                                if employee_id != "NA" and designation != "NA" and employee_name != "NA":
+                                    # print(employee_id, employee_name, designation, group.id)
+                                    emp = PoshUser.objects.filter(username=str(employee_id).strip()).first()
+                                    Employee.objects.get_or_create(
+                                        employee_id = emp ,
+                                        group_id = group,
+                                        designation = designation,
+                                        employee_name = employee_name,
+                                    )
+
+                                    # Store core employees in the temporary list
+                                    if designation in ["Core Internal Member", "Core External Member"]:
+                                        core_employees.append({
+                                            "employee_name": employee_name,
+                                            "employee_id": employee_id,
+                                            "designation": designation,
+                                            "group_id": group.id,
+                                        })
+
+                    # Store core employees in the session
+                    request.session['core_employees'] = core_employees
+
+                    all_groups = LocationEst.objects.filter(est_id=user)
+
+                    for group in all_groups:
+                        # Get the IDs of groups associated with the location UID
+                        grp_ids = Groups.objects.filter(group_code=group.location_uid).values_list("id", flat=True)
+
+                        for employee in request.session.get('core_employees', []):
+                            # Check if the employee's group_id does not match any of the grp_ids
+                            if employee["group_id"] not in grp_ids:
+                                for grp_id in grp_ids:
+                                    # Create employee in the unmatched group
+                                    Employee.objects.get_or_create(
+                                        employee_id=PoshUser.objects.filter(username=employee["employee_id"]).first(),
+                                        group_id=Groups.objects.get(id=grp_id),
+                                        designation=employee["designation"],
+                                        employee_name=employee["employee_name"],
+                                    )
+
+                    return JsonResponse({'status': 'success', 'message': 'Group Created Successfully'})
+                        
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': str(e)})
+        
+        else:
+            
+            try:
+                data = json.loads(request.body)
+                table_data = data.get("tableData", [])
+                core_employees = []
+                for row in table_data:
+                    # Process the group
+                    group, created = Groups.objects.get_or_create(
+                        group_name = str(row['Location Name']).strip(),
+                        section = LocationEst.objects.filter(location_uid=str(row['Location UID']).strip()).first().address,
+                        group_code = str(row['Location UID']).strip(),
+                    )
+
+                    # Map enterprise
+                    Enterprise.objects.get_or_create(
+                        enterprise_id=user,
+                        group_id=group,
+                    )
+
+                    if row['Chairperson UID'] and row['Chairperson Name']:
+                        emp = PoshUser.objects.filter(username=row['Chairperson UID']).first()
+                        Employee.objects.get_or_create(
+                            employee_id=emp,
+                            group_id=group,
+                            designation="Chairperson",
+                            employee_name=row['Chairperson Name'],
+                        )
+
+                    for member in row['Committee Members']:
+                        emp = PoshUser.objects.filter(username=str(member['UID']).strip()).first()
+                        Employee.objects.get_or_create(
+                            employee_id=emp,
+                            group_id=group,
+                            designation=str(member['Designation']).strip(),
+                            employee_name=str(member['Name']).strip(),
+                        )
+
+                        # Store core employees in the temporary list
+                        if str(member['Designation']).strip() in ["Core Internal Member", "Core External Member"]:
+                            core_employees.append({
+                                "employee_name": str(member['Name']).strip(),
+                                "employee_id": str(member['UID']).strip(),
+                                "designation": str(member['Designation']).strip(),
+                                "group_id": group.id,
+                            })
+
+                # Store core employees in the session
+                request.session['core_employees'] = core_employees
+
+                all_groups = LocationEst.objects.filter(est_id=user)
+
+                for group in all_groups:
+                    # Get the IDs of groups associated with the location UID
+                    grp_ids = Groups.objects.filter(group_code=group.location_uid).values_list("id", flat=True)
+
+                    for employee in request.session.get('core_employees', []):
+                        # Check if the employee's group_id does not match any of the grp_ids
+                        if employee["group_id"] not in grp_ids:
+                            for grp_id in grp_ids:
+                                # Create employee in the unmatched group
+                                Employee.objects.get_or_create(
+                                    employee_id=PoshUser.objects.filter(username=employee["employee_id"]).first(),
+                                    group_id=Groups.objects.get(id=grp_id),
+                                    designation=employee["designation"],
+                                    employee_name=employee["employee_name"],
+                                )
+                                
+                return JsonResponse({'status': 'success', 'message': 'Data is uploaded successfully'})
+            
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
