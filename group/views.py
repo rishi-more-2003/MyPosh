@@ -15,6 +15,7 @@ import json
 import os
 import pandas as pd
 from posh.models import LocationEst, PoshUser
+from collections import defaultdict
 
 # Create your views here.
 def group(request):
@@ -94,9 +95,22 @@ def render_class(request, id):
     teacher_mapping = Enterprise.objects.filter(enterprise_id = request.user).select_related('group_id')
     student_mapping = Employee.objects.filter(employee_id = request.user).select_related('group_id')
     mappings = chain(teacher_mapping,student_mapping) 
-    # teacher = teachers.object.
-    # print(teachers, mappings)
-    return render(request,'group_page.html',{'classroom':classroom,'assignments':assignments,'students':students,'teachers':teachers,"mappings":mappings})
+
+    # Group contributors by role
+    contributor_roles = defaultdict(list)
+    for contributor in students:
+        contributor_roles[contributor.designation].append({
+            "name": contributor.employee_name,
+            "role": contributor.designation,
+        })
+
+    # Define the order for roles
+    role_order = ["Chairperson", "Core Internal Member", "Core External Member", "Internal Member", "External Member"]
+    
+    # Sort contributors by role
+    sorted_contributors = {role: contributor_roles[role] for role in role_order if role in contributor_roles}
+    # print(sorted_contributors)
+    return render(request,'group_page.html',{'classroom':classroom,'assignments':assignments,'students':students,'teachers':teachers,"mappings":mappings, 'contributors': sorted_contributors, "roles": role_order,})
     
     
 @login_required

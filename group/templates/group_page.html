@@ -106,6 +106,27 @@
     div#top {
         margin-top: 100px;
       }
+    ul#assignmentTabs {
+        display: inline-flex;
+    }
+    .nav-tabs .nav-link {
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        margin-right: 5px;
+        color: #495057;
+    }
+    .nav-tabs .nav-link.active {
+        background-color: #007bff;
+        color: white;
+    }
+    .tab-content {
+        margin-top: 15px;
+    }
+    h5 {
+        color: orange;
+        margin-top: 10px;
+        border-bottom: double;
+    }
 </style>
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
@@ -194,6 +215,25 @@
             <p class="lead class_code">Location UID: {{ classroom.group_code }}</p>
             <input type="hidden" id="assignment_id" name="assignment_id">
             <div class="contatiner_of_assignments">
+                <!-- Nav Tabs -->
+                <ul class="nav nav-tabs" id="assignmentTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="assignments-tab" data-toggle="tab" href="#assignments" role="tab" aria-controls="assignments" aria-selected="true">
+                            Notices
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="contributors-tab" data-toggle="tab" href="#contributors" role="tab" aria-controls="contributors" aria-selected="false">
+                            Contributors
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                 <div class="tab-content" id="assignmentTabContent">
+                <!-- Assignments Tab -->
+                <div class="tab-pane fade show active" id="assignments" role="tabpanel" aria-labelledby="assignments-tab">
+                
                 {% if assignments %}
                     {% for assignment in assignments %}
                         {% for teacher in teachers %}
@@ -209,15 +249,38 @@
                             </div>
                             <div class="card-body card-body-custom">
                                 <h6 class="card-subtitle mb-2"><p class="card-text">Instructions: {{ assignment.instructions }}</p></h6>
-                                <p class="card-text">Notice posted on {{ assignment.posted_date }}</p>
-                                <p class="card-text">Notice due at {{ assignment.due_time }} on {{ assignment.due_date }}</p>
+                                <p class="card-text">Posted on {{ assignment.posted_date }}</p>
+                                <p class="card-text">Due at {{ assignment.due_time }} on {{ assignment.due_date }}</p>
                                 {% comment %} <a href="{% url 'group:render_class' mapping.group_id.id %}" class="btn btn-primary">View Class</a> {% endcomment %}
                             </div>
                         </div>
                         </a>
                   {% endfor %}
+                {% else %}
+                  <h4 style="text-align: center; margin-top: 20px;">No notices available.</h4>
                 {% endif %}
               </div>
+                <!-- Contributors Tab -->
+                <div class="tab-pane fade" id="contributors" role="tabpanel" aria-labelledby="contributors-tab">
+                    {% comment %} <h4>Group Contributors</h4> {% endcomment %}
+                    <div class="contributors-list">
+                        {% for contributor, member in contributors.items %}
+                            <div class="role-section">
+                                <h5 style="margin-top: 20px; margin-bottom: 20px;">{{ contributor }}</h5>
+                                <ul class="list-group">
+                                    {% for mem in member %}
+                                        <li class="list-group-item">
+                                            <strong>{{ mem.name }}</strong>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            </div>
+
               <div class="modal" tabindex="-1" id="submit_assignment">
                 <div class="modal-dialog">
                   <div class="modal-content">
