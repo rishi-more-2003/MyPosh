@@ -275,3 +275,171 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+const multibtn = document.getElementById("multi-core-button");
+const coremodal = document.getElementById("hierarchyModal");
+const popupcommittee = document.getElementById("popup-committee");
+const closecoremodal = document.getElementById("closeCoreModal");
+const generateTree = document.getElementById("generateTree");
+const hierarchyContainer = document.getElementById("hierarchyTree");
+const numberInput = document.getElementById("numberInput");
+
+multibtn.onclick = () => { 
+    coremodal.style.display = "block";
+};
+
+
+// Close Modal
+closecoremodal.onclick = () => {
+    coremodal.style.display = "none";
+    hierarchyContainer.innerHTML = ""; // Clear the hierarchy if modal closes
+};
+
+// Generate Hierarchy on Button Click
+generateTree.onclick = () => {
+    const levels = parseInt(numberInput.value, 10);
+    if (isNaN(levels) || levels < 1) {
+        alert("Please enter a valid number greater than 0.");
+        return;
+    }
+
+    // Clear previous tree
+    hierarchyContainer.innerHTML = "";
+
+    const leftColumn = document.createElement("div");
+    leftColumn.className = "left-column";
+
+// Generate roles for each level
+for (let i = 1; i <= levels; i++) {
+    // Core External
+    const coreExternal = `${'Sub '.repeat(i - 1)}Core External Member`;
+
+    // Create a container for role and input
+    const roleContainer = document.createElement("div");
+    roleContainer.className = "role-row"; // Optional class for styling
+
+    // Create and set up the role text
+    const externalRole = document.createElement("p");
+    externalRole.textContent = coreExternal;
+
+    // Create the "Alias:" label
+    const aliasLabel = document.createElement("span");
+    aliasLabel.textContent = "Alias: ";
+    aliasLabel.className = "alias-label"; // Optional class for styling
+
+    // Create and set up the input field
+    const externalInput = document.createElement("input");
+    externalInput.type = "text";
+    externalInput.placeholder = `Default ${coreExternal}`;
+    externalInput.className = "role-input"; // Optional class for styling
+
+    // Append the role, label, and input to the container
+    roleContainer.appendChild(externalRole);
+    roleContainer.appendChild(aliasLabel);
+    roleContainer.appendChild(externalInput);
+
+    // Append the container to the left column
+    leftColumn.appendChild(roleContainer);
+}
+
+// Generate roles for each level
+for (let i = 1; i <= levels; i++) {
+    // Core Internal
+    const coreInternal = `${'Sub '.repeat(i - 1)}Core Internal Member`;
+
+    // Create a container for role and input
+    const roleContainer = document.createElement("div");
+    roleContainer.className = "role-row"; // Optional class for styling
+
+    // Create and set up the role text
+    const internalRole = document.createElement("p");
+    internalRole.textContent = coreInternal;
+
+    // Create the "Alias:" label
+    const aliasLabel = document.createElement("span");
+    aliasLabel.textContent = "Alias: ";
+    aliasLabel.className = "alias-label"; // Optional class for styling
+
+    // Create and set up the input field
+    const internalInput = document.createElement("input");
+    internalInput.type = "text";
+    internalInput.placeholder = `Default ${coreInternal}`;
+    internalInput.className = "role-input"; // Optional class for styling
+
+    // Append the role, label, and input to the container
+    roleContainer.appendChild(internalRole);
+    roleContainer.appendChild(aliasLabel);
+    roleContainer.appendChild(internalInput);
+
+    // Append the container to the left column
+    leftColumn.appendChild(roleContainer);
+}
+
+// Append columns to the hierarchy container
+hierarchyContainer.appendChild(leftColumn);
+const corebtn = document.createElement("button")
+corebtn.className = "btn btn-success"
+corebtn.id= "get-all-alias"
+corebtn.textContent = "Save"
+corebtn.onclick = function() { sendHierarchyData(); };
+
+hierarchyContainer.appendChild(corebtn)
+
+}
+
+// Function to gather data and send to backend
+function sendHierarchyData() {
+    const hierarchyRows = document.querySelectorAll('.role-row'); // All role rows
+    const hierarchyData = []; // Array to hold the data to send
+
+    // Loop through each row
+    hierarchyRows.forEach(row => {
+        const roleText = row.querySelector('p').textContent; // Left column text
+        const inputField = row.querySelector('input'); // Input field
+
+        // Get the input value or default to the roleText if empty
+        const alias = inputField.value.trim() || roleText;
+
+        // Push the data to the array
+        hierarchyData.push({
+            role: roleText,
+            alias: alias
+        });
+    });
+
+    console.log(JSON.stringify(hierarchyData))
+
+    // Send data to the backend via AJAX
+    fetch('/multi-committee-multi-core-group-formation/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken() // Include CSRF token for Django (if using)
+        },
+        body: JSON.stringify(hierarchyData)
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Response sent to the server");
+            window.location.href = "/multi-committee-multi-core-group-formation/";
+        } else {
+            throw new Error('Error sending hierarchy data.');
+        }
+    })
+    .then(data => {
+        console.log('Data successfully sent:', data);
+        // alert('Hierarchy data sent successfully!');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // alert('Failed to send hierarchy data.');
+    });
+}
+
+// Helper function to get CSRF token for Django (if applicable)
+function getCSRFToken() {
+    const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
+    return cookieValue || '';
+}

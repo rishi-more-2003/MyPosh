@@ -1,4 +1,16 @@
 <div id="popup-committee" class="popup-committee hidden-committee">
+  <!-- Modal Structure -->
+  <div id="hierarchyModal" class="modal" style="display: none;">
+    <span id="closeCoreModal" class="close">&times;</span>
+    <div id="popup-modal-form" class="modal-content">
+        <h4>Enter Levels of Cores for Hierarchy</h4>
+          <input type="number" id="numberInput" min="1" placeholder="Enter number of cores" />
+          <button id="generateTree" class="btn btn-success">Generate Levels of Cores</button>
+    </div>
+    <!-- Hierarchy Display -->
+    <div id="hierarchyTree" class="hierarchy-container"></div>
+  </div>
+
   <div class="popup-committee-dialog">
     <div class="popup-committee-content">
       <div class="popup-committee-header">
@@ -44,11 +56,9 @@
         </div>
 
         <div class="option-info">
-          <a href="{% url 'group:group' %}" class="option-committee-link">
-            <button class="option-committee" data-option-id="multi-core">
+            <button class="option-committee" data-option-id="multi-core" id="multi-core-button">
               Multi Core Committee & Multi Committee Set-up
             </button>
-          </a>
           <i class="fas fa-info-circle info-btn" data-info="Combine multiple core and multiple committees for advanced setups." data-target="info-multi-core"></i>
         </div>
         <div id="info-multi-core" class="info-content hidden-info">
@@ -58,3 +68,6 @@
     </div>
   </div>
 </div>
+
+
+

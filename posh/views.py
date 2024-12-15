@@ -18,7 +18,7 @@ from django.conf import settings
 from .utils import (generate_unique_id, generate_unique_consultancy, generate_unique_establishment, 
                     generate_unique_ngo, get_session_data, update_locations_session, 
                     create_vendor_excel, get_vendor_data, update_vendor_session, create_employee_table, generate_unique_employeeid,
-                    generate_unique_locationUID, excel_group_formation)
+                    generate_unique_locationUID, excel_group_formation, excel_multi_group_formation)
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
@@ -2845,6 +2845,31 @@ def core_multi_group_formation(request):
     locationList = LocationEst.objects.filter(est_id=user).values('name', 'location_uid')  
     return render(request, "core-multi-group-formation.html", {'location': list(locationList)})
 
+def multi_committee_multi_core_group_formation(request):
+    user = request.user.establishmentuser
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            alias_list = [entry.get('alias', '') for entry in data]
+            request.session['aliases'] = alias_list  # Store in session
+            print(f"Aliases stored in session: {alias_list}")
+
+            return JsonResponse({'status': 'success', 'message': 'Data saved successfully!'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+         
+    locationList = LocationEst.objects.filter(est_id=user).values('name', 'location_uid')  
+    
+    return render(request, "multi-committee-multi-core-group-formation.html", {'location': list(locationList)})
+
+def get_dropdown_options(request):
+    if request.method == 'GET':
+        aliases = request.session.get('aliases', [])
+        aliases.insert(0, 'Chairperson')
+
+        return JsonResponse({'alias': aliases})
+
 def download_group_single_file(request):
 
     user = request.user.establishmentuser
@@ -2905,4 +2930,27 @@ def download_group_core_multi_file(request):
     with open(file_path, 'rb') as file:
         response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         response["Content-Disposition"] = 'attachment; filename="CoreMultiGroupDataTemplate.xlsx"'
+        return response
+    
+
+def download_group_multi_core_multi_file(request):
+    user = request.user.establishmentuser
+    locationList = LocationEst.objects.filter(est_id=user)
+    data = []
+    for location in locationList:
+        loc = {
+            'Location Name': location.name,
+            'Location UID': location.location_uid
+        }
+        data.append(loc)
+    aliases = request.session.get('aliases', [])
+    aliases.insert(0, 'Chairperson')
+
+    file = excel_multi_group_formation(data, aliases)
+    
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/MultiCommitteeMultiGroupDataTemplate.xlsx')
+    
+    with open(file_path, 'rb') as file:
+        response = HttpResponse(file, content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response["Content-Disposition"] = 'attachment; filename="MultiCommitteeMultiGroupDataTemplate.xlsx"'
         return response

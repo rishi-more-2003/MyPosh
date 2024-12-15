@@ -365,3 +365,45 @@ def excel_group_formation(data, opt):
         file_path = os.path.join(settings.BASE_DIR, 'static/posh/')
 
         workbook.save(f"{file_path}CoreMultiGroupDataTemplate.xlsx")
+
+def excel_multi_group_formation(data, alias):
+    print(alias)
+    target = ['Chairperson', ' External Member', ' Core External Member', ' Internal Member', ' Core Internal Member']
+    
+    # Define the template path
+    template_path = os.path.join(settings.BASE_DIR, 'static/posh/Core-Committee-Setup.xlsx')
+
+    # Load the Excel template
+    try:
+        workbook = load_workbook(template_path)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Template file not found at {template_path}")
+    sheet = workbook.active  # Assumes the data goes in the first sheet
+
+    # Update data validation options
+    if sheet.data_validations is not None:
+        # Convert the list to a comma-separated string enclosed in double quotes
+        new_values = '"' + ', '.join(alias) + '"'
+
+        for validation in sheet.data_validations.dataValidation:
+            if validation.formula1 and validation.type == 'list':
+                validation.formula1 = new_values
+
+    # Start populating the sheet with data, beginning at row 3
+    start_row = 3
+    for idx, row_data in enumerate(data, start=start_row):
+        sheet.cell(row=idx, column=1, value=idx - 2)  # SR.NO
+        sheet.cell(row=idx, column=2, value=row_data.get("Location Name", ""))  # LOCATION NAME
+        sheet.cell(row=idx, column=3, value=row_data.get("Location UID", ""))  # LOCATION UID
+
+    # Save the updated workbook
+    output_file_name = "MultiCommitteeMultiGroupDataTemplate.xlsx"
+    file_path = os.path.join(settings.BASE_DIR, 'static/posh/', output_file_name)
+    
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    try:
+        workbook.save(file_path)
+    except Exception as e:
+        raise IOError(f"Error saving the file: {str(e)}")

@@ -109,7 +109,7 @@ def render_class(request, id):
     
     # Sort contributors by role
     sorted_contributors = {role: contributor_roles[role] for role in role_order if role in contributor_roles}
-    # print(sorted_contributors)
+    print(assignments)
     return render(request,'group_page.html',{'classroom':classroom,'assignments':assignments,'students':students,'teachers':teachers,"mappings":mappings, 'contributors': sorted_contributors, "roles": role_order,})
     
     
@@ -388,6 +388,120 @@ def upload_multi_group_info(request):
                 data = json.loads(request.body)
                 table_data = data.get("tableData", [])
                 # print(table_data)
+                for row in table_data:
+                    # Process the group
+                    group, created = Groups.objects.get_or_create(
+                        group_name = str(row['Location Name']).strip(),
+                        section = LocationEst.objects.filter(location_uid=str(row['Location UID']).strip()).first().address,
+                        group_code = str(row['Location UID']).strip(),
+                    )
+
+                    # Map enterprise
+                    Enterprise.objects.get_or_create(
+                        enterprise_id=user,
+                        group_id=group,
+                    )
+
+                    if row['Chairperson UID'] and row['Chairperson Name']:
+                        emp = PoshUser.objects.filter(username=row['Chairperson UID']).first()
+                        Employee.objects.get_or_create(
+                            employee_id=emp,
+                            group_id=group,
+                            designation="Chairperson",
+                            employee_name=row['Chairperson Name'],
+                        )
+
+                    for member in row['Committee Members']:
+                        emp = PoshUser.objects.filter(username=str(member['UID']).strip()).first()
+                        Employee.objects.get_or_create(
+                            employee_id=emp,
+                            group_id=group,
+                            designation=str(member['Designation']).strip(),
+                            employee_name=str(member['Name']).strip(),
+                        )
+
+                return JsonResponse({'status': 'success', 'message': 'Data is uploaded successfully'})
+            
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+def upload_core_multi_multi_committee_group_info(request):
+    user = request.user.establishmentuser
+    if request.method == 'POST':
+        file = request.FILES.get('file')  
+        if file:
+            file_path = os.path.join(settings.BASE_DIR, 'static/posh/MultiCommitteeMultiGroupDataTemplate.xlsx')  
+            # Check if the file exists before attempting to delete it
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            
+            try:
+                if file.name.endswith('.csv'):
+                    data = pd.read_csv(file, header=1)  
+                elif file.name.endswith('.xlsx'):
+                    data = pd.read_excel(file, header=1)
+                else:
+                    return JsonResponse({'status': 'error', 'message': 'Unsupported file format'})
+
+                data = data.map(lambda x: str(x).replace('\xa0', ' ') if isinstance(x, str) else x)
+                data = data.fillna('NA') 
+
+                if not data.empty:
+                    for _,row in data.iterrows():
+                        if str(row.iloc[0]).isnumeric():
+                            group, created = Groups.objects.get_or_create(
+                                group_name = row.iloc[1],
+                                section = LocationEst.objects.filter(location_uid = str(row.iloc[2]).strip()).first().address,
+                                group_code = row.iloc[2],
+                            )
+                            
+                            Enterprise.objects.get_or_create(
+                                enterprise_id = user,
+                                group_id = group,
+                            )
+
+                            c = 3
+                            designationList =  []
+                            for alias in request.session.get('aliases', []):
+                                designationList.append(str(alias).strip())
+                            
+                            designationList.insert(0, 'Chairperson')
+
+                            # print(designationList)
+
+                            while row.iloc[c] != "NA":
+                                employee_name = row.iloc[c]
+                                if row.iloc[c+1] not in designationList:
+                                    designation = "Chairperson"
+                                    employee_id = row.iloc[c+1]
+                                    c = c + 2
+                                else:
+                                    designation = row.iloc[c+1]
+                                    employee_id = row.iloc[c+2]
+                                    c = c + 3
+                                
+                                if employee_id != "NA" and designation != "NA" and employee_name != "NA":
+                                    # print(employee_id, employee_name, designation, group.id)
+                                    emp = PoshUser.objects.filter(username=str(employee_id).strip()).first()
+                                    Employee.objects.get_or_create(
+                                        employee_id = emp ,
+                                        group_id = group,
+                                        designation = designation,
+                                        employee_name = employee_name,
+                                    )
+
+                    return JsonResponse({'status': 'success', 'message': 'Group Created Successfully'})
+                        
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': str(e)})
+        
+        else:
+            try:
+                data = json.loads(request.body)
+                table_data = data.get("tableData", [])
+                print(table_data)
                 for row in table_data:
                     # Process the group
                     group, created = Groups.objects.get_or_create(

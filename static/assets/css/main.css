@@ -950,7 +950,7 @@ body.dark-theme{
 
     .nav{
         height: calc(var(--header-height) + 1.5rem);
-        column-gap: 3rem;
+        /* column-gap: 3rem; */
     }
     .nav__toggle,
     .nav__close{
@@ -1463,3 +1463,180 @@ body.dark-theme{
 }
 
 
+/* Modal Styling */
+#hierarchyModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--body-color);
+    box-shadow: var(--background-footer-color);
+    border-radius: 20px;
+    padding: 20px;
+    z-index: 1000;
+    max-width: 500px;
+    max-height: 450px;
+    width: 90%;
+    font-family: var(--body-font);
+    overflow-y: auto; /* Ensures content scrolls on small screens */
+}
+
+#popup-modal-form {
+    margin-top: 50px;
+    position: relative;
+    padding: 20px;
+    border: none;
+}
+
+/* Close Button Styling */
+#closeCoreModal{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--text-color-light);
+    transition: color 0.3s ease;
+}
+
+#closeCoreModal:hover {
+    color: var(--first-color);
+}
+
+/* Heading Styling */
+#hierarchyModal h4 {
+    font-size: 22px;
+    color: var(--title-color);
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 25px;
+    margin-top: 25px;
+}
+
+/* Input Styling */
+#numberInput {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0 20px 0;
+    border: 1px solid var(--first-color);
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+    transition: var(--first-color-light) 0.3s ease, var(--first-color) 0.3s ease;
+    box-sizing: border-box;
+}
+
+#numberInput:focus {
+    border-color: var(--first-color);
+    box-shadow: 0 0 4px var(--first-color-light);
+}
+
+/* Button Styling */
+#generateTree,
+#get-all-alias {
+    background-color: var(--first-color);
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    display: block;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+#generateTree:hover,
+#get-all-alias:hover {
+    background-color: var(--first-color-alt);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Hierarchy Container Styling */
+.hierarchy-container {
+    max-height: 400px; /* Limit vertical height for scroll */
+    max-width: 100%; /* Limit horizontal width if necessary */
+    overflow-x: auto; /* Horizontal scroll */
+    overflow-y: auto; /* Vertical scroll */
+    border: 1px solid #ccc; /* Optional border for better visibility */
+    padding: 10px;
+    margin-top: 20px;
+    background-color: var(--first-color-lighten); /* Subtle background color */
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Left Column */
+.left-column {
+    flex: 1;
+    min-width: 40%;
+    padding-right: 20px;
+}
+
+.left-column p {
+    padding-bottom: 15px;
+}
+
+
+/* Media Query for Responsiveness */
+@media (max-width: 768px) {
+    #hierarchyModal {
+        max-width: 95%;
+        padding: 15px;
+    }
+    #hierarchyModal h4 {
+        font-size: 18px;
+    }
+    #numberInput {
+        font-size: 14px;
+    }
+    #generateTree,
+    #get-all-alias { 
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+    .hierarchy-container {
+        flex-direction: column;
+    }
+}
+
+.role-row {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between elements */
+    margin-bottom: 10px;
+    min-width: 400px;
+}
+
+.role-row p {
+    margin: 0;
+    font-size: 14px;
+    flex: 1; /* Role text takes up some space */
+}
+
+.role-row .alias-label {
+    font-weight: bold;
+    color: #ff8c00; /* Orange color for "Alias:" */
+}
+
+.role-row .role-input {
+    flex: 2;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.role-row .role-input:focus {
+    border-color: #ff8c00; /* Orange border on focus */
+}
