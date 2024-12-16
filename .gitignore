@@ -122,6 +122,6 @@ media/
 dsettings.py
 psettings.py
 
-conversation/migrations/
-group/migrations/
-posh/migrations/
+# conversation/migrations/
+# group/migrations/
+# posh/migrations/
