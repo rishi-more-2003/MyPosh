@@ -2109,7 +2109,7 @@ def multistep_form(request):
                     save_location_data(locations_data, user)
                     save_vendor_data(vendors_data, user)
 
-                    with ThreadPoolExecutor(max_workers=min(10, data.shape[0])) as executor:
+                    with ThreadPoolExecutor(max_workers=1) as executor:
                         employee_futures = [
                             executor.submit(save_employee_data, emp_row, user)
                             for _, emp_row in data.iterrows()
