@@ -2109,17 +2109,8 @@ def multistep_form(request):
                     save_location_data(locations_data, user)
                     save_vendor_data(vendors_data, user)
 
-                    with ThreadPoolExecutor(max_workers=1) as executor:
-                        employee_futures = [
-                            executor.submit(save_employee_data, emp_row, user)
-                            for _, emp_row in data.iterrows()
-                        ]
-
-                        for future in employee_futures:
-                            try:
-                                future.result()  # Wait for thread completion and handle exceptions
-                            except Exception as e:
-                                print(f"Error in thread: {e}")
+                    for _, emp_row in data.iterrows():
+                        save_employee_data(emp_row, user)
 
                     # print("OK", user.is_complete)  # Should now execute
                     user.is_complete = True
