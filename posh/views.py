@@ -37,8 +37,6 @@ from conversation.models import Conversation
 import json
 import os
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-import threading
-from concurrent.futures import ThreadPoolExecutor
 from django.db.models import Q
 
 @allowed_users(allowed_roles=['EST'])
@@ -1997,88 +1995,6 @@ def establishment_profile(request):
     }
     return render(request, 'establishment-profile.html', context)
 
-def save_location_data(locations_data, user):
-    # print("save_location_data started")
-    for loc in locations_data:
-        LocationEst.objects.get_or_create(
-            est_id = user,
-            name=loc['Location Name'],
-            address = loc['Address'],
-            location_uid =  generate_unique_locationUID(user, loc['Location Name']),
-            has_direct_employee = loc['Direct Employee'] == 'Yes',
-            no_of_direct_employees = loc['No. of Direct Employees'],
-            has_vendors = loc['Vendors'] == 'Yes',
-            no_of_vendors = loc['No. of Vendors'],
-            total_indirect_employees = loc['Total Number of Indirect Employees'] if loc['Total Number of Indirect Employees'] else 0,
-        )
-    return
-
-def save_vendor_data(vendors_data, user):
-    
-    for ven in vendors_data:
-        # print("save_vendor_data started")
-        if ven['Vendor Name'] != "NA":
-            # print("save_vendor_data started")
-            location = LocationEst.objects.get(name=ven['Location Name'].strip())
-            # print(location)
-            VendorEst.objects.get_or_create(
-                est_id = user,
-                location=location,
-                vendor_name=ven['Vendor Name'],
-                myposh_id=ven['MyPOSH ID'],
-                commercial_address=ven['Commercial Address'],
-                mobile=ven['Mobile'],
-                email=ven['Email'],
-                nature_of_service=ven['Nature of Service'],
-                contact_name=ven['Contact Name'],
-                contact_mobile=ven['Contact Mobile'],
-                contact_email=ven['Contact Email'],
-                contract_start_date=ven['Contract Start Date'] if ven["Contract Start Date"] else None,
-                contract_end_date=ven['Contract End Date'] if ven['Contract End Date'] else None,
-                max_employees=ven['Max Employees'],
-            )
-    return
-
-def save_employee_data(emp, user):
-
-    location = LocationEst.objects.get(name=emp['LOCATION'].strip())
-    
-    try:
-        vendor = VendorEst.objects.get(vendor_name=emp['VENDOR'].strip(), location=location) 
-    except:
-        vendor = None
-    username = generate_unique_employeeid(emp['MOBILE NUMBER'], emp['EMAIL ID'])   
-
-    # Create the employee
-    employee = EmployeeEst.objects.create_user(
-        username=username,
-        password=str(emp['MOBILE NUMBER']),
-        establishment_id=user,
-        location=location,
-        vendor_name=vendor,
-        employee_name=emp['NAME OF EMPLOYEE'],
-        middle_name=emp['MIDDLE NAME'],
-        gender=emp['GENDER'],
-        nature=emp['NATURE OF EMPLOYMENT (DIRECT / INDIRECT)'],
-        joining_date=str(emp['DATE OF JOINING']).split()[0] if emp['DATE OF JOINING'] else None,
-        phone=str(emp['MOBILE NUMBER']),
-        email=emp['EMAIL ID'],
-        is_activated=False,
-        type='Employee',
-    )
-
-    # Post-creation actions
-    employee.is_active = True
-    group, _ = Group.objects.get_or_create(name="EMPL")
-    employee.groups.add(group)
-    employee.save()
-
-    # Send welcome email
-    subject = 'Welcome to MyPosh'
-    message = f'Your username is {username} and password is YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
-    email_from = settings.EMAIL_HOST
-    send_mail(subject, message, email_from, [emp['EMAIL ID']], fail_silently=False)
-
 
 def multistep_form(request):
     user = request.user.establishmentuser
@@ -2106,20 +2022,81 @@ def multistep_form(request):
                     locations_data = get_session_data(request)
                     vendors_data = get_vendor_data(request)
 
-                    save_location_data(locations_data, user)
-                    save_vendor_data(vendors_data, user)
+                    for loc in locations_data:
+                        LocationEst.objects.get_or_create(
+                            est_id = user,
+                            name=loc['Location Name'],
+                            address = loc['Address'],
+                            location_uid =  generate_unique_locationUID(user, loc['Location Name']),
+                            has_direct_employee = loc['Direct Employee'] == 'Yes',
+                            no_of_direct_employees = loc['No. of Direct Employees'],
+                            has_vendors = loc['Vendors'] == 'Yes',
+                            no_of_vendors = loc['No. of Vendors'],
+                            total_indirect_employees = loc['Total Number of Indirect Employees'] if loc['Total Number of Indirect Employees'] else 0,
+                        )
 
-                    with ThreadPoolExecutor(max_workers=min(10, data.shape[0])) as executor:
-                        employee_futures = [
-                            executor.submit(save_employee_data, emp_row, user)
-                            for _, emp_row in data.iterrows()
-                        ]
+                    for ven in vendors_data:
+                        # print("save_vendor_data started")
+                        if ven['Vendor Name'] != "NA":
+                            # print("save_vendor_data started")
+                            location = LocationEst.objects.get(name=ven['Location Name'].strip())
+                            # print(location)
+                            VendorEst.objects.get_or_create(
+                                est_id = user,
+                                location=location,
+                                vendor_name=ven['Vendor Name'],
+                                myposh_id=ven['MyPOSH ID'],
+                                commercial_address=ven['Commercial Address'],
+                                mobile=ven['Mobile'],
+                                email=ven['Email'],
+                                nature_of_service=ven['Nature of Service'],
+                                contact_name=ven['Contact Name'],
+                                contact_mobile=ven['Contact Mobile'],
+                                contact_email=ven['Contact Email'],
+                                contract_start_date=ven['Contract Start Date'] if ven["Contract Start Date"] else None,
+                                contract_end_date=ven['Contract End Date'] if ven['Contract End Date'] else None,
+                                max_employees=ven['Max Employees'],
+                            )
 
-                        for future in employee_futures:
-                            try:
-                                future.result()  # Wait for thread completion and handle exceptions
-                            except Exception as e:
-                                print(f"Error in thread: {e}")
+                    for _, emp_row in data.iterrows():
+                        
+                        location = LocationEst.objects.get(name=emp['LOCATION'].strip())
+                        
+                        try:
+                            vendor = VendorEst.objects.get(vendor_name=emp['VENDOR'].strip(), location=location) 
+                        except:
+                            vendor = None
+                        username = generate_unique_employeeid(emp['MOBILE NUMBER'], emp['EMAIL ID'])   
+
+                        # Create the employee
+                        employee = EmployeeEst.objects.create_user(
+                            username=username,
+                            password=str(emp['MOBILE NUMBER']),
+                            establishment_id=user,
+                            location=location,
+                            vendor_name=vendor,
+                            employee_name=emp['NAME OF EMPLOYEE'],
+                            middle_name=emp['MIDDLE NAME'],
+                            gender=emp['GENDER'],
+                            nature=emp['NATURE OF EMPLOYMENT (DIRECT / INDIRECT)'],
+                            joining_date=str(emp['DATE OF JOINING']).split()[0] if emp['DATE OF JOINING'] else None,
+                            phone=str(emp['MOBILE NUMBER']),
+                            email=emp['EMAIL ID'],
+                            is_activated=False,
+                            type='Employee',
+                        )
+
+                        # Post-creation actions
+                        employee.is_active = True
+                        group, _ = Group.objects.get_or_create(name="EMPL")
+                        employee.groups.add(group)
+                        employee.save()
+
+                        # Send welcome email
+                        subject = 'Welcome to MyPosh'
+                        message = f'Your username is {username} and password is YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
+                        email_from = settings.EMAIL_HOST
+                        send_mail(subject, message, email_from, [emp['EMAIL ID']], fail_silently=False)
 
                     # print("OK", user.is_complete)  # Should now execute
                     user.is_complete = True
