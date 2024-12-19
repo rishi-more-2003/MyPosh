@@ -2019,9 +2019,10 @@ def multistep_form(request):
                 data = data.fillna('NA') 
 
                 if not data.empty:
+                    
                     locations_data = get_session_data(request)
                     vendors_data = get_vendor_data(request)
-
+                    
                     for loc in locations_data:
                         LocationEst.objects.get_or_create(
                             est_id = user,
@@ -2058,10 +2059,10 @@ def multistep_form(request):
                                 max_employees=ven['Max Employees'],
                             )
 
-                    for _, emp_row in data.iterrows():
-                        
+                    for _, emp in data.iterrows():
+                        # print("HOLLA")
                         location = LocationEst.objects.get(name=emp['LOCATION'].strip())
-                        
+                        # print(emp)
                         try:
                             vendor = VendorEst.objects.get(vendor_name=emp['VENDOR'].strip(), location=location) 
                         except:
@@ -2151,7 +2152,7 @@ def multistep_form(request):
                             )
 
                     for emp in table_data:
-                        print(emp)
+                        # print(emp)
                         location = LocationEst.objects.get(name=emp['LOCATION'])
                         try:
                             vendor = VendorEst.objects.get(vendor_name=emp['VENDOR'], location=location) 
