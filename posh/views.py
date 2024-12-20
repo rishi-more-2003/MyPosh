@@ -2093,11 +2093,11 @@ def multistep_form(request):
                         employee.groups.add(group)
                         employee.save()
 
-                        # Send welcome email
-                        subject = 'Welcome to MyPosh'
-                        message = f'Your username is {username} and password is YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
-                        email_from = settings.EMAIL_HOST
-                        send_mail(subject, message, email_from, [emp['EMAIL ID']], fail_silently=False)
+                        # # Send welcome email
+                        # subject = 'Welcome to MyPosh'
+                        # message = f'Your username is {username} and password is YOUR REGISTERED MOBILE\n Please do not share this information with anyone.'
+                        # email_from = settings.EMAIL_HOST
+                        # send_mail(subject, message, email_from, [emp['EMAIL ID']], fail_silently=False)
 
                     # print("OK", user.is_complete)  # Should now execute
                     user.is_complete = True
