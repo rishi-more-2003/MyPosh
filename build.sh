@@ -8,4 +8,4 @@ python manage.py collectstatic --no-input
 python manage.py makemigrations
 python manage.py migrate
 
-gunicorn --timeout 120
+gunicorn -w 2 backend.wsgi:application --timeout 120 
