@@ -158,7 +158,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'myposh.help@gmail.com'
-EMAIL_HOST_PASSWORD = 'gggqtxfwmijfmmyp'
+EMAIL_HOST_PASSWORD = ''
 
 # Set session cookie age to 3 hours (in seconds)
 SESSION_COOKIE_AGE = 10800  # 3 hours
